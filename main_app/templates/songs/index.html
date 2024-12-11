@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}All Songs{% endblock %}
+
+{% block content %}
+  <h2>All Songs</h2>
+
+  <p><a href="{% url 'song_create' %}">Add a new song</a></p>
+
+  <ul>
+    {% for song in songs %}
+      <li>
+        <img src="{{ song.album_cover.url }}" alt="{{song.title}} album cover">
+        <a href="{% url 'song_detail' song.id %}">{{ song.title }}</a> by {{ song.artist }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

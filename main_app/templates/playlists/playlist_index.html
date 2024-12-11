@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Playlists{% endblock %}
+
+{% block content %}
+<h1>Playlists</h1>
+{% for playlist in playlists %}
+    <div>
+        <img src="{{ playlist.playlist_cover.url }}" alt="{{playlist.name}} cover image">
+        <h2>{{ playlist.name }}</h2>
+        <p>{{ playlist.description }}</p>
+        <p>Created by: {{ playlist.user.username }}</p>
+        <a href="{% url 'playlist-detail' playlist.id %}">View Details</a>
+    </div>
+{% endfor %}
+{% endblock %}

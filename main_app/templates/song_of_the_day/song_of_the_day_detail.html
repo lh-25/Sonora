@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Song of the Day: {{ post.song.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ post.post_title }}</h2>
+<h4>{{ post.song.title }} by {{ post.song.artist }}</h4>
+<p><strong>Reason for Pick:</strong> {{ post.reason_for_pick }}</p>
+<p><strong>Standout Lyric:</strong> "{{ post.standout_lyric }}"</p>
+<p>Posted by: {{ post.user.username }} on {{ post.date_posted }}</p>
+{% if post.post_image %}
+<img src="{{ post.post_image.url }}" alt="Song of the Day image">
+{% endif %}
+{% endblock %}
