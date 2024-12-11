@@ -3,7 +3,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay
@@ -34,8 +33,9 @@ def song_index(request):
   songs = Song.objects.all()
   return render(request, 'songs/index.html', {'songs': songs})
   
-class SongDetails(DetailView):
-  model = Song
+def song_detail(request, song_id):
+  song = Song.objects.get(id=song_id)
+  return render(request, 'songs/detail.html', {'song': song})
   
 class SongCreate(CreateView):
   model = Song
@@ -89,7 +89,7 @@ def songoftheday_index(request):
 
 def my_posts(request):
   posts = SongOfTheDay.objects.filter(user=request.user)
-  return render(request, 'song_of_the_day/my_posts.html',{'post': posts})
+  return render(request, 'song_of_the_day/my_posts.html',{'posts': posts})
 
 def songoftheday_details(request, post_id):
   post = SongOfTheDay.objects.get(id=post_id)

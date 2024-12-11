@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Create Song of the Day{% endblock %}
+
+{% block content %}
+  <h2>Create Song of the Day Post</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post Song of the Day</button>
+  </form>
+{% endblock %}

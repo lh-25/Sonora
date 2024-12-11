@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ song.title }} Details{% endblock %}
+
+{% block content %}
+<h1>{{ song.title }}</h1>
+<p>Artist: {{ song.artist }}</p>
+<p>Album: {{ song.album }}</p>
+<p>Genre: {{ song.get_genre_display }}</p>
+<p>Duration: {{ song.formatted_duration}}</p>
+<p>Release Date: {{ song.release_date }}</p>
+{% if song.album_cover %}
+<img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover">
+{% endif %}
+<a href="{% url 'playlist-index' %}">Back to Playlists</a>
+{% endblock %}

@@ -7,7 +7,7 @@ urlpatterns = [
   path('accounts/signup/', views.signup, name='signup'),
    # Song URLs
   path('songs/', views.song_index, name='song-index'),
-  path('songs/<int:song_id>/', views.SongDetails.as_view(), name='song_detail'),
+  path('songs/<int:song_id>/', views.song_detail, name='song_detail'),
   path('songs/new/', views.SongCreate.as_view(), name='song_create'),
 
   # Playlist URLs

@@ -32,8 +32,11 @@ class Song(models.Model):
   def __str__(self):
     return f'{self.title} by {self.artist}'
   def get_absolute_url(self):
-        return reverse('song-detail', kwargs={'pk': self.pk})
-
+        return reverse('song_detail', kwargs={'pk': self.pk})
+      
+  def formatted_duration(self):
+        minutes, seconds = divmod(self.duration.total_seconds(), 60)
+        return f"{int(minutes)}:{int(seconds):02}"
 
 class Playlist(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='playlists')

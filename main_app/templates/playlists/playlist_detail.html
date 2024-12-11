@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{{ playlist.name }}{% endblock %}
+
+{% block content %}
+  <h2>{{ playlist.name }}</h2>
+  <p>{{ playlist.description }}</p>
+  
+  <h3>Songs in this Playlist</h3>
+  <ul>
+    {% for song in playlist.songs.all %}
+      <li>{{ song.title }} by {{ song.artist }}</li>
+    {% empty %}
+      <li>No songs in this playlist yet.</li>
+    {% endfor %}
+  </ul>
+  
+  <p><a href="{% url 'playlist_create' %}">Edit Playlist</a></p>
+{% endblock %}

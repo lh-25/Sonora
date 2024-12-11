@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Song of the Day{% endblock %}
+
+{% block content %}
+<h1>Song of the Day Posts</h1>
+{% for post in posts %}
+    <div>
+        <h2>{{ post.post_title }}</h2>
+        <p>Song: {{ post.song.title }} by {{ post.song.artist }}</p>
+        <p>Posted by: {{ post.user.username }}</p>
+        <a href="{% url 'song_of_the_day_detail' post.id %}">View Details</a>
+    </div>
+{% endfor %}
+{% endblock %}
