@@ -1,26 +1,28 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay
+from .forms import SignupForm
 # Create your views here.
 def signup(request):
     error_message = ''
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('cat-index')
+            return redirect('song-index')
         else:
             error_message = 'Invalid sign up - try again'
-    form = UserCreationForm()
+    form = SignupForm()
     context = {'form': form, 'error_message': error_message}
     return render(request, 'signup.html', context)
+  
 class Home(LoginView):
   template_name = 'home.html'
   
