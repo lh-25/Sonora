@@ -28,8 +28,9 @@ def about(request):
     return render(request, 'about.html')
   
 # Song Views
-class SongList(ListView):
-  model = Song
+def song_index(request):
+  songs = Song.objects.all()
+  return render(request, 'songs/index.html', {'songs': songs})
   
 class SongDetails(DetailView):
   model = Song
