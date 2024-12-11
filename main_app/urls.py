@@ -5,7 +5,7 @@ urlpatterns = [
   path('', views.Home.as_view(), name='home'),
   path('about/', views.about, name='about'),
    # Song URLs
-  path('songs/', views.SongList.as_view(), name='song_list'),
+  path('songs/', views.song_index, name='song-index'),
   path('songs/<int:song_id>/', views.SongDetails.as_view(), name='song_detail'),
   path('songs/new/', views.SongCreate.as_view(), name='song_create'),
 
