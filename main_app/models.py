@@ -71,6 +71,6 @@ class SongOfTheDay(models.Model):
     ordering = ['-date_posted']
     
   def get_absolute_url(self):
-        return reverse('song-of-the-day-detail', kwargs={'post_id': self.id})
+        return reverse('song_of_the_day_detail', kwargs={'post_id': self.id})
 
   

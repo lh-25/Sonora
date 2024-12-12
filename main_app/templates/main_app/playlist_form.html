@@ -3,11 +3,15 @@
 {% block title %}Create a New Playlist{% endblock %}
 
 {% block content %}
+{% if playlist %}
+  <h1>Edit {{ playlist.name }}</h1>
+{% else %}
   <h2>Create a New Playlist</h2>
-
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Playlist</button>
-  </form>
+{% endif %}
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  Hold down “Control”, or “Command” on a Mac, to add multiple songs.
+  <button type="submit">Submit</button>
+</form>
 {% endblock %}
