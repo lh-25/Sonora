@@ -13,4 +13,20 @@
 <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover">
 {% endif %}
 <a href="{% url 'playlist-index' %}">Back to Playlists</a>
+
+<form method="post" action="{% url 'add-to-playlist' song.id %}">
+  {% csrf_token %}
+  <label for="playlist">Select Playlist:</label>
+  <select name="playlist" id="playlist">
+      {% for playlist in user.playlists.all %}
+      <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+      {% endfor %}
+  </select>
+  <button type="submit">Add to Playlist</button>
+</form>
+
+<!-- Make Song of the Day Button -->
+<a href="{% url 'create-song-of-the-day' song.id %}">Make Song of the Day</a>
+
+<a href="{% url 'playlist-index' %}">Back to Playlists</a>
 {% endblock %}

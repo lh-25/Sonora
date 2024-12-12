@@ -4,9 +4,9 @@
 
 {% block content %}
 <h1>Are you sure you want to delete this post?</h1>
-<form method="post">
+<form method="post" action="{% url 'song_of_the_day_delete' object.id %}" >
     {% csrf_token %}
     <button type="submit">Confirm</button>
-    <a href="{% url 'song-of-the-day-index' %}">Cancel</a>
+    <a href="{% url 'my_posts' %}">Cancel</a>
 </form>
 {% endblock %}

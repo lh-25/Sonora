@@ -9,11 +9,15 @@
   <h3>Songs in this Playlist</h3>
   <ul>
     {% for song in playlist.songs.all %}
-      <li>{{ song.title }} by {{ song.artist }}</li>
+      <li>{{ song.title }} by {{ song.artist }}
+        <a href="{% url 'remove-from-playlist' playlist.id song.id %}">Remove</a>
+      </li>
     {% empty %}
       <li>No songs in this playlist yet.</li>
     {% endfor %}
   </ul>
-  
-  <p><a href="{% url 'playlist_create' %}">Edit Playlist</a></p>
+  {% if user == playlist.user %}
+    <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-primary">Edit</a>
+    <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete</a>
+  {% endif %}
 {% endblock %}
