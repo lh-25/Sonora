@@ -2,9 +2,14 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-  path('', views.Home.as_view(), name='home'),
+  path('', views.landing_page, name='landing-page'),
+  path('home/', views.Home.as_view(), name='home'),
   path('about/', views.about, name='about'),
+  path('profiles/my-profile', views.my_profile, name='my-profile'),
   path('accounts/signup/', views.signup, name='signup'),
+  path('profiles/', views.user_profiles, name='users-profiles'),
+  path('profiles/<int:user_id>/', views.profile, name='profile'),
+  
    # Song URLs
   path('songs/', views.song_index, name='song-index'),
   path('songs/<int:song_id>/', views.song_detail, name='song_detail'),

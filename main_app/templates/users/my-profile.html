@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<h1>{{ user.username }}'s Profile</h1>
+
+<div>
+  <a href="{% url 'my_playlists' %}">My PlayLists</a>
+ 
+</div>
+ <a href="{% url 'my_posts' %}">My Posts</a>
+<div>
+ 
+</div>
+{% endblock %}
