@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay
+from django.contrib.auth.models import User
 from .forms import SignupForm
 # Create your views here.
 def signup(request):
@@ -23,11 +24,30 @@ def signup(request):
     context = {'form': form, 'error_message': error_message}
     return render(request, 'signup.html', context)
   
+  
 class Home(LoginView):
   template_name = 'home.html'
-  
+
+def landing_page(request):
+  return render(request, 'landing_page.html')
+
 def about(request):
     return render(request, 'about.html')
+  
+def my_profile(request):
+  user = User.objects.get(id=request.user.id)
+  return render(request, 'users/my-profile.html', {'user': user}) 
+  
+def user_profiles(request):
+  users = User.objects.exclude(id=request.user.id)
+  return render(request, 'users/profiles.html', {'users': users})
+
+def profile(request, user_id):
+  user = User.objects.get(id=user_id)
+  posts = user.posts.all()
+  playlists = user.playlists.filter(visibility='PUBLIC')
+  return render(request, 'users/profile.html', {'user': user, 'posts': posts, 'playlists': playlists})
+  
   
 # Song Views
 def song_index(request):
@@ -80,7 +100,7 @@ class PlaylistDelete(DeleteView):
   success_url ='/playlists/my-playlists/'
 
 def playlist_index(request):
-  playlists = Playlist.objects.all()
+  playlists = Playlist.objects.filter(visibility='PUBLIC')
   return render(request, 'playlists/playlist_index.html', {'playlists': playlists})
 
 
