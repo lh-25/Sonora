@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
-  <!-- <link rel="shortcut icon" type="image/png" href="{% static 'images/splash.svg' %}" /> -->
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/sonora-logo2.PNG' %}" />
 
   <title>Sonora</title>
   {% block head %}
@@ -14,11 +14,11 @@
 </head>
 
 <body>
-  <header>
-    <div class="header-logo-container">
-      <!-- <a href="/">
-        <img src="{% static 'images/header-logo.svg' %}" alt="The Cat Collector Logo" />
-      </a> -->
+  <header class="page-header">
+    <div class="header-logo">
+      <a href="{% url 'home' %}">
+        <img src="{% static 'images/sonora-logo2.PNG' %}" alt="Sonora Logo" />
+      </a>
     </div>
     <nav>
       <ul>
