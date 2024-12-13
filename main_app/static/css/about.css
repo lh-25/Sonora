@@ -1,0 +1,121 @@
+/* General Page Styling */
+body {
+  background: linear-gradient(to right, #141414, #1e1e1e); /* Consistent background */
+  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero Section */
+.about-hero {
+  text-align: center;
+  padding: 60px 20px;
+  background: url("{% static 'images/about-bg.jpg' %}") no-repeat center center/cover;
+  color: #fff;
+}
+
+.about-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.about-hero h1::after {
+  content: "";
+  display: block;
+  width: 160px;
+  height: 5px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  margin: 10px auto 0;
+  border-radius: 5px;
+}
+
+/* Section Headers with Gradient Lines */
+h2 {
+  position: relative;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  margin: 10px auto 0;
+  border-radius: 5px;
+}
+
+/* Mission Section */
+.mission-section {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mission-section p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #b3b3b3;
+}
+
+/* Creator Section */
+.creator-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: #1a1a1a;
+}
+
+.creator-container {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.creator-container img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.creator-container h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.creator-container p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #b3b3b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .about-hero p {
+    font-size: 1.2rem;
+  }
+
+  .mission-section h2,
+  .creator-section h2 {
+    font-size: 2rem;
+  }
+
+  .creator-container p {
+    font-size: 1.1rem;
+  }
+}

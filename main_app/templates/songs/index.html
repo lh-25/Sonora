@@ -1,17 +1,82 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}" />
+{% endblock %}
 {% block title %}All Songs{% endblock %}
 
 {% block content %}
-  <h2>All Songs</h2>
-  <p><a href="{% url 'song_create' %}">Add a new song</a></p>
+<section class="songs-section">
+  <!-- Header Section -->
+  <div class="section-header">
+    <h2>All Songs</h2>
+    <a href="{% url 'song_create' %}" class="btn">Add New Song</a>
+  </div>
 
-  <ul>
+  <!-- Genre Filter -->
+  <div class="filters">
+    <form method="get" id="genre-filter-form">
+      <select name="genre" class="filter-dropdown" id="genre-filter">
+        <option value="">All Genres</option>
+        {% for genre, label in genre_choices %}
+        <option value="{{ genre }}" {% if request.GET.genre == genre %}selected{% endif %}>
+          {{ label }}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <!-- Search Filter -->
+  <div class="filters">
+    <form method="get" id="search-filter-form">
+      <input type="text" name="search" placeholder="Search by title, artist, or album..." value="{{ request.GET.search }}" class="filter-input">
+      <button type="submit" class="btn filter-btn">Search</button>
+    </form>
+  </div>
+
+  <!-- Songs Container -->
+  <div class="songs-container">
     {% for song in songs %}
-      <li>
-        <img src="{{ song.album_cover.url }}" alt="{{song.title}} album cover">
-        <a href="{% url 'song_detail' song.id %}">{{ song.title }}</a> by {{ song.artist }}
-      </li>
+    <div class="song-card">
+      <div class="album-cover-wrapper">
+        <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
+      </div>
+      <div class="song-info">
+        <h3><a href="{% url 'song_detail' song.id %}">{{ song.title }}</a></h3>
+        <p>by {{ song.artist }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <p>No songs available.</p>
     {% endfor %}
-  </ul>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if songs.has_previous %}
+    <a href="?page={{ songs.previous_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}" class="pagination-link">Previous</a>
+    {% endif %}
+    <span>Page {{ songs.number }} of {{ songs.paginator.num_pages }}</span>
+    {% if songs.has_next %}
+    <a href="?page={{ songs.next_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}" class="pagination-link">Next</a>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const genreFilter = document.getElementById("genre-filter");
+    const genreForm = document.getElementById("genre-filter-form");
+
+    if (genreFilter && genreForm) {
+      genreFilter.addEventListener("change", function () {
+        genreForm.submit(); // Automatically submit the genre filter form on selection
+      });
+    }
+  });
+</script>
+
 {% endblock %}
+
+

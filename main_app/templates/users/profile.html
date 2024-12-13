@@ -1,34 +1,95 @@
 {% extends 'base.html' %}
-
+{% load static %} 
 {% block head %}
+
+<link rel="stylesheet" href="{% static 'css/profile.css' %}" />
 {% endblock %}
 
 {% block content %}
-<h1>{{ user.username }}'s Profile</h1>
+<section class="profile-section">
+  <!-- Profile Header with Profile Picture -->
+  <div class="profile-header">
+    <!-- Profile Picture -->
+    {% if user.profile.profile_picture %}
+    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-picture">
+    {% else %}
+    <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
+    {% endif %}
+    <h1>{{ user.username }}'s Profile</h1>
+  </div>
 
-<div>
-    {% for playlist in playlists %}
-        <div>
-                <img src="{{ playlist.playlist_cover }}" alt="{{ playlist.name }}">
-            <div>
-                <h3>{{ playlist.name }}</h3>
-                <p>{{playlist.description}}</p>
-                <a href="{% url 'playlist-detail' playlist.id %}">View Details</a>
-            </div>
+  <!-- Featured Playlist -->
+  <div class="featured-playlist">
+    <h2>Featured Playlist</h2>
+    {% with playlists|first as featured_playlist %}
+    {% if featured_playlist %}
+    <div class="featured-card">
+      <img src="{{ featured_playlist.playlist_cover.url }}" alt="{{ featured_playlist.name }}" class="featured-cover">
+      <h3>{{ featured_playlist.name }}</h3>
+      <p>{{ featured_playlist.description }}</p>
+      <a href="{% url 'playlist-detail' featured_playlist.id %}" class="btn">View Playlist</a>
+    </div>
+    {% else %}
+    <p>No featured playlist available.</p>
+    {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- User Stats -->
+  <div class="user-stats">
+    <div class="stat">
+      <h3>Playlists</h3>
+      <p>{{ playlists|length }}</p>
+    </div>
+    <div class="stat">
+      <h3>Posts</h3>
+      <p>{{ posts|length }}</p>
+    </div>
+  </div>
+
+  <!-- Playlists Section -->
+  <div class="playlists-section">
+    <h2>Playlists</h2>
+    <div class="playlists-container">
+      {% for playlist in playlists %}
+      <div class="playlist-card">
+        <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }}" class="playlist-cover">
+        <div class="playlist-info">
+          <h3>{{ playlist.name }}</h3>
+          <p>{{ playlist.description }}</p>
+          <a href="{% url 'playlist-detail' playlist.id %}" class="btn">View Details</a>
         </div>
-    {% endfor %}
-</div>
-
-<div>
-  {% for post in posts %}
-      <div>
-              <img src="{{ post.post_image }}" alt="{{ post.post_title }}">
-          <div>
-              <h3>{{ post.post_title }}</h3>
-              <p>{{post.date_posted}}</p>
-              <a href="{% url 'song_of_the_day_detail' post.id %}">View Details</a>
-          </div>
       </div>
-  {% endfor %}
-</div>
+      {% empty %}
+      <p>No playlists available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Posts Section -->
+  <div class="posts-section">
+    <h2>Posts</h2>
+    <div class="posts-container">
+      {% for post in posts %}
+      <div class="post-card">
+        <img src="{{ post.post_image.url }}" alt="{{ post.post_title }}" class="post-image">
+        <div class="post-info">
+          <h3>{{ post.post_title }}</h3>
+          <p>{{ post.date_posted }}</p>
+          <a href="{% url 'song_of_the_day_detail' post.id %}" class="btn">View Details</a>
+        </div>
+      </div>
+      {% empty %}
+      <p>No posts available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recently Played Placeholder -->
+  <div class="recently-played">
+    <h2>Recently Played</h2>
+    <p>Feature coming soon!</p>
+  </div>
+</section>
+
 {% endblock %}

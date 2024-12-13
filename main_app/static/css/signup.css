@@ -1,0 +1,110 @@
+/* General Page Styles */
+.signup-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #141414, #1e1e1e); /* Same background as login */
+  padding: 20px;
+}
+
+.form-container {
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  padding: 40px 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  animation: fadeInUp 1.2s ease; /* Matches login animation */
+}
+
+.page-header h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+form label {
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+form input:focus {
+  border-color: #00d4ff; /* Matches the login input highlight */
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.8);
+}
+
+button.submit {
+  background: linear-gradient(90deg, #ff4040, #ff7b40);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.4s ease, transform 0.3s ease;
+}
+
+button.submit:hover {
+  background: linear-gradient(90deg, #ff2020, #ff5e20);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 64, 64, 0.5);
+}
+
+.red-text {
+  color: #ff4040;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Animation for fade-in */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .form-container {
+    padding: 30px 20px;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  button.submit {
+    font-size: 1.1rem;
+  }
+}
+

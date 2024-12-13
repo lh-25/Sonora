@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% load static %} 
+{% block head %}
 
+<link rel="stylesheet" href="{% static 'css/song_form.css' %}" />
+{% endblock %}
 {% block title %}Add a New Song{% endblock %}
 
 {% block content %}
