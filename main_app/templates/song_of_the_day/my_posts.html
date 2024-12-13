@@ -2,29 +2,35 @@
 {% load static %} 
 {% block head %}
 
-<link rel="stylesheet" href="{% static 'css/my_post.css' %}" />
+<link rel="stylesheet" href="{% static 'css/my_posts.css' %}" />
 {% endblock %}
 {% block title %}My Posts{% endblock %}
 
 {% block content %}
-<h2>My Song of the Day Posts</h2>
+<section class="my-posts-section">
+  <div class="section-header">
+    <h2>My Song of the Day Posts</h2>
+    <a href="{% url 'song_of_the_day_create' %}" class="btn">Create New Post</a>
+  </div>
 
-<p><a href="{% url 'song_of_the_day_create' %}">Create a new Song of the Day post</a></p>
-
-{% if posts %}
-<ul>
-  {% for post in posts %}
-  <li>
-    <a href="{% url 'song_of_the_day_detail' post.id %}">{{ post.post_title }}
-    </a>
-  </li>
-  {% if post.user == request.user %}
-  <a href="{% url 'song_of_the_day_update' post.id %}">Edit</a>
-  <a href="{% url 'song_of_the_day_delete' post.id %}">Delete</a>
+  {% if posts %}
+  <div class="posts-container">
+    {% for post in posts %}
+    <div class="post-card">
+      <h3><a href="{% url 'song_of_the_day_detail' post.id %}">{{ post.post_title }}</a></h3>
+      <p><strong>Song:</strong> {{ post.song.title }} by {{ post.song.artist }}</p>
+      <p><strong>Date:</strong> {{ post.date_posted|date:"M d, Y" }}</p>
+      {% if post.user == request.user %}
+      <div class="post-actions">
+        <a href="{% url 'song_of_the_day_update' post.id %}" class="btn">Edit</a>
+        <a href="{% url 'song_of_the_day_delete' post.id %}" class="btn delete-btn">Delete</a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-posts-message">You haven't created any Song of the Day posts yet.</p>
   {% endif %}
-  {% endfor %}
-</ul>
-{% else %}
-<p>You haven't created any Song of the Day posts yet.</p>
-{% endif %}
+</section>
 {% endblock %}

@@ -1,0 +1,95 @@
+/* General Styles */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to right, #141414, #1e1e1e);
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
+}
+
+.sotd-detail-section {
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.post-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.post-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 15px;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.post-info {
+  text-align: left;
+  flex: 1;
+}
+
+.post-info h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.post-info h3 {
+  font-size: 1.5rem;
+  color: #b3b3b3;
+  margin-bottom: 10px;
+}
+
+.post-info .posted-by {
+  font-size: 1rem;
+  color: #b3b3b3;
+}
+
+/* Post Details */
+.post-details {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  margin-top: 20px;
+  text-align: left;
+}
+
+.post-details p {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.post-details strong {
+  color: #00d4ff;
+}
+
+/* Navigation Buttons */
+.post-actions {
+  margin-top: 30px;
+}
+
+.post-actions .btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  color: #fff;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-actions .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
+}

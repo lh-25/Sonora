@@ -7,12 +7,30 @@
 {% block title %}Song of the Day: {{ post.song.title }}{% endblock %}
 
 {% block content %}
-<h2>{{ post.post_title }}</h2>
-<h4>{{ post.song.title }} by {{ post.song.artist }}</h4>
-<p><strong>Reason for Pick:</strong> {{ post.reason_for_pick }}</p>
-<p><strong>Standout Lyric:</strong> "{{ post.standout_lyric }}"</p>
-<p>Posted by: {{ post.user.username }} on {{ post.date_posted }}</p>
-{% if post.post_image %}
-<img src="{{ post.post_image.url }}" alt="Song of the Day image">
-{% endif %}
+<section class="sotd-detail-section">
+  <!-- Post Header -->
+  <div class="post-header">
+    {% if post.post_image %}
+    <img src="{{ post.post_image.url }}" alt="Song of the Day image" class="post-image">
+    {% else %}
+    <img src="{% static 'images/rainyday.jpeg' %}" alt="Default Song of the Day image" class="post-image">
+    {% endif %}
+    <div class="post-info">
+      <h1>{{ post.post_title }}</h1>
+      <h3>{{ post.song.title }} by {{ post.song.artist }}</h3>
+      <p class="posted-by">Posted by: <strong>{{ post.user.username }}</strong> on {{ post.date_posted|date:"M d, Y" }}</p>
+    </div>
+  </div>
+
+  <!-- Post Details -->
+  <div class="post-details">
+    <p><strong>Reason for Pick:</strong> {{ post.reason_for_pick }}</p>
+    <p><strong>Standout Lyric:</strong> "{{ post.standout_lyric }}"</p>
+  </div>
+
+  <!-- Navigation -->
+  <div class="post-actions">
+    <a href="{% url 'song_of_the_day_index' %}" class="btn">Back to Posts</a>
+  </div>
+</section>
 {% endblock %}

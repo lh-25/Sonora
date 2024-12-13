@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay
 from django.contrib.auth.models import User
-from .forms import SignupForm
+from .forms import SignupForm, SongForm
+
 # Create your views here.
 def signup(request):
     error_message = ''
@@ -54,37 +55,30 @@ def profile(request, user_id):
   
 # Song Views
 def song_index(request):
- # Fetch query parameters
     genre = request.GET.get('genre', '')
     search_query = request.GET.get('search', '')
-    page = request.GET.get('page', 1)  # Get current page number
+    page = request.GET.get('page', 1) 
 
-    # Base queryset
+
     songs = Song.objects.all()
 
-    # Apply genre filter if selected
     if genre:
         songs = songs.filter(genre__iexact=genre)
-
-    # Apply partial search filter across title, artist, and album
     if search_query:
         songs = songs.filter(
             Q(title__icontains=search_query) |
             Q(artist__icontains=search_query) |
             Q(album__icontains=search_query)
         )
-
-    # Apply pagination
-    paginator = Paginator(songs, 10)  # Show 10 songs per page
+    paginator = Paginator(songs, 10) 
     songs_page = paginator.get_page(page)
 
-    # Pass genre choices to the template for dropdown rendering
     genre_choices = Song._meta.get_field('genre').choices
 
     return render(request, 'songs/index.html', {
-        'songs': songs_page,  # Paginated songs
+        'songs': songs_page, 
         'genre_choices': genre_choices,
-        'request': request,  # Pass request for retaining filter values in template
+        'request': request,  
     })
   
 def song_detail(request, song_id):
@@ -93,7 +87,8 @@ def song_detail(request, song_id):
   
 class SongCreate(CreateView):
   model = Song
-  fields = '__all__'
+  form_class = SongForm
+
   
 def add_to_playlist(request, song_id):
     song = get_object_or_404(Song, id=song_id)
@@ -133,13 +128,19 @@ class PlaylistDelete(DeleteView):
   success_url ='/playlists/my-playlists/'
 
 def playlist_index(request):
+  page = request.GET.get('page', 1) 
   playlists = Playlist.objects.filter(visibility='PUBLIC')
-  return render(request, 'playlists/playlist_index.html', {'playlists': playlists})
+  paginator = Paginator(playlists, 10) 
+  playlists_page = paginator.get_page(page)
+  return render(request, 'playlists/playlist_index.html', {'playlists': playlists_page})
 
 
 def my_playlists(request):
+  page = request.GET.get('page', 1)  
   playlists = Playlist.objects.filter(user=request.user)
-  return render(request, 'playlists/my_playlists.html',{'playlists': playlists})
+  paginator = Paginator(playlists, 10)
+  playlists_page = paginator.get_page(page) 
+  return render(request, 'playlists/my_playlists.html',{'playlists': playlists_page})
 
 def playlist_details(request, playlist_id):
   playlist = Playlist.objects.get(id=playlist_id)
@@ -176,12 +177,18 @@ class SongOfTheDayDelete(DeleteView):
   success_url ='/song_of_the_day/my-posts/'
 
 def songoftheday_index(request):
- posts = SongOfTheDay.objects.all()
- return render(request, 'song_of_the_day/song_of_the_day_index.html', {'posts': posts})
+  posts = SongOfTheDay.objects.all()
+  page = request.GET.get('page', 1) 
+  paginator = Paginator(posts, 10)
+  posts_page = paginator.get_page(page)
+  return render(request, 'song_of_the_day/song_of_the_day_index.html', {'posts': posts_page})
 
-def my_posts(request):
+def my_posts(request):  
   posts = SongOfTheDay.objects.filter(user=request.user)
-  return render(request, 'song_of_the_day/my_posts.html',{'posts': posts})
+  page = request.GET.get('page', 1) 
+  paginator = Paginator(posts, 10)
+  posts_page = paginator.get_page(page)
+  return render(request, 'song_of_the_day/my_posts.html',{'posts': posts_page})
 
 def songoftheday_details(request, post_id):
   post = SongOfTheDay.objects.get(id=post_id)

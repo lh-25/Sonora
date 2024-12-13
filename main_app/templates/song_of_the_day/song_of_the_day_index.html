@@ -7,13 +7,33 @@
 {% block title %}Song of the Day{% endblock %}
 
 {% block content %}
-<h1>Song of the Day Posts</h1>
-{% for post in posts %}
-    <div>
-        <h2>{{ post.post_title }}</h2>
-        <p>Song: {{ post.song.title }} by {{ post.song.artist }}</p>
-        <p>Posted by: {{ post.user.username }}</p>
-        <a href="{% url 'song_of_the_day_detail' post.id %}">View Details</a>
+<section class="sotd-section">
+    <div class="section-header">
+      <h1>Song of the Day Posts</h1>
+      <a href="{% url 'song_of_the_day_create' %}" class="btn">Add New Post</a>
     </div>
-{% endfor %}
+  
+    <div class="sotd-container">
+      {% for post in posts %}
+      <div class="sotd-card">
+        <div class="sotd-image">
+          {% if post.post_image %}
+          <img src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+          {% else %}
+          <img src="{% static 'images/default-song-image.png' %}" alt="Default Song">
+          {% endif %}
+        </div>
+        <div class="sotd-info">
+          <h2>{{ post.post_title }}</h2>
+          <p><strong>Song:</strong> {{ post.song.title }} by {{ post.song.artist }}</p>
+          <p><strong>Posted by:</strong> {{ post.user.username }}</p>
+          <p><strong>Date:</strong> {{ post.date_posted|date:"M d, Y" }}</p>
+          <a href="{% url 'song_of_the_day_detail' post.id %}" class="btn">View Details</a>
+        </div>
+      </div>
+      {% empty %}
+      <p>No posts available.</p>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock %}

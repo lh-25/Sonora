@@ -1,36 +1,52 @@
 {% extends "base.html" %}
 {% load static %} 
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/detail.css' %}" />
 {% endblock %}
 {% block title %}{{ song.title }} Details{% endblock %}
 
 {% block content %}
-<h1>{{ song.title }}</h1>
-<p>Artist: {{ song.artist }}</p>
-<p>Album: {{ song.album }}</p>
-<p>Genre: {{ song.get_genre_display }}</p>
-<p>Duration: {{ song.formatted_duration}}</p>
-<p>Release Date: {{ song.release_date }}</p>
-{% if song.album_cover %}
-<img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover">
-{% endif %}
-<a href="{% url 'playlist-index' %}">Back to Playlists</a>
+<section class="song-detail-section">
+  <!-- Song Details Header -->
+  <div class="song-header">
+    {% if song.album_cover %}
+    <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
+    {% endif %}
+    <div class="song-info">
+      <h1>{{ song.title }}</h1>
+      <p>Artist: <strong>{{ song.artist }}</strong></p>
+      <p>Album: <strong>{{ song.album }}</strong></p>
+      <p>Genre: <strong>{{ song.get_genre_display }}</strong></p>
+      <p>Duration: <strong>{{ song.formatted_duration }}</strong></p>
+      <p>Release Date: <strong>{{ song.release_date }}</strong></p>
+    </div>
+  </div>
 
-<form method="post" action="{% url 'add-to-playlist' song.id %}">
-  {% csrf_token %}
-  <label for="playlist">Select Playlist:</label>
-  <select name="playlist" id="playlist">
-      {% for playlist in user.playlists.all %}
-      <option value="{{ playlist.id }}">{{ playlist.name }}</option>
-      {% endfor %}
-  </select>
-  <button type="submit">Add to Playlist</button>
-</form>
+  <!-- Playlist Action -->
+  <div class="action-section">
+    {% if user.playlists.exists %}
+    <form method="post" action="{% url 'add-to-playlist' song.id %}" class="playlist-form">
+      {% csrf_token %}
+      <label for="playlist">Add to Playlist:</label>
+      <select name="playlist" id="playlist">
+        {% for playlist in user.playlists.all %}
+        <option value="{{ playlist.id }}">{{ playlist.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn add-btn">Add</button>
+    </form>
+    {% else %}
+    <p class="no-playlists">
+      You don't have any playlists yet.
+      <a href="{% url 'playlist_create' %}" class="btn create-btn">Create a Playlist</a>
+    </p>
+    {% endif %}
+    <a href="{% url 'create-song-of-the-day' song.id %}" class="btn">Make Song of the Day</a>
+  </div>
 
-<!-- Make Song of the Day Button -->
-<a href="{% url 'create-song-of-the-day' song.id %}">Make Song of the Day</a>
-
-<a href="{% url 'playlist-index' %}">Back to Playlists</a>
+  <!-- Back Link -->
+  <div class="back-link">
+    <a href="{% url 'song-index' %}" class="btn">Back to Songs</a>
+  </div>
+</section>
 {% endblock %}
