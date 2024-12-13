@@ -1,12 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/sonora-logo2.PNG' %}" />
+
   <title>Sonora</title>
 </head>
 <body>
+  <img src="{% static 'images/sonora-logo2.PNG' %}" alt="Sonora Logo" />
   <h2>Welcome to Sonora!</h2>
+  
   <p>The Music App of the Future</p>
 
   <a href="{% url 'home' %} ">
