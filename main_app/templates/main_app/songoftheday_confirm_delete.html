@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% load static %} 
+{% block head %}
 
+<link rel="stylesheet" href="{% static 'css/post_delete.css' %}" />
+{% endblock %}
 {% block title %}Confirm Delete{% endblock %}
 
 {% block content %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
@@ -36,7 +37,9 @@ def about(request):
   
 def my_profile(request):
   user = User.objects.get(id=request.user.id)
-  return render(request, 'users/my-profile.html', {'user': user}) 
+  playlists_count = request.user.playlists.count()
+  posts_count = request.user.posts.count()
+  return render(request, 'users/my-profile.html', {'user': user,  'playlists_count': playlists_count,'posts_count': posts_count,}) 
   
 def user_profiles(request):
   users = User.objects.exclude(id=request.user.id)
@@ -51,8 +54,38 @@ def profile(request, user_id):
   
 # Song Views
 def song_index(request):
-  songs = Song.objects.all()
-  return render(request, 'songs/index.html', {'songs': songs})
+ # Fetch query parameters
+    genre = request.GET.get('genre', '')
+    search_query = request.GET.get('search', '')
+    page = request.GET.get('page', 1)  # Get current page number
+
+    # Base queryset
+    songs = Song.objects.all()
+
+    # Apply genre filter if selected
+    if genre:
+        songs = songs.filter(genre__iexact=genre)
+
+    # Apply partial search filter across title, artist, and album
+    if search_query:
+        songs = songs.filter(
+            Q(title__icontains=search_query) |
+            Q(artist__icontains=search_query) |
+            Q(album__icontains=search_query)
+        )
+
+    # Apply pagination
+    paginator = Paginator(songs, 10)  # Show 10 songs per page
+    songs_page = paginator.get_page(page)
+
+    # Pass genre choices to the template for dropdown rendering
+    genre_choices = Song._meta.get_field('genre').choices
+
+    return render(request, 'songs/index.html', {
+        'songs': songs_page,  # Paginated songs
+        'genre_choices': genre_choices,
+        'request': request,  # Pass request for retaining filter values in template
+    })
   
 def song_detail(request, song_id):
   song = Song.objects.get(id=song_id)

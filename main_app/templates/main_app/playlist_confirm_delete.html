@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% load static %} 
+{% block head %}
 
+<link rel="stylesheet" href="{% static 'css/playlist_delete.css' %}" />
+{% endblock %}
 {% block title %}Confirm Delete{% endblock %}
 
 {% block content %}

@@ -1,8 +1,31 @@
 {% extends "base.html" %}
-
+{% load static %} 
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}" />
+{% endblock %} 
 {% block title %}About Sonora{% endblock %}
 
 {% block content %}
-<h1>About Sonora</h1>
-<p>Sonora is a platform where music enthusiasts can share and discover playlists and songs of the day.</p>
+<section class="about-hero">
+  <h1>About Sonora</h1>
+  <p>Sonora is a platform where music enthusiasts can share and discover playlists and songs of the day.</p>
+</section>
+
+<section class="mission-section">
+  <h2>Our Mission</h2>
+  <p>
+    At Sonora, we aim to bring people together through the universal language of music. Whether you're creating, sharing, or discovering playlists, Sonora is your hub for musical inspiration.
+  </p>
+</section>
+
+<section class="creator-section">
+  <h2>Meet the Creator</h2>
+  <div class="creator-container">
+    <img src="{% static 'images/creator.jpg' %}" alt="Creator" />
+    <h3>Your Name</h3>
+    <p>
+      Hi! I’m the sole developer and designer of Sonora. I created this platform to make sharing and discovering music easier and more enjoyable for everyone. Thank you for being a part of the Sonora community!
+    </p>
+  </div>
+</section>
 {% endblock %}

@@ -4,18 +4,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}" />
   <link rel="shortcut icon" type="image/png" href="{% static 'images/sonora-logo2.PNG' %}" />
-
   <title>Sonora</title>
 </head>
 <body>
-  <img src="{% static 'images/sonora-logo2.PNG' %}" alt="Sonora Logo" />
-  <h2>Welcome to Sonora!</h2>
-  
-  <p>The Music App of the Future</p>
+  <div class="hero-section">
+   
+    <h1>Welcome to <span>Sonora</span></h1>
+    <p>The Music App of the Future</p>
+    <a href="{% url 'home' %}" class="btn">Get Started</a>
+  </div>
 
-  <a href="{% url 'home' %} ">
-    <button>Get Started</button>
-  </a>
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Why Choose Sonora?</h2>
+    <div class="features-container">
+      <div class="feature-card">
+        <i class="icon">&#127926;</i>
+        <h3>Endless Playlists</h3>
+        <p>Discover and create playlists tailored to your mood and taste.</p>
+      </div>
+      <div class="feature-card">
+        <i class="icon">&#128077;</i>
+        <h3>Community Favorites</h3>
+        <p>Explore trending songs and playlists shared by the Sonora community.</p>
+      </div>
+      <div class="feature-card">
+        <i class="icon">&#128293;</i>
+        <h3>Hot Picks Daily</h3>
+        <p>Check out the Song of the Day, curated by music enthusiasts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call-to-Action Section -->
+  <section class="cta-section">
+    <h2>Ready to Dive Into Music?</h2>
+    <p>Join Sonora today and unlock the ultimate music experience.</p>
+    <a href="{% url 'signup' %}" class="btn">Sign Up Now</a>
+  </section>
 </body>
 </html>
