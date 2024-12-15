@@ -11,7 +11,7 @@
     {% if error_message %}
       <p class="form-error">{{ error_message }}</p>
     {% endif %}
-    <form action="" method="post" autocomplete="off" class="signup-form">
+    <form action="" method="post" autocomplete="off" class="signup-form" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="form-group">
         {{ form.as_table }}

@@ -65,6 +65,8 @@ class SongOfTheDay(models.Model):
   standout_lyric = models.CharField(max_length=500)
   date_posted = models.DateTimeField(auto_now_add=True)
   post_image = models.ImageField(upload_to='song_of_the_day/posts/',null=True, blank=True)
+  likes = models.ManyToManyField(User, related_name='post_likes', blank=True)  # For liking posts
+
   
   def __str__(self):
     return f'Song of the Day by{self.user.username}:  {self.post_title}'
@@ -74,4 +76,44 @@ class SongOfTheDay(models.Model):
   def get_absolute_url(self):
         return reverse('song_of_the_day_detail', kwargs={'post_id': self.id})
 
-  
+  def total_likes(self):
+      return self.likes.count()
+
+class Comment(models.Model):
+    post = models.ForeignKey(SongOfTheDay, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    date_posted = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+    likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)  # For liking comments
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.post.post_title}"
+
+    def total_likes(self):
+        return self.likes.count()
+      
+    def is_reply(self):
+        return self.parent is not None
+      
+      
+      
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    profile_picture = models.ImageField(upload_to='profiles/profile_pictures/', null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True, null=True, help_text="Write a short bio about yourself.")
+    followers = models.ManyToManyField('self', symmetrical=False, related_name='following', blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+
+    def total_followers(self):
+        """Returns the number of followers."""
+        return self.followers.count()
+
+    def total_following(self):
+        """Returns the number of users this profile is following."""
+        return self.following.count()
+      
+    def get_absolute_url(self):
+        return reverse('my-profile', kwargs={'profile_id': self.id})
