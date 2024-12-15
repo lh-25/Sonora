@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/detail.css' %}" />
 {% endblock %}
@@ -11,6 +11,8 @@
   <div class="song-header">
     {% if song.album_cover %}
     <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
+    {% else %}
+    <img src="{% static 'images/album-cover.jpeg' %}" alt="{{ song.title }}" class="profile-picture">
     {% endif %}
     <div class="song-info">
       <h1>{{ song.title }}</h1>

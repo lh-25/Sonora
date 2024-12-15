@@ -13,7 +13,7 @@
     {% if post.post_image %}
     <img src="{{ post.post_image.url }}" alt="Song of the Day image" class="post-image">
     {% else %}
-    <img src="{% static 'images/rainyday.jpeg' %}" alt="Default Song of the Day image" class="post-image">
+    <img src="{% static 'images/post-cover.jpeg' %}" alt="Default Song of the Day image" class="post-image">
     {% endif %}
     <div class="post-info">
       <h1>{{ post.post_title }}</h1>

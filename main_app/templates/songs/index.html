@@ -19,7 +19,7 @@
       <select name="genre" class="filter-dropdown" id="genre-filter">
         <option value="">All Genres</option>
         {% for genre, label in genre_choices %}
-        <option value="{{ genre }}" {% if request.GET.genre == genre %}selected{% endif %}>
+        <option value="{{ genre }}" {% if request.GET.genre==genre %}selected{% endif %}>
           {{ label }}
         </option>
         {% endfor %}
@@ -30,7 +30,8 @@
   <!-- Search Filter -->
   <div class="filters">
     <form method="get" id="search-filter-form">
-      <input type="text" name="search" placeholder="Search by title, artist, or album..." value="{{ request.GET.search }}" class="filter-input">
+      <input type="text" name="search" placeholder="Search by title, artist, or album..."
+        value="{{ request.GET.search }}" class="filter-input">
       <button type="submit" class="btn filter-btn">Search</button>
     </form>
   </div>
@@ -40,7 +41,11 @@
     {% for song in songs %}
     <div class="song-card">
       <div class="album-cover-wrapper">
+        {% if song.album_cover %}
         <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
+        {% else %}
+        <img src="{% static 'images/album-cover.jpeg' %}" alt="{{ song.title }}" class="profile-picture">
+        {% endif %}
       </div>
       <div class="song-info">
         <h3><a href="{% url 'song_detail' song.id %}">{{ song.title }}</a></h3>
@@ -55,11 +60,13 @@
   <!-- Pagination -->
   <div class="pagination">
     {% if songs.has_previous %}
-    <a href="?page={{ songs.previous_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}" class="pagination-link">Previous</a>
+    <a href="?page={{ songs.previous_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}"
+      class="pagination-link">Previous</a>
     {% endif %}
     <span>Page {{ songs.number }} of {{ songs.paginator.num_pages }}</span>
     {% if songs.has_next %}
-    <a href="?page={{ songs.next_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}" class="pagination-link">Next</a>
+    <a href="?page={{ songs.next_page_number }}&genre={{ request.GET.genre }}&search={{ request.GET.search }}"
+      class="pagination-link">Next</a>
     {% endif %}
   </div>
 </section>
@@ -78,5 +85,3 @@
 </script>
 
 {% endblock %}
-
-
