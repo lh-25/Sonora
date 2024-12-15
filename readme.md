@@ -1,7 +1,7 @@
 # **Sonora** 🎵  
 A full-stack music application that allows users to create, share, and interact with playlists and song-of-the-day posts.
 
-![Sonora Screenshot/Logo](static/images/sonora-logo.PNG)  
+![Sonora Screenshot/Logo](https://sonora-dc7a94a1292a.herokuapp.com/static/images/sonora-logo3.PNG)  
 
 ---
 
