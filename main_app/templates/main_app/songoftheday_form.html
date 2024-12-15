@@ -1,20 +1,25 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/post_form.css' %}" />
 {% endblock %}
-{% block title %}Create Song of the Day{% endblock %}
+{% block title %}{% if object %}Edit {{ object.post_title }}{% else %}Create Song of the Day{% endif %}{% endblock %}
 
 {% block content %}
-{% if object %}
-  <h1>Edit {{ object.post_title }}</h1>
-{% else %}
-  <h2>Create Song of the Day Post</h2>
-{% endif %}
-<form method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit</button>
-</form>
+<section class="post-form-section">
+  <div class="form-header">
+    {% if object %}
+    <h1>Edit "{{ object.post_title }}"</h1>
+    {% else %}
+    <h2>Create Song of the Day Post</h2>
+    {% endif %}
+  </div>
+  <form method="POST" enctype="multipart/form-data" class="post-form">
+    {% csrf_token %}
+    <div class="form-fields">
+      {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn submit-btn">Submit</button>
+  </form>
+</section>
 {% endblock %}
