@@ -42,6 +42,7 @@ def landing_page(request):
 def about(request):
     return render(request, 'about.html')
   
+@login_required  
 def my_profile(request):
   user = User.objects.get(id=request.user.id)
   profile = user.profile
@@ -56,12 +57,14 @@ def my_profile(request):
         'followers_count': followers_count,
         'following_count': following_count,}) 
   
+@login_required   
 def user_profiles(request):
   users = User.objects.exclude(id=request.user.id)
   profiles = {user.id: user.profile for user in users}
 
   return render(request, 'users/profiles.html', {'users': users, 'profiles': profiles})
 
+@login_required 
 def profile(request, user_id):
   user = User.objects.get(id=user_id)
   profile = user.profile  # Fetch the profile of the user
@@ -75,7 +78,7 @@ def profile(request, user_id):
         'playlists': playlists,
     })
 
-class ProfileUpdate( UpdateView):
+class ProfileUpdate( LoginRequiredMixin, UpdateView):
     model = Profile
     fields = ['profile_picture', 'bio']
     template_name = 'main_app/edit_profile.html'
@@ -85,16 +88,19 @@ class ProfileUpdate( UpdateView):
       return reverse('my-profile')  # Use the URL name directly without kwargs
 
 
+@login_required 
 def followers(request, username):
     user = get_object_or_404(User, username=username)
     followers = user.profile.followers.all()  # Get all followers of the user
     return render(request, 'users/followers.html', {'user': user, 'followers': followers})
 
+@login_required 
 def following(request, username):
     user = get_object_or_404(User, username=username)
     following = user.profile.following.all()  # Get all users the user is following
     return render(request, 'users/following.html', {'user': user, 'following': following})
-  
+
+@login_required   
 def follow_unfollow(request, username):
     profile_to_follow = get_object_or_404(Profile, user__username=username)
     if request.user.profile in profile_to_follow.followers.all():
@@ -106,6 +112,7 @@ def follow_unfollow(request, username):
     return redirect('profile', username=username) 
   
 # Song Views
+@login_required 
 def song_index(request):
     genre = request.GET.get('genre', '')
     search_query = request.GET.get('search', '')
@@ -132,16 +139,17 @@ def song_index(request):
         'genre_choices': genre_choices,
         'request': request,  
     })
-  
+    
+@login_required 
 def song_detail(request, song_id):
   song = Song.objects.get(id=song_id)
   return render(request, 'songs/detail.html', {'song': song})
   
-class SongCreate(CreateView):
+class SongCreate(LoginRequiredMixin, CreateView):
   model = Song
   form_class = SongForm
 
-  
+@login_required  
 def add_to_playlist(request, song_id):
     song = get_object_or_404(Song, id=song_id)
     if request.method == 'POST':
@@ -151,7 +159,7 @@ def add_to_playlist(request, song_id):
         messages.success(request, f'{song.title} has been added to {playlist.name}!')
     return redirect('playlist-detail', playlist_id=playlist.id)
   
-class SongOfTheDayCreateView(CreateView):
+class SongOfTheDayCreateView(LoginRequiredMixin, CreateView):
     model = SongOfTheDay
     fields = ['post_title', 'reason_for_pick', 'standout_lyric', 'post_image']
     template_name = 'main_app/songoftheday_form.html'
@@ -164,21 +172,22 @@ class SongOfTheDayCreateView(CreateView):
   
 # Playlist Views
 
-class PlaylistCreate(CreateView):
+class PlaylistCreate(LoginRequiredMixin, CreateView):
   model = Playlist
   fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
   def form_valid(self, form):
         form.instance.user = self.request.user 
         return super().form_valid(form)
 
-class PlaylistUpdate(UpdateView):
+class PlaylistUpdate(LoginRequiredMixin, UpdateView):
   model = Playlist
   fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
   
-class PlaylistDelete(DeleteView):
+class PlaylistDelete(LoginRequiredMixin, DeleteView):
   model = Playlist
   success_url ='/playlists/my-playlists/'
-
+  
+@login_required 
 def playlist_index(request):
   page = request.GET.get('page', 1) 
   playlists = Playlist.objects.filter(visibility='PUBLIC')
@@ -186,7 +195,7 @@ def playlist_index(request):
   playlists_page = paginator.get_page(page)
   return render(request, 'playlists/playlist_index.html', {'playlists': playlists_page})
 
-
+@login_required 
 def my_playlists(request):
   page = request.GET.get('page', 1)  
   playlists = Playlist.objects.filter(user=request.user)
@@ -194,10 +203,12 @@ def my_playlists(request):
   playlists_page = paginator.get_page(page) 
   return render(request, 'playlists/my_playlists.html',{'playlists': playlists_page})
 
+@login_required 
 def playlist_details(request, playlist_id):
   playlist = Playlist.objects.get(id=playlist_id)
   return render(request, 'playlists/playlist_detail.html', {'playlist': playlist})
 
+@login_required 
 def remove_from_playlist(request, playlist_id, song_id):
     playlist = get_object_or_404(Playlist, id=playlist_id, user=request.user)
     song = get_object_or_404(Song, id=song_id)
@@ -213,21 +224,22 @@ def remove_from_playlist(request, playlist_id, song_id):
 
 # Song of the Day Views
 
-class SongOfTheDayCreate(CreateView):
+class SongOfTheDayCreate(LoginRequiredMixin, CreateView):
   model = SongOfTheDay
   fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
   def form_valid(self, form):
         form.instance.user = self.request.user 
         return super().form_valid(form)
 
-class SongOfTheDayUpdate(UpdateView):
+class SongOfTheDayUpdate(LoginRequiredMixin, UpdateView):
   model = SongOfTheDay
   fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
   
-class SongOfTheDayDelete(DeleteView):
+class SongOfTheDayDelete(LoginRequiredMixin, DeleteView):
   model = SongOfTheDay
   success_url ='/song_of_the_day/my-posts/'
 
+@login_required 
 def songoftheday_index(request):
   posts = SongOfTheDay.objects.all()
   page = request.GET.get('page', 1) 
@@ -235,6 +247,7 @@ def songoftheday_index(request):
   posts_page = paginator.get_page(page)
   return render(request, 'song_of_the_day/song_of_the_day_index.html', {'posts': posts_page})
 
+@login_required 
 def my_posts(request):  
   posts = SongOfTheDay.objects.filter(user=request.user)
   page = request.GET.get('page', 1) 
@@ -242,11 +255,13 @@ def my_posts(request):
   posts_page = paginator.get_page(page)
   return render(request, 'song_of_the_day/my_posts.html',{'posts': posts_page})
 
+@login_required 
 def songoftheday_details(request, post_id):
   post = SongOfTheDay.objects.get(id=post_id)
   top_level_comments = post.comments.filter(parent=None)
   return render(request, 'song_of_the_day/song_of_the_day_detail.html', {'post': post, 'top_level_comments': top_level_comments})
 
+@login_required 
 def like_post(request, post_id):
     post = get_object_or_404(SongOfTheDay, id=post_id)
     if request.user in post.likes.all():
@@ -255,7 +270,7 @@ def like_post(request, post_id):
         post.likes.add(request.user)  # Like
     return redirect('song_of_the_day_detail', post_id=post_id)
   
-
+@login_required 
 def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     # Toggle like/unlike
@@ -268,7 +283,7 @@ def like_comment(request, comment_id):
   
   
   
-class CommentCreate(CreateView):
+class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
     fields = ['content']
     template_name = 'main_app/comment_form.html'
@@ -290,7 +305,7 @@ class CommentCreate(CreateView):
     def get_success_url(self):
         return self.object.post.get_absolute_url()
       
-class CommentUpdate(UpdateView):
+class CommentUpdate(LoginRequiredMixin, UpdateView):
     model = Comment
     fields = ['content']
     template_name = 'main_app/comment_form.html'  # Reuse the same form template
@@ -303,7 +318,7 @@ class CommentUpdate(UpdateView):
         return self.object.post.get_absolute_url()
       
       
-class CommentDelete(DeleteView):
+class CommentDelete(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = 'main_app/comment_confirm_delete.html'
 
