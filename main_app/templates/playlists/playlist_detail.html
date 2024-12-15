@@ -1,27 +1,62 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/playlist_detail.css' %}" />
 {% endblock %}
 {% block title %}{{ playlist.name }}{% endblock %}
 
 {% block content %}
-  <h2>{{ playlist.name }}</h2>
-  <p>{{ playlist.description }}</p>
-  
-  <h3>Songs in this Playlist</h3>
-  <ul>
-    {% for song in playlist.songs.all %}
-      <li>{{ song.title }} by {{ song.artist }}
-        <a href="{% url 'remove-from-playlist' playlist.id song.id %}">Remove</a>
+<section class="playlist-detail-section">
+  <!-- Playlist Header -->
+  <div class="playlist-header">
+    <div class="playlist-cover">
+      {% if playlist.playlist_cover %}
+      <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }} cover image">
+      {% else %}
+      <img src="{% static 'images/playlist-default.jpeg' %}" alt="Default playlist cover">
+      {% endif %}
+    </div>
+    <div class="playlist-info">
+      <h2>{{ playlist.name }}</h2>
+      <p>{{ playlist.description }}</p>
+    </div>
+    <div class="playlist-actions">
+      <button class="btn btn-primary play-btn">Play</button>
+      <button class="btn btn-secondary shuffle-btn">Shuffle</button>
+    </div>
+  </div>
+
+  <!-- Songs List -->
+  <div class="songs-list">
+    <h3>Songs in this Playlist</h3>
+    {% if playlist.songs.all %}
+    <ul>
+      {% for song in playlist.songs.all %}
+      <li class="song-item">
+        <div class="song-info">
+          <p>{{ song.title }} by {{ song.artist }}</p>
+        </div>
+        {% if user == playlist.user %}
+        <div class="song-actions">
+          <a href="{% url 'remove-from-playlist' playlist.id song.id %}" class="btn btn-danger">Remove</a>
+        </div>
+        {% endif %}
       </li>
-    {% empty %}
-      <li>No songs in this playlist yet.</li>
-    {% endfor %}
-  </ul>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No songs in this playlist yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Playlist Edit/Delete Actions -->
   {% if user == playlist.user %}
-    <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-primary">Edit</a>
-    <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete</a>
+  <div class="playlist-edit-actions">
+    <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-primary">Edit Playlist</a>
+    <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete Playlist</a>
+  </div>
   {% endif %}
+</section>
 {% endblock %}
+
+

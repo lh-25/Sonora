@@ -1,21 +1,45 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/playlist_index.css' %}" />
 {% endblock %}
 {% block title %}Playlists{% endblock %}
 
 {% block content %}
-<h1>Playlists</h1>
-{% for playlist in playlists %}
-    <div>
-        <img src="{{ playlist.playlist_cover.url }}" alt="{{playlist.name}} cover image">
-        <h2>{{ playlist.name }}</h2>
-        <p>{{ playlist.description }}</p>
-        <p>Created by: {{ playlist.user.username }}</p>
-        <a href="{% url 'playlist-detail' playlist.id %}">View Details</a>
-    </div>
-{% endfor %}
+<section class="playlist-index-section">
+  <h1>Public Playlists</h1>
 
+  <!-- Playlist Grid -->
+  <div class="playlist-grid">
+    {% for playlist in playlists %}
+    <div class="playlist-card">
+      <div class="playlist-cover">
+        {% if playlist.playlist_cover %}
+        <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }} cover image">
+        {% else %}
+        <img src="{% static 'images/playlist-default.jpeg' %}" alt="Default playlist cover">
+        {% endif %}
+      </div>
+      <div class="playlist-info">
+        <h2>{{ playlist.name }}</h2>
+        <p>{{ playlist.description|truncatewords:15 }}</p>
+        <p>Created by: <strong>{{ playlist.user.username }}</strong></p>
+        <a href="{% url 'playlist-detail' playlist.id %}" class="btn">View Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if playlists.has_previous %}
+    <a href="?page={{ playlists.previous_page_number }}" class="btn">Previous</a>
+    {% endif %}
+    <span>Page {{ playlists.number }} of {{ playlists.paginator.num_pages }}</span>
+    {% if playlists.has_next %}
+    <a href="?page={{ playlists.next_page_number }}" class="btn">Next</a>
+    {% endif %}
+  </div>
+</section>
 {% endblock %}
+
