@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<section class="edit-profile-section">
+  <h1>Edit Your Profile</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Save Changes</button>
+  </form>
+  <a href="{% url 'my-profile' %}" class="btn">Cancel</a>
+</section>
+{% endblock %}

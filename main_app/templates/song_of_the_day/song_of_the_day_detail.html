@@ -27,7 +27,73 @@
     <p><strong>Reason for Pick:</strong> {{ post.reason_for_pick }}</p>
     <p><strong>Standout Lyric:</strong> "{{ post.standout_lyric }}"</p>
   </div>
-
+  <div class="comments-section">
+    <h3>Comments</h3>
+  
+    <!-- Add New Comment Form -->
+    <form method="post" action="{% url 'comment_create' post.id %}">
+      {% csrf_token %}
+      <textarea name="content" placeholder="Write your comment here..." required></textarea>
+      <button type="submit" class="btn">Post Comment</button>
+    </form>
+  
+    <!-- Render Comments -->
+    {% for comment in top_level_comments %}
+    <div class="comment">
+      <p><strong>{{ comment.user.username }}</strong>: {{ comment.content }}</p>
+      <p>{{ comment.date_posted|date:"M d, Y H:i" }}</p>
+  
+      <!-- Like Button -->
+      <form method="post" action="{% url 'like_comment' comment.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">
+          {% if user in comment.likes.all %}
+          Unlike
+          {% else %}
+          Like
+          {% endif %}
+        </button>
+        <span>{{ comment.total_likes }} Likes</span>
+      </form>
+  
+      <!-- Reply Form -->
+      <form method="post" action="{% url 'comment_create' post.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+        <textarea name="content" placeholder="Write your reply here..." required></textarea>
+        <button type="submit" class="btn reply-btn">Reply</button>
+      </form>
+  
+      <!-- Render Replies -->
+      {% for reply in comment.replies.all %}
+      <div class="reply">
+        <p><strong>{{ reply.user.username }}</strong>: {{ reply.content }}</p>
+        <p>{{ reply.date_posted|date:"M d, Y H:i" }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  
+  
+  <div class="post-actions">
+    <!-- Like Button -->
+    <form method="post" action="{% url 'like_post' post.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn">
+        {% if user in post.likes.all %}
+        Unlike
+        {% else %}
+        Like
+        {% endif %}
+      </button>
+      <span>{{ post.total_likes }} Likes</span>
+    </form>
+  
+    <!-- Back to Posts -->
+    <a href="{% url 'song_of_the_day_index' %}" class="btn">Back to Posts</a>
+  </div>
+  
   <!-- Navigation -->
   <div class="post-actions">
     <a href="{% url 'song_of_the_day_index' %}" class="btn">Back to Posts</a>

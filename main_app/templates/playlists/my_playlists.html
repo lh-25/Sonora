@@ -1,27 +1,49 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/my_playlist.css' %}" />
 {% endblock %}
 {% block title %}My Playlists{% endblock %}
 
 {% block content %}
-  <h2>My Playlists</h2>
-  
-  <p><a href="{% url 'playlist_create' %}">Create a new playlist</a></p>
-  
+<section class="my-playlists-section">
+  <div class="header">
+    <h2>My Playlists</h2>
+    <a href="{% url 'playlist_create' %}" class="btn create-playlist-btn">Create a New Playlist</a>
+  </div>
+
   {% if playlists %}
-    <ul>
-      {% for playlist in playlists %}
-        <li>
-          <img src="{{ playlist.playlist_cover.url }}" alt="{{playlist.name}} cover image">
-          <a href="{% url 'playlist-detail' playlist.pk %}">{{ playlist.name }}</a>
-          
-        </li>
-      {% endfor %}
-    </ul>
+  <div class="playlist-grid">
+    {% for playlist in playlists %}
+    <div class="playlist-card">
+      <div class="playlist-cover">
+        {% if playlist.playlist_cover %}
+        <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }} cover image">
+        {% else %}
+        <img src="{% static 'images/playlist-default.jpeg' %}" alt="Default playlist cover">
+        {% endif %}
+      </div>
+      <div class="playlist-info">
+        <h3><a href="{% url 'playlist-detail' playlist.pk %}">{{ playlist.name }}</a></h3>
+        <p>{{ playlist.description|truncatewords:15 }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if playlists.has_previous %}
+    <a href="?page={{ playlists.previous_page_number }}" class="btn">Previous</a>
+    {% endif %}
+    <span>Page {{ playlists.number }} of {{ playlists.paginator.num_pages }}</span>
+    {% if playlists.has_next %}
+    <a href="?page={{ playlists.next_page_number }}" class="btn">Next</a>
+    {% endif %}
+  </div>
   {% else %}
-    <p>You haven't created any playlists yet. Start by creating one!</p>
+  <p>You haven't created any playlists yet. Start by creating one!</p>
   {% endif %}
+</section>
 {% endblock %}
+

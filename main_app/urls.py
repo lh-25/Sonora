@@ -5,10 +5,15 @@ urlpatterns = [
   path('', views.landing_page, name='landing-page'),
   path('home/', views.Home.as_view(), name='home'),
   path('about/', views.about, name='about'),
-  path('profiles/my-profile', views.my_profile, name='my-profile'),
   path('accounts/signup/', views.signup, name='signup'),
+  path('profiles/my-profile', views.my_profile, name='my-profile'),
   path('profiles/', views.user_profiles, name='users-profiles'),
   path('profiles/<int:user_id>/', views.profile, name='profile'),
+  path('profiles/edit/', views.ProfileUpdate.as_view(), name='edit_profile'),
+  path('profiles/<str:username>/followers/', views.followers, name='followers'),
+  path('profiles/<str:username>/following/', views.following, name='following'),
+ 
+
   
    # Song URLs
   path('songs/', views.song_index, name='song-index'),
@@ -34,7 +39,13 @@ urlpatterns = [
   path('song-of-the-day/new/', views.SongOfTheDayCreate.as_view(), name='song_of_the_day_create'),
   path('song_of_the_day/<int:pk>/update/', views.SongOfTheDayUpdate.as_view(), name='song_of_the_day_update'),
   path('song_of_the_day/<int:pk>/delete/', views.SongOfTheDayDelete.as_view(), name='song_of_the_day_delete'),
-  
+  path('song-of-the-day/<int:post_id>/like/', views.like_post, name='like_post'),
+  path('song-of-the-day/<int:post_id>/comment/new/', views.CommentCreate.as_view(), name='comment_create'),
+  path('comment/<int:pk>/update/', views.CommentUpdate.as_view(), name='comment_update'),
+  path('comment/<int:pk>/delete/', views.CommentDelete.as_view(), name='comment_delete'),
+  path('comment/<int:comment_id>/like/', views.like_comment, name='like_comment'),
+
+ 
 ]
 
     

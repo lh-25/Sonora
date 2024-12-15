@@ -14,9 +14,11 @@
     <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
     {% endif %}
 
-    <h1>{{ user.username }}'s Profile</h1>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <p><strong>Bio:</strong> {{ user.profile.bio|default:"No bio provided." }}</p>
   </div>
 
+  <!-- Profile Stats -->
   <div class="profile-stats">
     <div class="stat-card">
       <h2>Total Playlists</h2>
@@ -26,12 +28,22 @@
       <h2>Total Posts</h2>
       <p>{{ posts_count }}</p>
     </div>
+    <div class="stat-card">
+      <h2>Followers</h2>
+      <p><a href="{% url 'followers' user.username %}">{{ followers_count }}</a></p>
+    </div>
+    <div class="stat-card">
+      <h2>Following</h2>
+      <p><a href="{% url 'following' user.username %}">{{ following_count }}</a></p>
+    </div>
   </div>
 
+  <!-- Profile Actions -->
   <div class="profile-actions">
     <a href="{% url 'my_playlists' %}" class="btn">My Playlists</a>
     <a href="{% url 'my_posts' %}" class="btn">My Posts</a>
+    <a href="{% url 'edit_profile' %}" class="btn">Edit Profile</a>
   </div>
 </section>
-
 {% endblock %}
+
