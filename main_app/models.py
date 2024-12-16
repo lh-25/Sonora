@@ -65,10 +65,10 @@ class SongOfTheDay(models.Model):
   standout_lyric = models.CharField(max_length=500)
   date_posted = models.DateTimeField(auto_now_add=True)
   post_image = models.ImageField(upload_to='song_of_the_day/posts/',null=True, blank=True)
-  likes = models.ManyToManyField(User, related_name='post_likes', blank=True)  # For liking posts
+  likes = models.ManyToManyField(User, related_name='post_likes', blank=True) 
   
   def __str__(self):
-    return f'Song of the Day by{self.user.username}:  {self.post_title}'
+    return f'Song of the Day by {self.user.username}:  {self.post_title}'
   class Meta:
     ordering = ['-date_posted']
     
@@ -84,7 +84,7 @@ class Comment(models.Model):
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
-    likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)  # For liking comments
+    likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.post.post_title}"
