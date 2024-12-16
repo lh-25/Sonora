@@ -1,13 +1,43 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/edit_profile.css' %}" />
+{% endblock %}
 {% block title %}Edit Profile{% endblock %}
 {% block content %}
-<section class="edit-profile-section">
+<div class="edit-profile-container">
   <h1>Edit Your Profile</h1>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Save Changes</button>
+    {{ form.non_field_errors }}
+
+    <!-- Profile Picture Section -->
+    <div class="form-group">
+      <label for="id_profile_picture">Current Profile Picture:</label>
+      {% if user.profile.profile_picture %}
+      <img src="{{ user.profile.profile_picture.url }}" alt="Current Profile Picture" class="profile-image-preview">
+      {% else %}
+      <img src="{% static 'images/profilepic.jpeg' %}" alt="Default Profile Picture" class="profile-image-preview">
+      {% endif %}
+    </div>
+
+    <!-- Upload New Profile Picture -->
+    <div class="form-group">
+      <label for="id_profile_picture">Upload a New Profile Picture:</label>
+      {{ form.profile_picture }}
+    </div>
+
+    <!-- Bio Field -->
+    <div class="form-group">
+      <label for="id_bio">Bio:</label>
+      {{ form.bio }}
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="submit">Save Changes</button>
+      <a href="{% url 'my-profile' %}" class="btn cancel-btn">Cancel</a>
+    </div>
   </form>
-  <a href="{% url 'my-profile' %}" class="btn">Cancel</a>
-</section>
+</div>
 {% endblock %}

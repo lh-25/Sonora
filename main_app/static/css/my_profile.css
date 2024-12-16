@@ -3,6 +3,7 @@
   text-align: center;
   padding: 60px 20px;
 }
+
 .profile-picture {
   width: 150px;
   height: 150px;
@@ -17,6 +18,7 @@
   text-align: center;
   margin-bottom: 40px;
 }
+
 .profile-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
@@ -91,17 +93,71 @@
   box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
 }
 
+/* Follower and Following Links Styling */
+.stat-card a {
+  text-decoration: none;
+  color: #00d4ff;
+  font-weight: 700;
+  font-size: 1.6rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.stat-card a:hover {
+  color: #ff40ff;
+  text-shadow: 0 0 8px rgba(255, 64, 255, 0.7);
+}
+
+
 /* Responsive Design */
+
+@media (max-width: 400px) {
+  .profile-header h1 {
+    font-size: 2rem;
+  }
+
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+  }
+
+  .stat-card {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+  }
+
+  .stat-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .stat-card p {
+    font-size: 1.5rem;
+  }
+
+  .profile-actions .btn {
+    font-size: 1rem;
+    padding: 10px 14px;
+  }
+}
+
+
 @media (max-width: 768px) {
-  .profile-stats {
-    flex-direction: column;
-    align-items: center;
+  .profile-header h1 {
+    font-size: 2.2rem;
   }
 
   .stat-card {
     width: 100%;
     max-width: 300px;
-    margin-bottom: 20px;
+    padding: 20px;
+  }
+
+  .stat-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .stat-card p {
+    font-size: 1.8rem;
   }
 
   .profile-actions {
@@ -110,9 +166,46 @@
   }
 
   .profile-actions .btn {
-    font-size: 1rem;
     padding: 10px 16px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-header h1 {
+    font-size: 2.3rem;
+  }
+
+  .stat-card {
+    max-width: 200px;
+    padding: 20px;
+  }
+
+  .stat-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .stat-card p {
+    font-size: 1.8rem;
   }
 }
 
 
+@media (max-width: 1200px) {
+  .profile-header h1 {
+    font-size: 2.4rem;
+  }
+
+  .stat-card {
+    max-width: 220px;
+    padding: 25px;
+  }
+
+  .stat-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .stat-card p {
+    font-size: 2rem;
+  }
+}

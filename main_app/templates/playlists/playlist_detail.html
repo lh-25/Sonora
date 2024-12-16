@@ -56,7 +56,10 @@
     <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete Playlist</a>
   </div>
   {% endif %}
+  <div class="back-button">
+    <a href="{% url 'playlist-index'  %}" class="btn btn-back">Back to Playlists</a>
+  </div>
+
 </section>
+
 {% endblock %}
-
-

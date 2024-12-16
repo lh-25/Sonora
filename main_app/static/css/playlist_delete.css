@@ -1,0 +1,89 @@
+/* Container Styling */
+.delete-confirm-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Styling */
+.delete-confirm-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #ff4d4d;
+}
+
+/* Button Styling */
+.delete-confirm-container form button,
+.delete-confirm-container a {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-confirm-container form button {
+  background-color: #ff4d4d;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-confirm-container form button:hover {
+  background-color: #d43f3f;
+}
+
+.delete-confirm-container a {
+  background-color: #00d4ff;
+}
+
+.delete-confirm-container a:hover {
+  background-color: #00a1d1;
+}
+
+/* Responsive Design */
+
+@media (max-width: 400px) {
+  .delete-confirm-container {
+    padding: 15px;
+  }
+
+  .delete-confirm-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .delete-confirm-container form button,
+  .delete-confirm-container a {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .delete-confirm-container {
+    max-width: 400px;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .delete-confirm-container {
+    max-width: 450px;
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .delete-confirm-container {
+    max-width: 500px;
+  }
+}

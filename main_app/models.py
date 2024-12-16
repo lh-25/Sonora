@@ -66,7 +66,6 @@ class SongOfTheDay(models.Model):
   date_posted = models.DateTimeField(auto_now_add=True)
   post_image = models.ImageField(upload_to='song_of_the_day/posts/',null=True, blank=True)
   likes = models.ManyToManyField(User, related_name='post_likes', blank=True)  # For liking posts
-
   
   def __str__(self):
     return f'Song of the Day by{self.user.username}:  {self.post_title}'
@@ -108,11 +107,9 @@ class Profile(models.Model):
         return f"{self.user.username}'s Profile"
 
     def total_followers(self):
-        """Returns the number of followers."""
         return self.followers.count()
 
     def total_following(self):
-        """Returns the number of users this profile is following."""
         return self.following.count()
       
     def get_absolute_url(self):

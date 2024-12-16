@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay, Comment, Profile
 from django.contrib.auth.models import User
-from .forms import SignupForm, SongForm
+from .forms import SignupForm, SongForm, CommentForm
 
 # Create your views here.
 def signup(request):
@@ -21,8 +21,6 @@ def signup(request):
           user = form.save()
           profile_picture = form.cleaned_data.get('profile_picture')
           bio = form.cleaned_data.get('bio', '')
-
-            # Create a profile
           Profile.objects.create(user=user, profile_picture=profile_picture, bio=bio)
           login(request, user)
           return redirect('song-index')
@@ -42,6 +40,9 @@ def landing_page(request):
 def about(request):
     return render(request, 'about.html')
   
+  
+# User/Profile Views
+
 @login_required  
 def my_profile(request):
   user = User.objects.get(id=request.user.id)
@@ -67,7 +68,7 @@ def user_profiles(request):
 @login_required 
 def profile(request, user_id):
   user = User.objects.get(id=user_id)
-  profile = user.profile  # Fetch the profile of the user
+  profile = user.profile 
   posts = user.posts.all()
   playlists = user.playlists.filter(visibility='PUBLIC')
 
@@ -85,31 +86,29 @@ class ProfileUpdate( LoginRequiredMixin, UpdateView):
     def get_object(self,):
       return self.model.objects.get(user=self.request.user)
     def get_success_url(self):
-      return reverse('my-profile')  # Use the URL name directly without kwargs
+      return reverse('my-profile') 
 
 
 @login_required 
 def followers(request, username):
     user = get_object_or_404(User, username=username)
-    followers = user.profile.followers.all()  # Get all followers of the user
+    followers = user.profile.followers.all() 
     return render(request, 'users/followers.html', {'user': user, 'followers': followers})
 
 @login_required 
 def following(request, username):
     user = get_object_or_404(User, username=username)
-    following = user.profile.following.all()  # Get all users the user is following
+    following = user.profile.following.all() 
     return render(request, 'users/following.html', {'user': user, 'following': following})
 
 @login_required   
 def follow_unfollow(request, username):
     profile_to_follow = get_object_or_404(Profile, user__username=username)
     if request.user.profile in profile_to_follow.followers.all():
-        # Unfollow
         profile_to_follow.followers.remove(request.user.profile)
     else:
-        # Follow
         profile_to_follow.followers.add(request.user.profile)
-    return redirect('profile', username=username) 
+    return redirect('profile', user_id=profile_to_follow.user.id) 
   
 # Song Views
 @login_required 
@@ -257,61 +256,56 @@ def my_posts(request):
 
 @login_required 
 def songoftheday_details(request, post_id):
-  post = SongOfTheDay.objects.get(id=post_id)
-  top_level_comments = post.comments.filter(parent=None)
-  return render(request, 'song_of_the_day/song_of_the_day_detail.html', {'post': post, 'top_level_comments': top_level_comments})
+    post = get_object_or_404(SongOfTheDay, id=post_id)
+    top_level_comments = post.comments.filter(parent=None)
+    form = CommentForm()
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.post = post
+            parent_id = request.POST.get('parent_id')
+            if parent_id:
+                comment.parent = Comment.objects.get(id=parent_id)
+            comment.save()
+            return redirect(post.get_absolute_url()) 
+    return render(
+        request,
+        'song_of_the_day/song_of_the_day_detail.html',
+        {
+            'post': post,
+            'top_level_comments': top_level_comments,
+            'form': form,
+        }
+    )
 
 @login_required 
 def like_post(request, post_id):
     post = get_object_or_404(SongOfTheDay, id=post_id)
     if request.user in post.likes.all():
-        post.likes.remove(request.user)  # Unlike
+        post.likes.remove(request.user) 
     else:
-        post.likes.add(request.user)  # Like
+        post.likes.add(request.user) 
     return redirect('song_of_the_day_detail', post_id=post_id)
   
 @login_required 
 def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    # Toggle like/unlike
     if request.user in comment.likes.all():
-        comment.likes.remove(request.user)  # Unlike
+        comment.likes.remove(request.user) 
     else:
-        comment.likes.add(request.user)  # Like
-    # Redirect back to the post's detail page
+        comment.likes.add(request.user) 
     return redirect(comment.post.get_absolute_url())
-  
-  
-  
-class CommentCreate(LoginRequiredMixin, CreateView):
-    model = Comment
-    fields = ['content']
-    template_name = 'main_app/comment_form.html'
 
-    def form_valid(self, form):
-        post_id = self.kwargs['post_id']
-        post = get_object_or_404(SongOfTheDay, id=post_id)
-        form.instance.post = post
-        form.instance.user = self.request.user
-
-        # Check if the comment is a reply
-        parent_id = self.request.POST.get('parent_id')
-        if parent_id:
-            parent_comment = get_object_or_404(Comment, id=parent_id)
-            form.instance.parent = parent_comment
-
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.post.get_absolute_url()
       
 class CommentUpdate(LoginRequiredMixin, UpdateView):
     model = Comment
     fields = ['content']
-    template_name = 'main_app/comment_form.html'  # Reuse the same form template
+    template_name = 'main_app/comment_form.html' 
 
     def get_queryset(self):
-        # Ensure users can only edit their own comments
         return super().get_queryset().filter(user=self.request.user)
 
     def get_success_url(self):
@@ -323,7 +317,6 @@ class CommentDelete(LoginRequiredMixin, DeleteView):
     template_name = 'main_app/comment_confirm_delete.html'
 
     def get_queryset(self):
-        # Ensure users can only delete their own comments
         return super().get_queryset().filter(user=self.request.user)
 
     def get_success_url(self):

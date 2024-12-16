@@ -1,5 +1,5 @@
 /* General Form Styling */
-.post-form-container {
+.playlist-form-container {
   max-width: 600px;
   margin: 50px auto;
   padding: 20px;
@@ -9,28 +9,28 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.post-form-container h1,
-.post-form-container h2 {
+.playlist-form-container h1,
+.playlist-form-container h2 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 2rem;
   color: #00d4ff;
 }
 
-.post-form-container form {
+.playlist-form-container form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.post-form-container form label {
+.playlist-form-container form label {
   font-size: 1rem;
   color: #b3b3b3;
 }
 
-.post-form-container form input,
-.post-form-container form textarea,
-.post-form-container form select {
+.playlist-form-container form input,
+.playlist-form-container form select,
+.playlist-form-container form textarea {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
@@ -40,14 +40,14 @@
   border-radius: 5px;
 }
 
-.post-form-container form input:focus,
-.post-form-container form textarea:focus,
-.post-form-container form select:focus {
+.playlist-form-container form input:focus,
+.playlist-form-container form select:focus,
+.playlist-form-container form textarea:focus {
   outline: none;
   border-color: #00d4ff;
 }
 
-.post-form-container form button {
+.playlist-form-container form button {
   padding: 10px 15px;
   font-size: 1rem;
   font-weight: bold;
@@ -59,25 +59,31 @@
   transition: background-color 0.3s ease;
 }
 
-.post-form-container form button:hover {
+.playlist-form-container form button:hover {
   background-color: #00a1d1;
+}
+
+.playlist-form-container .instructions {
+  font-size: 0.9rem;
+  color: #b3b3b3;
+  margin-top: -10px;
 }
 
 /* Responsive Design */
 
 
 @media (max-width: 400px) {
-  .post-form-container {
+  .playlist-form-container {
     margin: 30px auto;
     padding: 15px;
   }
 
-  .post-form-container h1,
-  .post-form-container h2 {
+  .playlist-form-container h1,
+  .playlist-form-container h2 {
     font-size: 1.8rem;
   }
 
-  .post-form-container form button {
+  .playlist-form-container form button {
     font-size: 0.9rem;
     padding: 8px 10px;
   }
@@ -85,21 +91,21 @@
 
 
 @media (max-width: 768px) {
-  .post-form-container {
+  .playlist-form-container {
     max-width: 500px;
   }
 }
 
 
 @media (max-width: 1024px) {
-  .post-form-container {
+  .playlist-form-container {
     max-width: 550px;
   }
 }
 
 
 @media (max-width: 1200px) {
-  .post-form-container {
+  .playlist-form-container {
     max-width: 600px;
   }
 }

@@ -15,10 +15,13 @@ body {
   object-fit: cover;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+
 /* Profile Header */
 .profile-header {
   text-align: center;
+  margin-top: 20px;
   margin-bottom: 40px;
+  position: relative;
 }
 
 .profile-header h1 {
@@ -28,17 +31,47 @@ body {
   text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
 }
 
-.profile-section {
-  padding: 60px 20px;
-  text-align: center;
+.profile-header .follow-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
 }
 
-.profile-section h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
+.profile-header .follow-stats p {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: #fff;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-  margin-bottom: 40px;
+}
+
+/* Follow/Unfollow Button */
+.profile-header form {
+  margin-top: 10px;
+}
+
+.profile-header .follow-btn,
+.profile-header .unfollow-btn {
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 25px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-header .unfollow-btn {
+  background: linear-gradient(90deg, #ff4d4d, #ff4040);
+}
+
+.profile-header .follow-btn:hover,
+.profile-header .unfollow-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
 }
 
 /* Featured Playlist */
@@ -196,28 +229,9 @@ body {
   box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
 }
 
-/* Recently Played Placeholder */
-.recently-played {
-  text-align: center;
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 40px 0;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-}
-
-.recently-played h2 {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
-}
-
-.recently-played p {
-  font-size: 1rem;
-  color: #b3b3b3;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
+
   .playlists-container,
   .posts-container {
     flex-direction: column;

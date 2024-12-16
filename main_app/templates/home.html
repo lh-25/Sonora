@@ -15,8 +15,10 @@
       <input type="hidden" name="next" value="{{ next }}" />
       <button type="submit" class="btn submit">Login</button>
     </form>
+    <div class="register-link">
+      <p>New here? <a href="{% url 'signup' %}" class="signup-link">Sign up now</a></p>
+    </div>
   </div>
 </section>
 
 {% endblock %}
-

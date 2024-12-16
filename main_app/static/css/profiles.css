@@ -88,6 +88,7 @@ body {
     max-width: 400px;
   }
 }
+
 /* Profile Picture */
 .profile-picture {
   width: 100px;
@@ -97,4 +98,3 @@ body {
   object-fit: cover;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
-

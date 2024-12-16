@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/song_form.css' %}" />
 {% endblock %}
 {% block title %}Add a New Song{% endblock %}
 
 {% block content %}
+<div class="song-form-container">
   <h2>Add a New Song</h2>
 
   <form method="POST" enctype="multipart/form-data">
@@ -14,4 +14,5 @@
     {{ form.as_p }}
     <button type="submit">Create Song</button>
   </form>
+</div>
 {% endblock %}

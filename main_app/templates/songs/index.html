@@ -19,7 +19,7 @@
       <select name="genre" class="filter-dropdown" id="genre-filter">
         <option value="">All Genres</option>
         {% for genre, label in genre_choices %}
-        <option value="{{ genre }}" {% if request.GET.genre==genre %}selected{% endif %}>
+        <option value="{{ genre }}" {% if request.GET.genre == genre %}selected{% endif %}>
           {{ label }}
         </option>
         {% endfor %}
@@ -71,17 +71,6 @@
   </div>
 </section>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const genreFilter = document.getElementById("genre-filter");
-    const genreForm = document.getElementById("genre-filter-form");
-
-    if (genreFilter && genreForm) {
-      genreFilter.addEventListener("change", function () {
-        genreForm.submit(); // Automatically submit the genre filter form on selection
-      });
-    }
-  });
-</script>
+<script src="{% static 'js/script.js' %}" defer></script>
 
 {% endblock %}

@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/playlist_delete.css' %}" />
 {% endblock %}
 {% block title %}Confirm Delete{% endblock %}
 
 {% block content %}
-<h1>Are you sure you want to delete this playlist?</h1>
-<form method="post"  action="{% url 'playlist_delete' object.id %}" >
+<div class="delete-confirm-container">
+  <h1>Are you sure you want to delete this playlist?</h1>
+  <form method="post" action="{% url 'playlist_delete' object.id %}">
     {% csrf_token %}
     <button type="submit">Confirm</button>
     <a href="{% url 'playlist-index' %}">Cancel</a>
-</form>
+  </form>
+</div>
 {% endblock %}
