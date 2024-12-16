@@ -1,0 +1,119 @@
+/* General Styling */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to right, #141414, #1e1e1e);
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
+}
+
+.sotd-section {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.section-header .btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  color: #fff;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section-header .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
+}
+
+/* Posts Container */
+.sotd-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.sotd-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.sotd-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.9);
+}
+
+.sotd-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.sotd-info {
+  padding: 15px;
+}
+
+.sotd-info h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.sotd-info p {
+  font-size: 1rem;
+  margin: 5px 0;
+  color: #b3b3b3;
+}
+
+.sotd-info .btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  color: #fff;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sotd-info .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .sotd-container {
+    grid-template-columns: 1fr;
+  }
+
+  .sotd-info h2 {
+    font-size: 1.3rem;
+  }
+}

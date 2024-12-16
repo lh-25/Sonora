@@ -1,0 +1,178 @@
+/* General Page Styles */
+.signup-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #141414, #1e1e1e);
+  padding: 20px;
+}
+
+.form-container {
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  padding: 50px 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  animation: fadeInUp 1s ease;
+}
+
+.form-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.form-error {
+  color: #ff4040;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Form Spacing and Layout */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+  align-items: center;
+}
+
+.form-group label {
+  font-size: 1rem;
+  color: #e0e0e0;
+  text-align: left;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"],
+.signup-form textarea,
+.signup-form input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.signup-form input[type="text"]:focus,
+.signup-form input[type="email"]:focus,
+.signup-form input[type="password"]:focus,
+.signup-form textarea:focus {
+  border-color: #00d4ff;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.8);
+  outline: none;
+}
+
+.signup-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Profile Picture Input */
+.signup-form input[type="file"] {
+  padding: 8px;
+  color: #b3b3b3;
+  background: #222;
+}
+
+.signup-form input[type="file"]::-webkit-file-upload-button {
+  background: #00d4ff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.signup-form input[type="file"]::-webkit-file-upload-button:hover {
+  background: #00bfe5;
+}
+
+/* Submit Button */
+.btn-submit {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff4040, #ff7b40);
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 64, 64, 0.5);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 40px 20px;
+  }
+
+  .form-title {
+    font-size: 2rem;
+  }
+
+  .form-group {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .btn-submit {
+    font-size: 1rem;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 30px 15px;
+  }
+
+  .form-title {
+    font-size: 1.8rem;
+  }
+
+  .signup-form input,
+  .signup-form textarea {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .btn-submit {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation for Fade In */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
