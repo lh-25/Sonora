@@ -143,7 +143,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "main_app" /  "media"
+# MEDIA_ROOT = BASE_DIR / "main_app" /  "media"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 LOGIN_REDIRECT_URL = 'song-index'
