@@ -32,5 +32,15 @@
   {% else %}
   <p class="no-posts-message">You haven't created any Song of the Day posts yet.</p>
   {% endif %}
+    <!-- Pagination -->
+    <div class="pagination">
+      {% if posts.has_previous %}
+      <a href="?page={{ posts.previous_page_number }}" class="btn">Previous</a>
+      {% endif %}
+      <span>Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+      {% if posts.has_next %}
+      <a href="?page={{ posts.next_page_number }}" class="btn">Next</a>
+      {% endif %}
+    </div>
 </section>
 {% endblock %}
