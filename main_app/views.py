@@ -151,6 +151,7 @@ class SongCreate(LoginRequiredMixin, CreateView):
   model = Song
   form_class = SongForm
   def form_valid(self, form):
+    song = form.save(commit=False)
     # def add_photo(request, song_id):
     album_cover = self.request.FILES.get('album_cover', None)
     if album_cover:
@@ -160,7 +161,7 @@ class SongCreate(LoginRequiredMixin, CreateView):
             bucket = os.environ['S3_BUCKET']
             s3.upload_fileobj(album_cover, bucket, key)
             url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
-            Song.objects.create(album_cover=url )
+            song.album_cover=url 
         except Exception as e:
             print('An error occurred uploading file to S3')
             print(e)
