@@ -11,6 +11,7 @@ whitenoise = "*"
 gunicorn = "*"
 dj-database-url = "*"
 pillow = "*"
+django-cloudinary-storage = "*"
 
 [dev-packages]
 
