@@ -26,7 +26,7 @@ class Song(models.Model):
   genre = models.CharField(max_length=50, choices=GENRE_CHOICES, default='OTHER')
   release_date = models.DateField(null=True, blank=True)
   duration = models.DurationField()
-  album_cover = models.ImageField(upload_to='songs/images/',null=True, blank=True)
+  album_cover = models.CharField(max_length=255,null=True, blank=True)
   class Meta:
     ordering = ['title', 'artist'] 
     
@@ -45,7 +45,7 @@ class Playlist(models.Model):
   description = models.TextField(null=True, blank=True)
   visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='PRIVATE')
   date_created = models.DateTimeField(auto_now_add=True)
-  playlist_cover = models.ImageField(upload_to='playlists/covers/',null=True, blank=True)
+  playlist_cover = models.CharField(max_length=255,null=True, blank=True)
   songs = models.ManyToManyField(Song, related_name='playlists')
   
   def __str__(self):
@@ -64,7 +64,7 @@ class SongOfTheDay(models.Model):
   reason_for_pick = models.TextField()
   standout_lyric = models.CharField(max_length=500)
   date_posted = models.DateTimeField(auto_now_add=True)
-  post_image = models.ImageField(upload_to='song_of_the_day/posts/',null=True, blank=True)
+  post_image = models.CharField(max_length=255,null=True, blank=True)
   likes = models.ManyToManyField(User, related_name='post_likes', blank=True) 
   
   def __str__(self):
@@ -99,7 +99,7 @@ class Comment(models.Model):
       
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    profile_picture = models.ImageField(upload_to='profiles/profile_pictures/', null=True, blank=True)
+    profile_picture = models.CharField(max_length=255, null=True, blank=True)
     bio = models.TextField(max_length=500, blank=True, null=True, help_text="Write a short bio about yourself.")
     followers = models.ManyToManyField('self', symmetrical=False, related_name='following', blank=True)
 
