@@ -152,6 +152,7 @@ class SongCreate(LoginRequiredMixin, CreateView):
   form_class = SongForm
   def form_valid(self, form):
     song = form.save(commit=False)
+    print(song)
     # def add_photo(request, song_id):
     album_cover = self.request.FILES.get('album_cover', None)
     if album_cover:
@@ -165,6 +166,7 @@ class SongCreate(LoginRequiredMixin, CreateView):
         except Exception as e:
             print('An error occurred uploading file to S3')
             print(e)
+    song.save()
     # return redirect('song-detail', song_id=song_id)
     return super().form_valid(form)
   
