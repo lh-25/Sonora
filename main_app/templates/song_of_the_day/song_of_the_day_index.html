@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
 
 <link rel="stylesheet" href="{% static 'css/post_index.css' %}" />
@@ -8,32 +8,32 @@
 
 {% block content %}
 <section class="sotd-section">
-    <div class="section-header">
-      <h1>Song of the Day Posts</h1>
-      <a href="{% url 'song_of_the_day_create' %}" class="btn">Add New Post</a>
-    </div>
-  
-    <div class="sotd-container">
-      {% for post in posts %}
-      <div class="sotd-card">
-        <div class="sotd-image">
-          {% if post.post_image %}
-          <img src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
-          {% else %}
-          <img src="{% static 'images/post-cover.jpeg' %}" alt="Default Song">
-          {% endif %}
-        </div>
-        <div class="sotd-info">
-          <h2>{{ post.post_title }}</h2>
-          <p><strong>Song:</strong> {{ post.song.title }} by {{ post.song.artist }}</p>
-          <p><strong>Posted by:</strong> {{ post.user.username }}</p>
-          <p><strong>Date:</strong> {{ post.date_posted|date:"M d, Y" }}</p>
-          <a href="{% url 'song_of_the_day_detail' post.id %}" class="btn">View Details</a>
-        </div>
+  <div class="section-header">
+    <h1>Song of the Day Posts</h1>
+    <a href="{% url 'song_of_the_day_create' %}" class="btn">Add New Post</a>
+  </div>
+
+  <div class="sotd-container">
+    {% for post in posts %}
+    <div class="sotd-card">
+      <div class="sotd-image">
+        {% if post.post_image %}
+        <img src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+        {% else %}
+        <img src="{% static 'images/post-cover.jpeg' %}" alt="Default Song">
+        {% endif %}
       </div>
-      {% empty %}
-      <p>No posts available.</p>
-      {% endfor %}
+      <div class="sotd-info">
+        <h2>{{ post.post_title }}</h2>
+        <p><strong>Song:</strong> {{ post.song.title }} by {{ post.song.artist }}</p>
+        <p><strong>Posted by:</strong> {{ post.user.username }}</p>
+        <p><strong>Date:</strong> {{ post.date_posted|date:"M d, Y" }}</p>
+        <a href="{% url 'song_of_the_day_detail' post.id %}" class="btn">View Details</a>
+      </div>
     </div>
-  </section>
+    {% empty %}
+    <p>No posts available.</p>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

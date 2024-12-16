@@ -3,7 +3,7 @@
   max-width: 900px;
   margin: 0 auto;
   margin-top: 15px;
-  padding: 20px;
+  padding: 30px;
   background: #121212;
   color: #fff;
   border-radius: 10px;
@@ -148,9 +148,29 @@
   background: #00a1d1;
 }
 
+.back-button {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.btn-back {
+  padding: 10px 20px;
+  background: #00d4ff;
+  color: #121212;
+  font-weight: bold;
+  border-radius: 25px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.btn-back:hover {
+  background: #00a1d1;
+}
+
 /* Responsive Design */
 
-/* Extra Small Devices (320px - 400px) */
+
 @media (max-width: 400px) {
   .playlist-header {
     flex-direction: column;
@@ -202,26 +222,7 @@
   }
 }
 
-/* Back Button Styling */
-.back-button {
-  margin-top: 20px;
-  text-align: center;
-}
 
-.btn-back {
-  padding: 10px 20px;
-  background: #00d4ff;
-  color: #121212;
-  font-weight: bold;
-  border-radius: 25px;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.btn-back:hover {
-  background: #00a1d1;
-}
 
 
 /* Small Devices (481px - 768px) */
@@ -263,5 +264,3 @@
     height: 130px;
   }
 }
-
-

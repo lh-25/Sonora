@@ -1,4 +1,26 @@
-/* Center login section */
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #0d0d0d;
+  color: #e0e0e0;
+  line-height: 1.7;
+}
+
+main {
+  flex: 1;
+}
+
+/* Login Section */
 .login-section {
   display: flex;
   justify-content: center;
@@ -18,6 +40,24 @@
   width: 100%;
   animation: fadeInUp 1.2s ease;
 }
+
+/* Style for Signup Link */
+.login-container a {
+  display: inline-block;
+  margin-top: 20px;
+  text-decoration: none;
+  color: #00d4ff;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.login-container a:hover {
+  color: #ff40ff;
+  text-shadow: 0 0 8px rgba(255, 64, 255, 0.7);
+  transform: translateY(-1px);
+}
+
 
 .login-title {
   font-size: 2rem;
@@ -79,18 +119,7 @@
   box-shadow: 0 8px 20px rgba(255, 64, 64, 0.5);
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* Error messages */
+/* Error Messages */
 .form-errors {
   background: #ff4040;
   color: #fff;
@@ -104,47 +133,50 @@
   animation: shake 0.4s ease;
 }
 
-/* Individual field errors (inside forms) */
-form .errorlist {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  color: #ff4040;
-  font-size: 0.85rem;
-  margin-top: 5px;
-}
-
-form .errorlist li {
-  margin: 0;
-}
-
 /* Error input fields */
 input.is-invalid {
   border-color: #ff4040;
   box-shadow: 0 0 8px rgba(255, 64, 64, 0.8);
 }
 
-/* Shake animation for error display */
+/* Animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-5px);
   }
+
   50% {
     transform: translateX(5px);
   }
+
   75% {
     transform: translateX(-5px);
   }
 }
 
+/* Responsive Design */
 
-/* Responsive design */
-@media (max-width: 480px) {
+@media (max-width: 400px) {
   .login-container {
-    padding: 30px 20px;
+    padding: 20px 15px;
   }
 
   .login-title {
@@ -153,5 +185,43 @@ input.is-invalid {
 
   .login-subtitle {
     font-size: 0.9rem;
+  }
+
+  .login-form button.submit {
+    font-size: 1rem;
+    padding: 10px 15px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .login-container {
+    max-width: 350px;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .login-container {
+    max-width: 400px;
+  }
+
+  .login-title {
+    font-size: 2.2rem;
+  }
+
+  .login-form button.submit {
+    font-size: 1.1rem;
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .login-container {
+    max-width: 450px;
+  }
+
+  .login-title {
+    font-size: 2.3rem;
   }
 }

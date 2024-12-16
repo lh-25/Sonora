@@ -1,15 +1,41 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/following.css' %}" />
+{% endblock %}
 {% block title %}Following by {{ user.username }}{% endblock %}
 {% block content %}
-<h1>Following by {{ user.username }}</h1>
-<ul>
-  {% for user in following %}
-  <li>
-    <a href="{% url 'profile' user.user.id %}">{{ user.user.username }}</a>
-  </li>
-  {% empty %}
-  <p>Not following anyone yet.</p>
-  {% endfor %}
-</ul>
-<a href="{% url 'profile' user.id %}" class="btn">Back to Profile</a>
+<section class="following-section">
+  <h1>Following by {{ user.username }}</h1>
+  <ul class="following-list">
+    {% for user in following %}
+    <li class="following-item">
+      <!-- Profile Picture -->
+      <div class="profile-picture">
+        {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.user.username }}">
+        {% else %}
+        <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.user.username }}">
+        {% endif %}
+      </div>
+
+      <!-- Username -->
+      <div class="user-info">
+        <a href="{% url 'profile' user.user.id %}">{{ user.user.username }}</a>
+      </div>
+
+      <!-- Unfollow Button -->
+      <div class="unfollow-button">
+        <form method="post" action="{% url 'follow_unfollow' user.user.username %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Unfollow</button>
+        </form>
+      </div>
+    </li>
+    {% empty %}
+    <p>Not following anyone yet.</p>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'profile' user.id %}" class="btn">Back to Profile</a>
+</section>
 {% endblock %}

@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/playlist_form.css' %}" />
 {% endblock %}
 {% block title %}Create a New Playlist{% endblock %}
 
 {% block content %}
-{% if playlist %}
+<div class="playlist-form-container">
+  {% if playlist %}
   <h1>Edit {{ playlist.name }}</h1>
-{% else %}
+  {% else %}
   <h2>Create a New Playlist</h2>
-{% endif %}
-<form method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  Hold down “Control”, or “Command” on a Mac, to add multiple songs.
-  <button type="submit">Submit</button>
-</form>
+  {% endif %}
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p class="instructions">Hold down “Control” (or “Command” on a Mac) to add multiple songs.</p>
+    <button type="submit">Submit</button>
+  </form>
+</div>
 {% endblock %}

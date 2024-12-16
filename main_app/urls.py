@@ -6,12 +6,16 @@ urlpatterns = [
   path('home/', views.Home.as_view(), name='home'),
   path('about/', views.about, name='about'),
   path('accounts/signup/', views.signup, name='signup'),
+  
+  # User/Profile URLs
   path('profiles/my-profile', views.my_profile, name='my-profile'),
   path('profiles/', views.user_profiles, name='users-profiles'),
   path('profiles/<int:user_id>/', views.profile, name='profile'),
   path('profiles/edit/', views.ProfileUpdate.as_view(), name='edit_profile'),
   path('profiles/<str:username>/followers/', views.followers, name='followers'),
   path('profiles/<str:username>/following/', views.following, name='following'),
+  path('profiles/<str:username>/follow/', views.follow_unfollow, name='follow_unfollow'),
+
  
 
   
@@ -40,7 +44,6 @@ urlpatterns = [
   path('song_of_the_day/<int:pk>/update/', views.SongOfTheDayUpdate.as_view(), name='song_of_the_day_update'),
   path('song_of_the_day/<int:pk>/delete/', views.SongOfTheDayDelete.as_view(), name='song_of_the_day_delete'),
   path('song-of-the-day/<int:post_id>/like/', views.like_post, name='like_post'),
-  path('song-of-the-day/<int:post_id>/comment/new/', views.CommentCreate.as_view(), name='comment_create'),
   path('comment/<int:pk>/update/', views.CommentUpdate.as_view(), name='comment_update'),
   path('comment/<int:pk>/delete/', views.CommentDelete.as_view(), name='comment_delete'),
   path('comment/<int:comment_id>/like/', views.like_comment, name='like_comment'),

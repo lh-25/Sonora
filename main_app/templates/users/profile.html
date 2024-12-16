@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
-{% load static %} 
+{% load static %}
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'css/profile.css' %}" />
 {% endblock %}
 
@@ -16,6 +15,24 @@
     <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
     {% endif %}
     <h1>{{ user.username }}'s Profile</h1>
+
+    <!-- Follow Stats -->
+    <div class="follow-stats">
+      <p><strong>{{ user.profile.followers.count }}</strong> Followers</p>
+      <p><strong>{{ user.profile.following.count }}</strong> Following</p>
+    </div>
+
+    <!-- Follow/Unfollow Button -->
+    {% if request.user != user %}
+    <form method="post" action="{% url 'follow_unfollow' user.username %}">
+      {% csrf_token %}
+      {% if request.user.profile in user.profile.followers.all %}
+      <button type="submit" class="btn unfollow-btn">Unfollow</button>
+      {% else %}
+      <button type="submit" class="btn follow-btn">Follow</button>
+      {% endif %}
+    </form>
+    {% endif %}
   </div>
 
   <!-- Featured Playlist -->

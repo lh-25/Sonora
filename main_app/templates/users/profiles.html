@@ -1,31 +1,31 @@
 {% extends 'base.html' %}
 
-{% load static %} 
+{% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/profiles.css' %}" />
 {% endblock %}
 
 {% block content %}
 <section class="profiles-section">
-    <h1>All Users</h1>
-  
-    <div class="profiles-container">
-      {% for user in users %}
-      <div class="profile-card">
-        <!-- Profile Picture -->
-        {% if user.profile.profile_picture %}
-        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-picture">
-        {% else %}
-        <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
-        {% endif %}
-  
-        <!-- User Information -->
-        <h3>{{ user.username }}</h3>
-        <a href="{% url 'profile' user.id %}" class="btn">View Profile</a>
-      </div>
-      {% empty %}
-      <p>No users found.</p>
-      {% endfor %}
+  <h1>All Users</h1>
+
+  <div class="profiles-container">
+    {% for user in users %}
+    <div class="profile-card">
+      <!-- Profile Picture -->
+      {% if user.profile.profile_picture %}
+      <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-picture">
+      {% else %}
+      <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
+      {% endif %}
+
+      <!-- User Information -->
+      <h3>{{ user.username }}</h3>
+      <a href="{% url 'profile' user.id %}" class="btn">View Profile</a>
     </div>
-  </section>
+    {% empty %}
+    <p>No users found.</p>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}
