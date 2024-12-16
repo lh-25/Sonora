@@ -15,9 +15,11 @@ class SignupForm(UserCreationForm):
         fields = ('username', 'email', 'profile_picture','bio')
 
 class SongForm(forms.ModelForm):
+    album_cover = forms.FileField()
     class Meta:
         model = Song
         fields = '__all__'
+       
         widgets = {
             'release_date': forms.DateInput(
                 format=('%Y-%m-%d'),
@@ -25,10 +27,12 @@ class SongForm(forms.ModelForm):
                     'placeholder': 'Select a date',
                     'type': 'date'
                 }
-            )
+            ),
+            
         }
         
 class ProfileForm(forms.ModelForm):
+    profile_picture = forms.FileField()
     class Meta:
         model = Profile
         fields = ['bio', 'profile_picture']
