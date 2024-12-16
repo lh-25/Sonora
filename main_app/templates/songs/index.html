@@ -42,7 +42,7 @@
     <div class="song-card">
       <div class="album-cover-wrapper">
         {% if song.album_cover %}
-        <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
+        <img src="{{ song.album_cover }}" alt="{{ song.title }} album cover" class="album-cover">
         {% else %}
         <img src="{% static 'images/album-cover.jpg' %}" alt="{{ song.title }}" class="album-cover">
         {% endif %}
