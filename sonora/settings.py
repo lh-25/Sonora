@@ -43,9 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
-    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +77,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sonora.wsgi.application'
 
-CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -139,12 +136,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "main_app" / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / "main_app" /  "media"
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_ROOT = BASE_DIR / "main_app" /  "media"
 
 LOGIN_REDIRECT_URL = 'song-index'
 LOGOUT_REDIRECT_URL = 'landing-page'

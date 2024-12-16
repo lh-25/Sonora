@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+import uuid
+import boto3
+import os
 from django.db.models import Q
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -147,6 +150,25 @@ def song_detail(request, song_id):
 class SongCreate(LoginRequiredMixin, CreateView):
   model = Song
   form_class = SongForm
+  def form_valid(self, form):
+    # def add_photo(request, song_id):
+    album_cover = self.request.FILES.get('album_cover', None)
+    if album_cover:
+        s3 = boto3.client('s3')
+        key = uuid.uuid4().hex[:6] + album_cover.name[album_cover.name.rfind('.'):]
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(album_cover, bucket, key)
+            url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+            Song.objects.create(album_cover=url )
+        except Exception as e:
+            print('An error occurred uploading file to S3')
+            print(e)
+    # return redirect('song-detail', song_id=song_id)
+    return super().form_valid(form)
+  
+  
+  
 
 @login_required  
 def add_to_playlist(request, song_id):
