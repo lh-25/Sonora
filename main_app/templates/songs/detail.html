@@ -13,7 +13,7 @@
     {% if song.album_cover %}
     <img src="{{ song.album_cover.url }}" alt="{{ song.title }} album cover" class="album-cover">
     {% else %}
-    <img src="{% static 'images/album-cover.jpeg' %}" alt="{{ song.title }}" class="profile-picture">
+    <img src="{% static 'images/album-cover.jpg' %}" alt="{{ song.title }}" class="album-cover">
     {% endif %}
     <div class="song-info">
       <h1>{{ song.title }}</h1>
