@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay, Comment, Profile
 from django.contrib.auth.models import User
-from .forms import SignupForm, SongForm, CommentForm, PlaylistForm, SongOfTheDayForm, ProfileForm
+from .forms import SignupForm, SongForm, CommentForm, PlaylistForm, SongOfTheDayForm, ProfileForm, SongOfTheDaySongForm
 
 # Create your views here.
 def signup(request):
@@ -216,7 +216,7 @@ def add_to_playlist(request, song_id):
   
 class SongOfTheDayCreateView(LoginRequiredMixin, CreateView):
     model = SongOfTheDay
-    form_class = SongOfTheDayForm
+    form_class = SongOfTheDaySongForm
     template_name = 'main_app/songoftheday_form.html'
 
     def form_valid(self, form):
