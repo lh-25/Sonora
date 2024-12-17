@@ -17,32 +17,37 @@ from .forms import SignupForm, SongForm, CommentForm, PlaylistForm, SongOfTheDay
 
 # Create your views here.
 def signup(request):
-  error_message = ''
-  if request.method == 'POST':
-      form = SignupForm(request.POST, request.FILES)
-      if form.is_valid():
-          user = form.save()
-          profile_picture = form.cleaned_data.get('profile_picture')
-          bio = form.cleaned_data.get('bio', '')
-          url = None
-          if profile_picture:
-            s3 = boto3.client('s3')
-            key = f"profile_picture/{uuid.uuid4().hex[:6]}{profile_picture.name[profile_picture.name.rfind('.'):]}"
-            try:
-              bucket = os.environ['S3_BUCKET']
-              s3.upload_fileobj(profile_picture, bucket, key)
-              url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
-            except Exception as e:
-              print('An error occurred uploading file to S3')
-              print(e)
-          Profile.objects.create(user=user, profile_picture=url, bio=bio)
-      login(request, user)
-      return redirect('song-index')
-  else:
-    error_message = 'Invalid sign up - try again'
-  form = SignupForm()
-  context = {'form': form, 'error_message': error_message}
-  return render(request, 'signup.html', context)
+    error_message = '' 
+    if request.method == 'POST':
+        form = SignupForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            profile_picture = form.cleaned_data.get('profile_picture')
+            bio = form.cleaned_data.get('bio', '')
+            url = None
+
+            if profile_picture:
+                s3 = boto3.client('s3')
+                key = f"profile_picture/{uuid.uuid4().hex[:6]}{profile_picture.name[profile_picture.name.rfind('.'):]}"
+                try:
+                    bucket = os.environ['S3_BUCKET']
+                    s3.upload_fileobj(profile_picture, bucket, key)
+                    url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+                except Exception as e:
+                    print('An error occurred uploading file to S3')
+                    print(e)
+            
+            Profile.objects.create(user=user, profile_picture=url, bio=bio)
+            login(request, user)  
+            return redirect('song-index')
+        else:
+            error_message = 'Invalid sign up - try again' 
+    else:
+        form = SignupForm() 
+
+    context = {'form': form, 'error_message': error_message}
+    return render(request, 'signup.html', context)
+
   
   
 class Home(LoginView):
