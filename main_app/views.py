@@ -165,7 +165,7 @@ def song_index(request):
             Q(artist__icontains=search_query) |
             Q(album__icontains=search_query)
         )
-    paginator = Paginator(songs, 10) 
+    paginator = Paginator(songs, 12) 
     songs_page = paginator.get_page(page)
 
     genre_choices = Song._meta.get_field('genre').choices
@@ -294,7 +294,7 @@ class PlaylistDelete(LoginRequiredMixin, DeleteView):
 def playlist_index(request):
   page = request.GET.get('page', 1) 
   playlists = Playlist.objects.filter(visibility='PUBLIC')
-  paginator = Paginator(playlists, 10) 
+  paginator = Paginator(playlists, 12) 
   playlists_page = paginator.get_page(page)
   return render(request, 'playlists/playlist_index.html', {'playlists': playlists_page})
 
@@ -302,7 +302,7 @@ def playlist_index(request):
 def my_playlists(request):
   page = request.GET.get('page', 1)  
   playlists = Playlist.objects.filter(user=request.user)
-  paginator = Paginator(playlists, 10)
+  paginator = Paginator(playlists, 12)
   playlists_page = paginator.get_page(page) 
   return render(request, 'playlists/my_playlists.html',{'playlists': playlists_page})
 
@@ -382,7 +382,7 @@ class SongOfTheDayDelete(LoginRequiredMixin, DeleteView):
 def songoftheday_index(request):
   posts = SongOfTheDay.objects.all()
   page = request.GET.get('page', 1) 
-  paginator = Paginator(posts, 10)
+  paginator = Paginator(posts, 12)
   posts_page = paginator.get_page(page)
   return render(request, 'song_of_the_day/song_of_the_day_index.html', {'posts': posts_page})
 
@@ -390,7 +390,7 @@ def songoftheday_index(request):
 def my_posts(request):  
   posts = SongOfTheDay.objects.filter(user=request.user)
   page = request.GET.get('page', 1) 
-  paginator = Paginator(posts, 10)
+  paginator = Paginator(posts, 12)
   posts_page = paginator.get_page(page)
   return render(request, 'song_of_the_day/my_posts.html',{'posts': posts_page})
 
