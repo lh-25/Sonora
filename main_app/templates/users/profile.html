@@ -10,7 +10,7 @@
   <div class="profile-header">
     <!-- Profile Picture -->
     {% if user.profile.profile_picture %}
-    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-picture">
+    <img src="{{ user.profile.profile_picture }}" alt="{{ user.username }}" class="profile-picture">
     {% else %}
     <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
     {% endif %}
@@ -41,7 +41,7 @@
     {% with playlists|first as featured_playlist %}
     {% if featured_playlist %}
     <div class="featured-card">
-      <img src="{{ featured_playlist.playlist_cover.url }}" alt="{{ featured_playlist.name }}" class="featured-cover">
+      <img src="{{ featured_playlist.playlist_cover }}" alt="{{ featured_playlist.name }}" class="featured-cover">
       <h3>{{ featured_playlist.name }}</h3>
       <p>{{ featured_playlist.description }}</p>
       <a href="{% url 'playlist-detail' featured_playlist.id %}" class="btn">View Playlist</a>
@@ -70,7 +70,7 @@
     <div class="playlists-container">
       {% for playlist in playlists %}
       <div class="playlist-card">
-        <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }}" class="playlist-cover">
+        <img src="{{ playlist.playlist_cover }}" alt="{{ playlist.name }}" class="playlist-cover">
         <div class="playlist-info">
           <h3>{{ playlist.name }}</h3>
           <p>{{ playlist.description }}</p>

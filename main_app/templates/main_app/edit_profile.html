@@ -15,7 +15,7 @@
     <div class="form-group">
       <label for="id_profile_picture">Current Profile Picture:</label>
       {% if user.profile.profile_picture %}
-      <img src="{{ user.profile.profile_picture.url }}" alt="Current Profile Picture" class="profile-image-preview">
+      <img src="{{ user.profile.profile_picture }}" alt="Current Profile Picture" class="profile-image-preview">
       {% else %}
       <img src="{% static 'images/profilepic.jpeg' %}" alt="Default Profile Picture" class="profile-image-preview">
       {% endif %}
