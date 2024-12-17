@@ -50,17 +50,17 @@ This app utilizes several external libraries and frameworks:
 - **HTML, CSS, and JavaScript** for front-end development.  
 - **Heroku** for deployment.  
 - **Whitenoise** for static file management in production.
+- **Amazon S3** to manage user-uploaded media files, including playlist covers and profile pictures.
 
 ---
 
 ## **Next Steps**  
 Here are planned enhancements to make Sonora even better:  
 1. **Audio Integration**: Allow users to upload and play audio files directly within the app.  
-2. **Cloud Storage**: Integrate scalable storage solutions (e.g., Amazon S3 or Cloudinary) to manage user-uploaded media files, including playlist covers and profile pictures.  
-3. **Real-Time Features**: Add WebSocket-based real-time notifications for likes, comments, and new posts.  
-4. **Playlist Collaboration**: Enable multiple users to collaborate on playlists.  
-5. **Enhanced Search**: Implement advanced filtering and recommendation algorithms to improve music discovery.  
-6. **Mobile App**: Develop a mobile version of Sonora for iOS and Android.
+2. **Real-Time Features**: Add WebSocket-based real-time notifications for likes, comments, and new posts.
+3. **Playlist Collaboration**: Enable multiple users to collaborate on playlists.  
+4. **Enhanced Search**: Implement advanced filtering and recommendation algorithms to improve music discovery. 
+5. **Mobile App**: Develop a mobile version of Sonora for iOS and Android. 
 
 ---
 
