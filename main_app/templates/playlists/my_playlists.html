@@ -18,7 +18,7 @@
     <div class="playlist-card">
       <div class="playlist-cover">
         {% if playlist.playlist_cover %}
-        <img src="{{ playlist.playlist_cover.url }}" alt="{{ playlist.name }} cover image">
+        <img src="{{ playlist.playlist_cover }}" alt="{{ playlist.name }} cover image">
         {% else %}
         <img src="{% static 'images/playlist-cover.webp' %}" alt="Default playlist cover">
         {% endif %}

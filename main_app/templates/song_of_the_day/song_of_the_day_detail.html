@@ -10,7 +10,7 @@
   <!-- Post Header -->
   <div class="post-header">
     {% if post.post_image %}
-    <img src="{{ post.post_image.url }}" alt="Song of the Day image" class="post-image">
+    <img src="{{ post.post_image }}" alt="Song of the Day image" class="post-image">
     {% else %}
     <img src="{% static 'images/post-cover.jpeg' %}" alt="Default Song of the Day image" class="post-image">
     {% endif %}
