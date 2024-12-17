@@ -1,11 +1,11 @@
 from django import forms
-from .models import Song, Profile, Comment
+from .models import Song, Profile, Comment, Playlist, SongOfTheDay
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 class SignupForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    profile_picture = forms.ImageField(required=False, label="Upload Profile Picture")
+    profile_picture = forms.FileField(required=False, label="Upload Profile Picture")
     bio = forms.CharField(required=False, max_length=500, widget=forms.Textarea(attrs={
         'placeholder': 'Write a short bio about yourself',
         'rows': 3
@@ -30,6 +30,18 @@ class SongForm(forms.ModelForm):
             ),
             
         }
+        
+class PlaylistForm(forms.ModelForm):
+    playlist_cover = forms.FileField()
+    class Meta:
+        model = Playlist
+        fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
+    
+class SongOfTheDayForm(forms.ModelForm):
+    post_image = forms.FileField()
+    class Meta:
+        model = SongOfTheDay
+        fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
         
 class ProfileForm(forms.ModelForm):
     profile_picture = forms.FileField()

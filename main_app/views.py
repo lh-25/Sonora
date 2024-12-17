@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Song, Playlist, SongOfTheDay, Comment, Profile
 from django.contrib.auth.models import User
-from .forms import SignupForm, SongForm, CommentForm
+from .forms import SignupForm, SongForm, CommentForm, PlaylistForm, SongOfTheDayForm, ProfileForm
 
 # Create your views here.
 def signup(request):
@@ -24,9 +24,20 @@ def signup(request):
           user = form.save()
           profile_picture = form.cleaned_data.get('profile_picture')
           bio = form.cleaned_data.get('bio', '')
-          Profile.objects.create(user=user, profile_picture=profile_picture, bio=bio)
-          login(request, user)
-          return redirect('song-index')
+          url = None
+          if profile_picture:
+            s3 = boto3.client('s3')
+            key = f"profile_picture/{uuid.uuid4().hex[:6]}{profile_picture.name[profile_picture.name.rfind('.'):]}"
+            try:
+              bucket = os.environ['S3_BUCKET']
+              s3.upload_fileobj(profile_picture, bucket, key)
+              url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+            except Exception as e:
+              print('An error occurred uploading file to S3')
+              print(e)
+          Profile.objects.create(user=user, profile_picture=url, bio=bio)
+      login(request, user)
+      return redirect('song-index')
   else:
     error_message = 'Invalid sign up - try again'
   form = SignupForm()
@@ -84,10 +95,33 @@ def profile(request, user_id):
 
 class ProfileUpdate( LoginRequiredMixin, UpdateView):
     model = Profile
-    fields = ['profile_picture', 'bio']
+    form_class = ProfileForm
     template_name = 'main_app/edit_profile.html'
     def get_object(self,):
       return self.model.objects.get(user=self.request.user)
+    
+    def form_valid(self, form):
+        # Get the current instance being updated
+        profile = self.get_object()
+
+        # Handle new profile picture upload (if any)
+        new_picture = self.request.FILES.get('profile_picture', None)
+        if new_picture:
+            s3 = boto3.client('s3')
+            # Generate a unique key for the new image
+            key = f"profile_pictures/{uuid.uuid4().hex[:6]}{new_picture.name[new_picture.name.rfind('.'):]}"
+            try:
+                bucket = os.environ['S3_BUCKET']
+                # Upload the new image to S3
+                s3.upload_fileobj(new_picture, bucket, key)
+                # Generate the S3 file URL
+                url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+                form.instance.profile_picture = url  # Update the profile with the new image URL
+            except Exception as e:
+                print("An error occurred uploading file to S3")
+                print(e)
+
+        return super().form_valid(form)
     def get_success_url(self):
       return reverse('my-profile') 
 
@@ -152,12 +186,10 @@ class SongCreate(LoginRequiredMixin, CreateView):
   form_class = SongForm
   def form_valid(self, form):
     song = form.save(commit=False)
-    print(song)
-    # def add_photo(request, song_id):
     album_cover = self.request.FILES.get('album_cover', None)
     if album_cover:
         s3 = boto3.client('s3')
-        key = uuid.uuid4().hex[:6] + album_cover.name[album_cover.name.rfind('.'):]
+        key = f"album_cover/{uuid.uuid4().hex[:6]}{album_cover.name[album_cover.name.rfind('.'):]}"
         try:
             bucket = os.environ['S3_BUCKET']
             s3.upload_fileobj(album_cover, bucket, key)
@@ -167,7 +199,6 @@ class SongCreate(LoginRequiredMixin, CreateView):
             print('An error occurred uploading file to S3')
             print(e)
     song.save()
-    # return redirect('song-detail', song_id=song_id)
     return super().form_valid(form)
   
   
@@ -185,27 +216,75 @@ def add_to_playlist(request, song_id):
   
 class SongOfTheDayCreateView(LoginRequiredMixin, CreateView):
     model = SongOfTheDay
-    fields = ['post_title', 'reason_for_pick', 'standout_lyric', 'post_image']
+    form_class = SongOfTheDayForm
     template_name = 'main_app/songoftheday_form.html'
 
     def form_valid(self, form):
         song = get_object_or_404(Song, id=self.kwargs['song_id'])
         form.instance.user = self.request.user
         form.instance.song = song
+        post_image = self.request.FILES.get('post_image', None)
+        if post_image:
+            s3 = boto3.client('s3')
+            key = f"post_image/{uuid.uuid4().hex[:6]}{post_image.name[post_image.name.rfind('.'):]}"
+            try:
+                bucket = os.environ['S3_BUCKET']
+                s3.upload_fileobj(post_image, bucket, key)
+                url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+                form.instance.post_image = url
+            except Exception as e:
+                print('An error occurred uploading file to S3')
+                print(e)
         return super().form_valid(form)
   
 # Playlist Views
 
 class PlaylistCreate(LoginRequiredMixin, CreateView):
   model = Playlist
-  fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
+  form_class = PlaylistForm
   def form_valid(self, form):
-        form.instance.user = self.request.user 
-        return super().form_valid(form)
+      form.instance.user = self.request.user  
+      playlist = form.save(commit=False)
+      playlist_cover = self.request.FILES.get('playlist_cover', None)
+      if playlist_cover:
+        s3 = boto3.client('s3')
+        key = f"playlist_cover/{uuid.uuid4().hex[:6]}{playlist_cover.name[playlist_cover.name.rfind('.'):]}"
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(playlist_cover, bucket, key)
+            url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+            playlist.playlist_cover=url 
+        except Exception as e:
+            print('An error occurred uploading file to S3')
+            print(e)
+      playlist.save()
+      return super().form_valid(form)
 
 class PlaylistUpdate(LoginRequiredMixin, UpdateView):
   model = Playlist
-  fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
+  form_class = PlaylistForm
+  def form_valid(self, form):
+        # Get the instance being updated
+        playlist = self.get_object()
+
+        # Handle new playlist_cover upload (if any)
+        new_cover = self.request.FILES.get('playlist_cover', None)
+        if new_cover:
+            s3 = boto3.client('s3')
+            # Generate a unique key for the new image
+            key = f"playlist_covers/{uuid.uuid4().hex[:6]}{new_cover.name[new_cover.name.rfind('.'):]}"
+            try:
+                bucket = os.environ['S3_BUCKET']
+                # Upload the new image to S3
+                s3.upload_fileobj(new_cover, bucket, key)
+                # Generate the S3 file URL
+                url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+                form.instance.playlist_cover = url  # Update the playlist with the new cover URL
+            except Exception as e:
+                print("An error occurred uploading file to S3")
+                print(e)
+        
+        return super().form_valid(form)
   
 class PlaylistDelete(LoginRequiredMixin, DeleteView):
   model = Playlist
@@ -250,14 +329,50 @@ def remove_from_playlist(request, playlist_id, song_id):
 
 class SongOfTheDayCreate(LoginRequiredMixin, CreateView):
   model = SongOfTheDay
-  fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
+  form_class = SongOfTheDayForm
   def form_valid(self, form):
-        form.instance.user = self.request.user 
-        return super().form_valid(form)
+      form.instance.user = self.request.user
+      post = form.save(commit=False)
+      post_image = self.request.FILES.get('post_image', None)
+      if post_image:
+        s3 = boto3.client('s3')
+        key = f"post_image/{uuid.uuid4().hex[:6]}{post_image.name[post_image.name.rfind('.'):]}"
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(post_image, bucket, key)
+            url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+            post.post_image=url 
+        except Exception as e:
+          print('An error occurred uploading file to S3')
+          print(e)
+      post.save() 
+      return super().form_valid(form)
 
 class SongOfTheDayUpdate(LoginRequiredMixin, UpdateView):
   model = SongOfTheDay
-  fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
+  form_class = SongOfTheDayForm
+  def form_valid(self, form):
+        # Get the current object being updated
+        song_of_the_day = self.get_object()
+
+        # Handle new post_image upload (if any)
+        new_post_image = self.request.FILES.get('post_image', None)
+        if new_post_image:
+            s3 = boto3.client('s3')
+            # Generate a unique key for the new image
+            key = f"post_image/{uuid.uuid4().hex[:6]}{new_post_image.name[new_post_image.name.rfind('.'):]}"
+            try:
+                bucket = os.environ['S3_BUCKET']
+                # Upload the new image to S3
+                s3.upload_fileobj(new_post_image, bucket, key)
+                # Generate the S3 file URL
+                url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+                form.instance.post_image = url  # Update the field with the new image URL
+            except Exception as e:
+                print("An error occurred uploading file to S3")
+                print(e)
+
+        return super().form_valid(form)
   
 class SongOfTheDayDelete(LoginRequiredMixin, DeleteView):
   model = SongOfTheDay

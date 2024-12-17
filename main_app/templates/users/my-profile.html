@@ -9,7 +9,7 @@
   <div class="profile-header">
     <!-- Profile Picture -->
     {% if user.profile.profile_picture %}
-    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-picture">
+    <img src="{{ user.profile.profile_picture }}" alt="{{ user.username }}" class="profile-picture">
     {% else %}
     <img src="{% static 'images/profilepic.jpeg' %}" alt="{{ user.username }}" class="profile-picture">
     {% endif %}
