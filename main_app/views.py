@@ -360,7 +360,7 @@ class SongOfTheDayUpdate(LoginRequiredMixin, UpdateView):
         if new_post_image:
             s3 = boto3.client('s3')
             # Generate a unique key for the new image
-            key = f"post_image/{uuid.uuid4().hex[:6]}{new_post_image.name[new_post_image.name.rfind('.'):]}"
+            key = f"post_images/{uuid.uuid4().hex[:6]}{new_post_image.name[new_post_image.name.rfind('.'):]}"
             try:
                 bucket = os.environ['S3_BUCKET']
                 # Upload the new image to S3
