@@ -43,6 +43,12 @@ class SongOfTheDayForm(forms.ModelForm):
         model = SongOfTheDay
         fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
         
+class SongOfTheDaySongForm(forms.ModelForm):
+    post_image = forms.FileField(required=False)
+    class Meta:
+        model = SongOfTheDay
+        fields = [ 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
+        
 class ProfileForm(forms.ModelForm):
     profile_picture = forms.FileField(required=False)
     class Meta:
