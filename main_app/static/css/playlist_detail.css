@@ -170,66 +170,34 @@
 
 /* Responsive Design */
 
-
 @media (max-width: 400px) {
   .playlist-header {
     flex-direction: column;
     align-items: center;
-  }
-
-  .playlist-cover img {
-    width: 100px;
-    height: 100px;
-  }
-
-  .playlist-info h2 {
-    font-size: 1.5rem;
-    text-align: center;
-  }
-
-  .playlist-info p {
-    font-size: 0.9rem;
+    gap: 15px; 
     text-align: center;
   }
 
   .playlist-actions {
-    bottom: 5px;
-    right: 5px;
-    flex-direction: column;
-    gap: 5px;
+    position: static; 
+    flex-direction: column; 
+    width: 100%;
+    gap: 10px;
   }
 
   .playlist-actions .btn {
     font-size: 0.9rem;
-    padding: 8px 12px;
-  }
-
-  .song-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .playlist-edit-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .btn-primary,
-  .btn-danger {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
+    width: 80%;
+    margin: 0 auto; 
   }
 }
 
-
-
-
-/* Small Devices (481px - 768px) */
 @media (max-width: 768px) {
   .playlist-header {
     flex-direction: column;
     align-items: center;
+    gap: 20px;
+    text-align: center;
   }
 
   .playlist-cover img {
@@ -238,22 +206,18 @@
   }
 
   .playlist-actions {
-    bottom: 10px;
-    right: 10px;
+    position: static; 
+    flex-direction: row; 
+    gap: 15px;
+    justify-content: center;
   }
 
   .playlist-actions .btn {
-    font-size: 0.95rem;
-    padding: 9px 14px;
-  }
-
-  .song-item {
-    flex-direction: column;
-    align-items: flex-start;
+    font-size: 1rem;
+    padding: 8px 12px;
   }
 }
 
-/* Medium Devices (769px - 1024px) */
 @media (max-width: 1024px) {
   .playlist-header {
     gap: 15px;
