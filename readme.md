@@ -7,6 +7,7 @@ A full-stack music application that allows users to create, share, and interact 
 
 ## **About Sonora**  
 Sonora is a music app designed for users to explore their passion for music. With Sonora, users can:  
+- Add Songs to the Site 
 - Create, update, and manage playlists.  
 - Share a "Song of the Day" post featuring a song, artist, and standout lyrics.  
 - Comment on and like posts to engage with the music community.  
