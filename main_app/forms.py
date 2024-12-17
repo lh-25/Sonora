@@ -15,7 +15,7 @@ class SignupForm(UserCreationForm):
         fields = ('username', 'email', 'profile_picture','bio')
 
 class SongForm(forms.ModelForm):
-    album_cover = forms.FileField()
+    album_cover = forms.FileField(required=False)
     class Meta:
         model = Song
         fields = '__all__'
@@ -32,19 +32,19 @@ class SongForm(forms.ModelForm):
         }
         
 class PlaylistForm(forms.ModelForm):
-    playlist_cover = forms.FileField()
+    playlist_cover = forms.FileField(required=False)
     class Meta:
         model = Playlist
         fields = ['name', 'description', 'visibility', 'playlist_cover', 'songs']
     
 class SongOfTheDayForm(forms.ModelForm):
-    post_image = forms.FileField()
+    post_image = forms.FileField(required=False)
     class Meta:
         model = SongOfTheDay
         fields = ['song', 'post_title', 'reason_for_pick', 'post_image', 'standout_lyric']
         
 class ProfileForm(forms.ModelForm):
-    profile_picture = forms.FileField()
+    profile_picture = forms.FileField(required=False)
     class Meta:
         model = Profile
         fields = ['bio', 'profile_picture']
