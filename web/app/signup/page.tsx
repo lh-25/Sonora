@@ -51,30 +51,30 @@ export default function SignupPage() {
           <StackLayout gap={2}>
             <FormField>
               <FormFieldLabel>Username *</FormFieldLabel>
-              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Choose a username" />
+              <Input value={username} onChange={(e) => setUsername((e.target as HTMLInputElement).value)} placeholder="Choose a username" />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Email *</FormFieldLabel>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <Input inputProps={{ type: 'email' }} value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} placeholder="you@example.com" />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Password *</FormFieldLabel>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+              <Input inputProps={{ type: 'password' }} value={password} onChange={(e) => setPassword((e.target as HTMLInputElement).value)} placeholder="At least 8 characters" />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Bio</FormFieldLabel>
               <MultilineInput
                 value={bio}
-                onChange={(e) => setBio(e.target.value)}
+                onChange={(e) => setBio((e.target as HTMLTextAreaElement).value)}
                 placeholder="Tell us about yourself (optional)"
                 rows={3}
               />
             </FormField>
 
-            {error && <Text styleAs="help" className={styles.error}>{error}</Text>}
+            {error && <Text styleAs="notation" className={styles.error}>{error}</Text>}
 
             <Button type="submit" variant="primary" loading={loading} className={styles.submitBtn}>
               Create Account
@@ -83,7 +83,7 @@ export default function SignupPage() {
         </form>
 
         <FlexLayout justify="center" gap={1} align="center">
-          <Text styleAs="help" className={styles.footerText}>Already have an account?</Text>
+          <Text styleAs="notation" className={styles.footerText}>Already have an account?</Text>
           <Link href="/login" className={styles.link}>Log in</Link>
         </FlexLayout>
       </div>
