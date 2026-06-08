@@ -12,6 +12,10 @@ gunicorn = "*"
 dj-database-url = "*"
 pillow = "*"
 boto3 = "*"
+djangorestframework = "*"
+djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
+requests = "*"
 
 [dev-packages]
 
