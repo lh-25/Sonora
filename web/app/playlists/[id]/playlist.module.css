@@ -1,0 +1,159 @@
+.page {
+  padding: 32px 0 120px;
+}
+
+.spinner {
+  margin-top: 80px;
+}
+
+.header {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.cover {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.coverPlaceholder {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  background: var(--sonora-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  color: #444;
+  flex-shrink: 0;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.name {
+  color: #fff !important;
+}
+
+.meta {
+  color: #666 !important;
+}
+
+.desc {
+  color: #aaa !important;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.deleteBtn {
+  margin-top: 8px;
+  align-self: flex-start;
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+.songsLabel {
+  color: #666 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+
+.empty {
+  color: #555;
+  margin-top: 40px;
+}
+
+.songList {
+  gap: 4px;
+}
+
+.songRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  transition: border-color 0.15s;
+}
+.songRow:hover {
+  border-color: #3a3a3a;
+}
+
+.songIndex {
+  color: #555 !important;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.songArt {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.songArtPlaceholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: var(--sonora-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+.songInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.songTitle {
+  color: #fff !important;
+  font-weight: 600 !important;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.songArtist {
+  color: #888 !important;
+  display: block;
+}
+
+.songDuration {
+  color: #555 !important;
+  flex-shrink: 0;
+}
+
+.playBtn {
+  min-width: 36px !important;
+  background: var(--sonora-green) !important;
+  color: #000 !important;
+}
+
+.removeBtn {
+  min-width: 36px !important;
+  color: #e74c3c !important;
+  border-color: rgba(231, 76, 60, 0.4) !important;
+}

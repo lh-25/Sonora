@@ -1,0 +1,141 @@
+.page {
+  padding: 32px 0 120px;
+}
+
+.title {
+  color: #fff !important;
+  margin-bottom: 28px;
+}
+
+.spinner {
+  margin-top: 80px;
+}
+
+.profileCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatarPlaceholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--sonora-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarInitial {
+  font-size: 36px;
+  font-weight: 800;
+  color: #000;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.username {
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.email {
+  color: #666 !important;
+}
+
+.bio {
+  color: #aaa !important;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  max-width: 360px;
+}
+
+.statCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  display: block;
+}
+
+.statLabel {
+  color: #666 !important;
+  margin-top: 4px;
+  display: block;
+}
+
+.section {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 16px;
+  max-width: 560px;
+}
+
+.sectionTitle {
+  color: #888 !important;
+  font-size: 13px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+}
+
+.connectedText {
+  color: var(--sonora-green) !important;
+  font-weight: 600;
+}
+
+.hint {
+  color: #666 !important;
+  line-height: 1.5;
+}
+
+.spotifyBtn {
+  background: var(--sonora-green) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  align-self: flex-start;
+}
+
+.disconnectBtn {
+  align-self: flex-start;
+}
+
+.logoutBtn {
+  color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}

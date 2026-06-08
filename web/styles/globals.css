@@ -1,0 +1,84 @@
+@import '@salt-ds/core/index.css';
+
+:root {
+  --sonora-bg: #0a0a0a;
+  --sonora-surface: #141414;
+  --sonora-surface-alt: #1e1e1e;
+  --sonora-border: #2a2a2a;
+  --sonora-green: #1db954;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--sonora-bg);
+  color: #ffffff;
+  font-family: var(--salt-typography-fontFamily), system-ui, sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* Salt dark mode overrides */
+.salt-theme[data-mode='dark'] {
+  --salt-container-primary-background: var(--sonora-surface);
+  --salt-container-secondary-background: var(--sonora-surface-alt);
+  --salt-separable-secondary-borderColor: var(--sonora-border);
+}
+
+/* Sonora-specific utilities */
+.sonora-card {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.15s;
+}
+.sonora-card:hover {
+  border-color: #444;
+}
+
+.sonora-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.sonora-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--sonora-surface-alt);
+}
+
+.sonora-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--sonora-surface-alt);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+}
+
+.sonora-green {
+  color: var(--sonora-green);
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}

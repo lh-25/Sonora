@@ -1,0 +1,73 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sonora-border);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  font-size: 22px;
+  color: var(--sonora-green);
+}
+
+.logoText {
+  color: #fff !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px;
+}
+
+.links {
+  flex: 1;
+  justify-content: center;
+}
+
+.link {
+  color: #888;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.linkActive {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.username {
+  color: #666 !important;
+  font-size: 13px;
+}
+
+.logoutBtn {
+  font-size: 13px !important;
+}
