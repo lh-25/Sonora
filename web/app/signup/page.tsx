@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  Button, Input, Textarea, FormField, FormFieldLabel,
+  Button, Input, MultilineInput, FormField, FormFieldLabel,
   Text, H2, StackLayout, FlexLayout,
 } from '@salt-ds/core';
 import { useAuth } from '@/contexts/AuthContext';
@@ -66,7 +66,7 @@ export default function SignupPage() {
 
             <FormField>
               <FormFieldLabel>Bio</FormFieldLabel>
-              <Textarea
+              <MultilineInput
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell us about yourself (optional)"
