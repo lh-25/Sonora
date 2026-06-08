@@ -3,16 +3,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button, Input, Text, H1, H3, StackLayout, FlexLayout,
-  Spinner, Pill,
+  Spinner, Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
+  DialogContent, DialogActions, MultilineInput,
 } from '@salt-ds/core';
-import { getSongs, spotifySearch, linkSpotifyTrack, type Song } from '@/services/api';
+import { getSongs, spotifySearch, linkSpotifyTrack, createSong, uploadImage, type Song } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import styles from './songs.module.css';
 
 const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY', 'ELECTRONIC', 'OTHER'];
 
 export default function SongsPage() {
   const { play } = usePlayer();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -24,6 +29,17 @@ export default function SongsPage() {
   const [spotifyQuery, setSpotifyQuery] = useState('');
   const [spotifyResults, setSpotifyResults] = useState<any[]>([]);
   const [spotifyLoading, setSpotifyLoading] = useState(false);
+
+  // Add song dialog
+  const [addOpen, setAddOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newArtist, setNewArtist] = useState('');
+  const [newAlbum, setNewAlbum] = useState('');
+  const [newGenre, setNewGenre] = useState('POP');
+  const [newCoverUrl, setNewCoverUrl] = useState('');
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [addingSong, setAddingSong] = useState(false);
+  const coverRef = useRef<HTMLInputElement>(null);
 
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -46,6 +62,7 @@ export default function SongsPage() {
   }, [search]);
 
   const handleSpotifySearch = async () => {
+    if (!isAuthenticated) { router.push('/login'); return; }
     if (!spotifyQuery.trim()) return;
     setSpotifyLoading(true);
     try {
@@ -59,6 +76,7 @@ export default function SongsPage() {
   };
 
   const handleLinkTrack = async (song: Song, spotifyTrack: any) => {
+    if (!isAuthenticated) { router.push('/login'); return; }
     try {
       const updated = await linkSpotifyTrack(song.id, spotifyTrack.id, spotifyTrack.preview_url);
       setSongs((prev) => prev.map((s) => s.id === updated.id ? updated : s));
@@ -68,10 +86,48 @@ export default function SongsPage() {
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCover(true);
+    try {
+      const { url } = await uploadImage(file, 'album_covers');
+      setNewCoverUrl(url);
+    } catch {
+      alert('Could not upload cover image.');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleAddSong = async () => {
+    if (!newTitle.trim() || !newArtist.trim()) return;
+    setAddingSong(true);
+    try {
+      const song = await createSong({
+        title: newTitle.trim(),
+        artist: newArtist.trim(),
+        album: newAlbum.trim() || undefined,
+        genre: newGenre,
+        album_cover: newCoverUrl || undefined,
+      });
+      setSongs((prev) => [song, ...prev]);
+      setAddOpen(false);
+      setNewTitle(''); setNewArtist(''); setNewAlbum(''); setNewGenre('POP'); setNewCoverUrl('');
+    } catch {
+      alert('Could not add song. Try again.');
+    } finally {
+      setAddingSong(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
       <div className="page-container">
-        <H1 className={styles.title}>Songs</H1>
+        <FlexLayout justify="space-between" align="center" className={styles.header}>
+          <H1 className={styles.title}>Songs</H1>
+          <Button variant="primary" onClick={() => setAddOpen(true)} className={styles.addBtn}>+ Add Song</Button>
+        </FlexLayout>
 
         {/* Search + Genre filter */}
         <div className={styles.filters}>
@@ -180,6 +236,56 @@ export default function SongsPage() {
           </>
         )}
       </div>
+
+      {/* Add Song Dialog */}
+      <Dialog open={addOpen} onOpenChange={(open) => setAddOpen(open)}>
+        <DialogHeader header="Add a New Song" />
+        <DialogContent>
+          <StackLayout gap={2}>
+            <FormField>
+              <FormFieldLabel>Title *</FormFieldLabel>
+              <Input value={newTitle} onChange={(e) => setNewTitle((e.target as HTMLInputElement).value)} placeholder="Song title" />
+            </FormField>
+            <FormField>
+              <FormFieldLabel>Artist *</FormFieldLabel>
+              <Input value={newArtist} onChange={(e) => setNewArtist((e.target as HTMLInputElement).value)} placeholder="Artist name" />
+            </FormField>
+            <FormField>
+              <FormFieldLabel>Album</FormFieldLabel>
+              <Input value={newAlbum} onChange={(e) => setNewAlbum((e.target as HTMLInputElement).value)} placeholder="Album (optional)" />
+            </FormField>
+            <FormField>
+              <FormFieldLabel>Genre</FormFieldLabel>
+              <select
+                value={newGenre}
+                onChange={(e) => setNewGenre(e.target.value)}
+                className={styles.genreSelect}
+              >
+                {GENRES.filter(Boolean).map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </FormField>
+            <FormField>
+              <FormFieldLabel>Album Cover</FormFieldLabel>
+              <FlexLayout gap={1} align="center">
+                {newCoverUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={newCoverUrl} alt="cover" className={styles.coverPreview} />
+                )}
+                <Button variant="secondary" onClick={() => coverRef.current?.click()} loading={uploadingCover}>
+                  {newCoverUrl ? 'Change Image' : 'Upload Image'}
+                </Button>
+                <input ref={coverRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleCoverUpload} />
+              </FlexLayout>
+            </FormField>
+          </StackLayout>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleAddSong} loading={addingSong} disabled={!newTitle.trim() || !newArtist.trim()}>
+            Add Song
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
