@@ -29,8 +29,8 @@ export default function Navigation() {
     <nav className={styles.nav}>
       <div className={styles.inner}>
         <Link href="/feed" className={styles.logo}>
-          <span className={styles.logoIcon}>♪</span>
-          <Text styleAs="h3" className={styles.logoText}>Sonora</Text>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/sonora-logo.PNG" alt="Sonora" className={styles.logoImg} />
         </Link>
 
         <FlexLayout gap={1} className={styles.links}>

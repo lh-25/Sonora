@@ -33,11 +33,9 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <StackLayout gap={3} align="center">
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>♪</span>
-            <H1 className={styles.logoText}>Sonora</H1>
-          </div>
+        <StackLayout gap={2} align="center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/sonora-logo.PNG" alt="Sonora" className={styles.logoImg} />
           <Text styleAs="h4" className={styles.subtitle}>Sign in to your account</Text>
         </StackLayout>
 
