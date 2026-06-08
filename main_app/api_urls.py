@@ -43,4 +43,6 @@ urlpatterns = [
     path('spotify/playlists/', api_views.spotify_user_playlists, name='spotify-user-playlists'),
     path('spotify/import/', api_views.spotify_import_playlist, name='spotify-import-playlist'),
     path('spotify/tracks/<str:track_id>/', api_views.spotify_track_detail, name='spotify-track-detail'),
+    path('spotify/web-callback/', api_views.spotify_web_callback, name='spotify-web-callback'),
+    path('spotify/web-auth-url/', api_views.spotify_web_auth_url, name='spotify-web-auth-url'),
 ]
