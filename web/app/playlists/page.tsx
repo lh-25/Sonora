@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import {
   Button, Text, H1, H2, H3, StackLayout, FlexLayout, Spinner,
   Dialog, DialogHeader, DialogContent, DialogActions,
-  FormField, FormFieldLabel, Input, Textarea, RadioButton, RadioButtonGroup,
+  FormField, FormFieldLabel, Input, MultilineInput, RadioButton, RadioButtonGroup,
   ToggleButton, ToggleButtonGroup,
 } from '@salt-ds/core';
 import {
@@ -153,7 +153,7 @@ export default function PlaylistsPage() {
             </FormField>
             <FormField>
               <FormFieldLabel>Description</FormFieldLabel>
-              <Textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} rows={3} />
+              <MultilineInput value={newDesc} onChange={(e) => setNewDesc(e.target.value)} rows={3} />
             </FormField>
             <FormField>
               <FormFieldLabel>Visibility</FormFieldLabel>
