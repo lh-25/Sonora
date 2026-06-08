@@ -21,23 +21,14 @@ export default function ProfilePage() {
       .finally(() => setLoadingSpotify(false));
   }, []);
 
-  const handleSpotifyConnect = () => {
-    const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
-    if (!clientId) {
-      alert('Spotify Client ID not configured. Set NEXT_PUBLIC_SPOTIFY_CLIENT_ID in .env.local');
-      return;
+  const handleSpotifyConnect = async () => {
+    try {
+      const { request } = await import('@/services/api');
+      const data = await request<{ url: string }>('/spotify/web-auth-url/');
+      window.location.href = data.url;
+    } catch {
+      alert('Could not start Spotify connection. Make sure the backend is running.');
     }
-    const redirectUri = `${window.location.origin}/spotify-callback`;
-    const scopes = [
-      'user-read-private', 'user-read-email',
-      'playlist-read-private', 'playlist-read-collaborative',
-    ].join(' ');
-    const url = new URL('https://accounts.spotify.com/authorize');
-    url.searchParams.set('client_id', clientId);
-    url.searchParams.set('response_type', 'code');
-    url.searchParams.set('redirect_uri', redirectUri);
-    url.searchParams.set('scope', scopes);
-    window.location.href = url.toString();
   };
 
   const handleDisconnect = async () => {
