@@ -1,4 +1,6 @@
 import os
+import uuid
+import boto3
 import requests
 import urllib.parse
 from datetime import timedelta
@@ -292,7 +294,7 @@ def api_profiles(request):
     return paginator.get_paginated_response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def api_profile_detail(request, user_id):
     try:
@@ -300,6 +302,16 @@ def api_profile_detail(request, user_id):
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     profile = user.profile
+
+    if request.method == 'PATCH':
+        if request.user.id != user_id:
+            return Response({'error': 'Cannot edit another user\'s profile'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     is_following = request.user.profile in profile.followers.all()
     return Response({
         **ProfileSerializer(profile).data,
@@ -697,3 +709,31 @@ def spotify_track_detail(request, track_id):
     if resp.ok:
         return Response(resp.json())
     return Response({'error': 'Track not found'}, status=resp.status_code)
+
+
+# ─── Image Upload ─────────────────────────────────────────────────────────────
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_upload_image(request):
+    """Upload an image to S3 and return the URL. Field name: 'image'. Optional: 'folder' (profile_pictures|album_covers|playlist_covers)."""
+    image = request.FILES.get('image')
+    if not image:
+        return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    bucket = os.environ.get('S3_BUCKET')
+    base_url = os.environ.get('S3_BASE_URL', 'https://s3.amazonaws.com/')
+    if not bucket:
+        return Response({'error': 'S3 not configured'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    folder = request.data.get('folder', 'uploads')
+    ext = image.name[image.name.rfind('.'):] if '.' in image.name else ''
+    key = f"{folder}/{uuid.uuid4().hex}{ext}"
+
+    try:
+        s3 = boto3.client('s3')
+        s3.upload_fileobj(image, bucket, key, ExtraArgs={'ContentType': image.content_type})
+        url = f"{base_url}{bucket}/{key}"
+        return Response({'url': url})
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
