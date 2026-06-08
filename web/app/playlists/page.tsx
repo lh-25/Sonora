@@ -99,7 +99,7 @@ export default function PlaylistsPage() {
 
         <ToggleButtonGroup
           value={filter}
-          onChange={(val) => setFilter(val as 'public' | 'mine')}
+          onChange={(e: React.SyntheticEvent<HTMLButtonElement>) => setFilter(e.currentTarget.value as 'public' | 'mine')}
           className={styles.filterGroup}
         >
           <ToggleButton value="public">Public</ToggleButton>
@@ -129,7 +129,7 @@ export default function PlaylistsPage() {
                 )}
                 <div className={styles.plInfo}>
                   <Text styleAs="label" className={styles.plName}>{pl.name}</Text>
-                  <Text styleAs="help" className={styles.plMeta}>
+                  <Text styleAs="notation" className={styles.plMeta}>
                     {pl.song_count} songs · {pl.user.username}
                   </Text>
                   <span className="sonora-tag" style={{ marginTop: 4, display: 'inline-flex' }}>
@@ -149,11 +149,11 @@ export default function PlaylistsPage() {
           <StackLayout gap={2}>
             <FormField>
               <FormFieldLabel>Name *</FormFieldLabel>
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Playlist name" />
+              <Input value={newName} onChange={(e) => setNewName((e.target as HTMLInputElement).value)} placeholder="Playlist name" />
             </FormField>
             <FormField>
               <FormFieldLabel>Description</FormFieldLabel>
-              <MultilineInput value={newDesc} onChange={(e) => setNewDesc(e.target.value)} rows={3} />
+              <MultilineInput value={newDesc} onChange={(e) => setNewDesc((e.target as HTMLTextAreaElement).value)} rows={3} />
             </FormField>
             <FormField>
               <FormFieldLabel>Visibility</FormFieldLabel>
@@ -180,13 +180,13 @@ export default function PlaylistsPage() {
         <DialogContent>
           <StackLayout gap={1} className={styles.importList}>
             {spotifyPls.length === 0 && (
-              <Text styleAs="help">No Spotify playlists found.</Text>
+              <Text styleAs="notation">No Spotify playlists found.</Text>
             )}
             {spotifyPls.map((pl: any) => (
               <FlexLayout key={pl.id} justify="space-between" align="center" className={styles.importRow}>
                 <div>
                   <Text styleAs="label" className={styles.importName}>{pl.name}</Text>
-                  <Text styleAs="help" className={styles.importMeta}>{pl.tracks?.total} tracks</Text>
+                  <Text styleAs="notation" className={styles.importMeta}>{pl.tracks?.total} tracks</Text>
                 </div>
                 <Button
                   variant="secondary"

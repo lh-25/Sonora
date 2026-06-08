@@ -24,7 +24,7 @@ export default function MusicPlayer() {
 
         <div className={styles.info}>
           <Text styleAs="label" className={styles.title}>{currentSong.title}</Text>
-          <Text styleAs="help" className={styles.artist}>{currentSong.artist}</Text>
+          <Text styleAs="notation" className={styles.artist}>{currentSong.artist}</Text>
         </div>
 
         <FlexLayout gap={1} align="center">
@@ -51,7 +51,7 @@ export default function MusicPlayer() {
       </div>
 
       {!currentSong.preview_url && (
-        <Text styleAs="help" className={styles.noPreview}>
+        <Text styleAs="notation" className={styles.noPreview}>
           No preview — open in Spotify for full playback
         </Text>
       )}
