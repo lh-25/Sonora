@@ -1,0 +1,60 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 16px;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  justify-content: center;
+}
+
+.logoIcon {
+  font-size: 28px;
+  color: var(--sonora-green);
+}
+
+.logoText {
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--sonora-green) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+.error {
+  color: #e74c3c !important;
+}
+
+.footerText {
+  color: #666 !important;
+}
+
+.link {
+  color: var(--sonora-green);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
