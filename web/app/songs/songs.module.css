@@ -1,0 +1,205 @@
+.page {
+  padding: 32px 0 120px;
+}
+
+.title {
+  color: #fff !important;
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 480px;
+}
+
+.genres {
+  gap: 8px;
+}
+
+.pill {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pillActive {
+  background: var(--sonora-green) !important;
+  color: #000 !important;
+  border-color: var(--sonora-green) !important;
+}
+
+/* Spotify panel */
+.spotifyPanel {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spotifyLabel {
+  color: var(--sonora-green) !important;
+  font-weight: 700 !important;
+}
+
+.spotifyInput {
+  flex: 1;
+}
+
+.spotifyResults {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  border-top: 1px solid var(--sonora-border);
+  margin-top: 8px;
+}
+
+.spotifyTrack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sonora-border);
+}
+
+.spotifyArt {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.spotifyInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.spotifyName {
+  color: #fff !important;
+  font-weight: 600 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.spotifyArtist {
+  color: #888 !important;
+}
+
+/* Song grid */
+.spinner {
+  margin-top: 80px;
+}
+
+.empty {
+  margin-top: 60px;
+  color: #666;
+}
+
+.songGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.songCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 10px;
+  transition: border-color 0.15s;
+}
+.songCard:hover {
+  border-color: #444;
+}
+
+.songArt {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.songArtPlaceholder {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: var(--sonora-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+.songInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.songTitle {
+  color: #fff !important;
+  font-weight: 600 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.songArtist {
+  color: #888 !important;
+  display: block;
+  margin-top: 2px;
+}
+
+.songMeta {
+  margin-top: 4px;
+  gap: 8px;
+}
+
+.duration {
+  color: #555 !important;
+}
+
+.songId {
+  color: #444 !important;
+  font-size: 11px;
+}
+
+.songActions {
+  flex-shrink: 0;
+}
+
+.spotifyDot {
+  color: var(--sonora-green);
+  font-size: 10px;
+  title: 'Linked to Spotify';
+}
+
+.playBtn {
+  min-width: 40px !important;
+  background: var(--sonora-green) !important;
+  color: #000 !important;
+}
+
+.loadMore {
+  margin-top: 20px;
+}

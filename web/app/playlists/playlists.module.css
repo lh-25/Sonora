@@ -1,0 +1,103 @@
+.page {
+  padding: 32px 0 120px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  color: #fff !important;
+}
+
+.filterGroup {
+  margin-bottom: 24px;
+}
+
+.spinner {
+  margin-top: 80px;
+}
+
+.empty {
+  margin-top: 60px;
+  gap: 16px;
+  color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.plCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.plCard:hover {
+  border-color: #444;
+  transform: translateY(-2px);
+}
+
+.plCover {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.plCoverPlaceholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--sonora-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #444;
+}
+
+.plInfo {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plName {
+  color: #fff !important;
+  font-weight: 600 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.plMeta {
+  color: #666 !important;
+}
+
+/* Import dialog */
+.importList {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.importRow {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sonora-border);
+}
+
+.importName {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.importMeta {
+  color: #888 !important;
+}
