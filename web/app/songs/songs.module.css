@@ -2,9 +2,38 @@
   padding: 32px 0 120px;
 }
 
+.header {
+  margin-bottom: 24px;
+}
+
 .title {
   color: #fff !important;
-  margin-bottom: 24px;
+  margin-bottom: 0;
+}
+
+.addBtn {
+  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  white-space: nowrap;
+}
+
+.coverPreview {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.genreSelect {
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
 }
 
 .filters {
