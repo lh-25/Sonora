@@ -19,25 +19,18 @@
   gap: 24px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
+.logoImg {
+  height: 80px;
+  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.6));
+  transition: filter 0.3s ease;
 }
 
-.logoIcon {
-  font-size: 32px;
-  color: var(--sonora-green);
-}
-
-.logoText {
-  color: #fff !important;
-  font-weight: 800 !important;
+.logoImg:hover {
+  filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.9));
 }
 
 .subtitle {
-  color: #888 !important;
+  color: #b3b3b3 !important;
 }
 
 .form {
@@ -47,9 +40,17 @@
 .submitBtn {
   width: 100%;
   margin-top: 8px;
-  background: var(--sonora-green) !important;
-  color: #000 !important;
+  background: linear-gradient(90deg, #ff4040, #ff7b40) !important;
+  color: #fff !important;
   font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 64, 64, 0.5) !important;
 }
 
 .error {

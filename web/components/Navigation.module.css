@@ -2,16 +2,15 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--sonora-border);
+  background: linear-gradient(90deg, #141414, #1f1f1f);
+  border-bottom: 1px solid #333;
 }
 
 .inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
+  padding: 0 40px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21,21 +20,19 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
   text-decoration: none;
-  color: inherit;
   flex-shrink: 0;
 }
 
-.logoIcon {
-  font-size: 22px;
-  color: var(--sonora-green);
+.logoImg {
+  height: 56px;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
 }
 
-.logoText {
-  color: #fff !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.5px;
+.logoImg:hover {
+  transform: scale(1.1) rotate(-3deg);
+  filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.8));
 }
 
 .links {
@@ -44,27 +41,38 @@
 }
 
 .link {
-  color: #888;
+  color: #e0e0e0;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 1.05rem;
   font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.15s;
+  padding: 6px 14px;
+  position: relative;
+  transition: color 0.3s ease;
 }
 
-.link:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  transition: width 0.3s ease;
 }
 
+.link:hover::after,
+.linkActive::after {
+  width: 100%;
+}
+
+.link:hover,
 .linkActive {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: #00d4ff;
 }
 
 .username {
-  color: #666 !important;
+  color: #b3b3b3 !important;
   font-size: 13px;
 }
 
