@@ -41,7 +41,7 @@ export default function SpotifyCallbackPage() {
   }, []);
 
   return (
-    <StackLayout align="center" justify="center" style={{ height: '100vh', gap: 16 }}>
+    <StackLayout align="center" style={{ height: '100vh', gap: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       {status === 'loading' && (
         <>
           <Spinner size="large" />
