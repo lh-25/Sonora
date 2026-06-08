@@ -305,3 +305,34 @@ export async function importSpotifyPlaylist(spotifyPlaylistId: string, name?: st
     { method: 'POST', body: JSON.stringify({ spotify_playlist_id: spotifyPlaylistId, name }) },
   );
 }
+
+// ─── Songs CRUD ───────────────────────────────────────────────────────────────
+
+export async function createSong(data: {
+  title: string; artist: string; album?: string; genre: string;
+  release_date?: string; duration?: string; album_cover?: string;
+}) {
+  return request<Song>('/songs/', { method: 'POST', body: JSON.stringify(data) });
+}
+
+// ─── Profile update ───────────────────────────────────────────────────────────
+
+export async function updateProfile(userId: number, data: { bio?: string; profile_picture?: string }) {
+  return request<Profile>(`/profiles/${userId}/`, { method: 'PATCH', body: JSON.stringify(data) });
+}
+
+// ─── Image upload ─────────────────────────────────────────────────────────────
+
+export async function uploadImage(file: File, folder = 'uploads'): Promise<{ url: string }> {
+  const token = getAccessToken();
+  const form = new FormData();
+  form.append('image', file);
+  form.append('folder', folder);
+  const resp = await fetch(`${API_BASE}/upload/image/`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
+  if (!resp.ok) throw new Error(await resp.text());
+  return resp.json();
+}
