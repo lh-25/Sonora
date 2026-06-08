@@ -65,7 +65,7 @@ export default function ProfilePage() {
 
           <div className={styles.profileInfo}>
             <H2 className={styles.username}>@{user.username}</H2>
-            {user.email && <Text styleAs="help" className={styles.email}>{user.email}</Text>}
+            {user.email && <Text styleAs="notation" className={styles.email}>{user.email}</Text>}
             {profile.bio && <Text className={styles.bio}>{profile.bio}</Text>}
           </div>
         </div>
@@ -74,11 +74,11 @@ export default function ProfilePage() {
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <Text className={styles.statValue}>{profile.total_followers}</Text>
-            <Text styleAs="help" className={styles.statLabel}>Followers</Text>
+            <Text styleAs="notation" className={styles.statLabel}>Followers</Text>
           </div>
           <div className={styles.statCard}>
             <Text className={styles.statValue}>{profile.total_following}</Text>
-            <Text styleAs="help" className={styles.statLabel}>Following</Text>
+            <Text styleAs="notation" className={styles.statLabel}>Following</Text>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function ProfilePage() {
               <FlexLayout gap={1} align="center">
                 <Text className={styles.connectedText}>✓ Spotify connected</Text>
               </FlexLayout>
-              <Text styleAs="help" className={styles.hint}>
+              <Text styleAs="notation" className={styles.hint}>
                 You can now import Spotify playlists and link songs to Spotify tracks.
               </Text>
               <Button variant="secondary" onClick={handleDisconnect} className={styles.disconnectBtn}>
@@ -101,7 +101,7 @@ export default function ProfilePage() {
             </StackLayout>
           ) : (
             <StackLayout gap={2}>
-              <Text styleAs="help" className={styles.hint}>
+              <Text styleAs="notation" className={styles.hint}>
                 Connect Spotify to import playlists, link songs, and play 30-second previews.
               </Text>
               <Button variant="primary" onClick={handleSpotifyConnect} className={styles.spotifyBtn}>
