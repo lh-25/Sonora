@@ -52,7 +52,7 @@ export default function FeedPage() {
           <H1 className={styles.title}>Song of the Day</H1>
           <ToggleButtonGroup
             value={filter}
-            onChange={(val) => setFilter(val as 'all' | 'mine')}
+            onChange={(e: React.SyntheticEvent<HTMLButtonElement>) => setFilter(e.currentTarget.value as 'all' | 'mine')}
           >
             <ToggleButton value="all">All Posts</ToggleButton>
             <ToggleButton value="mine">My Posts</ToggleButton>
@@ -67,7 +67,7 @@ export default function FeedPage() {
           <StackLayout align="center" className={styles.empty}>
             <Text styleAs="h2">♪</Text>
             <H3>No posts yet</H3>
-            <Text styleAs="help">Be the first to share your Song of the Day!</Text>
+            <Text styleAs="notation">Be the first to share your Song of the Day!</Text>
           </StackLayout>
         ) : (
           <StackLayout gap={3} className={styles.feed}>
@@ -113,7 +113,7 @@ function PostCard({
         )}
         <div className={styles.songInfo}>
           <Text styleAs="label" className={styles.songTitle}>{post.song.title}</Text>
-          <Text styleAs="help" className={styles.songArtist}>{post.song.artist}</Text>
+          <Text styleAs="notation" className={styles.songArtist}>{post.song.artist}</Text>
         </div>
         {(post.song.preview_url || post.song.spotify_track_id) && (
           <span className={styles.playIcon}>▶</span>
@@ -125,13 +125,13 @@ function PostCard({
 
       {post.standout_lyric && (
         <blockquote className={styles.lyric}>
-          <Text styleAs="body">"{post.standout_lyric}"</Text>
+          <Text>"{post.standout_lyric}"</Text>
         </blockquote>
       )}
 
       {/* Footer */}
       <FlexLayout justify="space-between" align="center" className={styles.postFooter}>
-        <Text styleAs="help" className={styles.postedBy}>by @{post.user.username}</Text>
+        <Text styleAs="notation" className={styles.postedBy}>by @{post.user.username}</Text>
         <FlexLayout gap={2} align="center">
           <Button
             variant={post.is_liked ? 'primary' : 'secondary'}
@@ -140,7 +140,7 @@ function PostCard({
           >
             ♥ {post.total_likes}
           </Button>
-          <Text styleAs="help" className={styles.commentCount}>
+          <Text styleAs="notation" className={styles.commentCount}>
             💬 {post.comment_count}
           </Text>
         </FlexLayout>
