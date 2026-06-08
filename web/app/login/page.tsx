@@ -47,25 +47,23 @@ export default function LoginPage() {
               <FormFieldLabel>Username</FormFieldLabel>
               <Input
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername((e.target as HTMLInputElement).value)}
                 placeholder="Enter your username"
-                autoComplete="username"
               />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Password</FormFieldLabel>
               <Input
-                type="password"
+                inputProps={{ type: 'password' }}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
                 placeholder="Enter your password"
-                autoComplete="current-password"
               />
             </FormField>
 
             {error && (
-              <Text styleAs="help" className={styles.error}>{error}</Text>
+              <Text styleAs="notation" className={styles.error}>{error}</Text>
             )}
 
             <Button type="submit" variant="primary" loading={loading} className={styles.submitBtn}>
@@ -75,7 +73,7 @@ export default function LoginPage() {
         </form>
 
         <FlexLayout justify="center" gap={1} className={styles.footer}>
-          <Text styleAs="help" className={styles.footerText}>Don&apos;t have an account?</Text>
+          <Text styleAs="notation" className={styles.footerText}>Don&apos;t have an account?</Text>
           <Link href="/signup" className={styles.link}>Sign up</Link>
         </FlexLayout>
       </div>

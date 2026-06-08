@@ -77,7 +77,7 @@ export default function SongsPage() {
         <div className={styles.filters}>
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
             placeholder="Search songs, artists, albums…"
             className={styles.searchInput}
           />
@@ -85,10 +85,9 @@ export default function SongsPage() {
             {GENRES.map((g) => (
               <Pill
                 key={g || 'all'}
-                label={g || 'All'}
                 onClick={() => setGenre(g)}
                 className={`${styles.pill} ${genre === g ? styles.pillActive : ''}`}
-              />
+              >{g || 'All'}</Pill>
             ))}
           </FlexLayout>
         </div>
@@ -99,7 +98,7 @@ export default function SongsPage() {
           <FlexLayout gap={1} align="center">
             <Input
               value={spotifyQuery}
-              onChange={(e) => setSpotifyQuery(e.target.value)}
+              onChange={(e) => setSpotifyQuery((e.target as HTMLInputElement).value)}
               placeholder="Find a track on Spotify…"
               onKeyDown={(e) => e.key === 'Enter' && handleSpotifySearch()}
               className={styles.spotifyInput}
@@ -119,7 +118,7 @@ export default function SongsPage() {
                   )}
                   <div className={styles.spotifyInfo}>
                     <Text styleAs="label" className={styles.spotifyName}>{track.name}</Text>
-                    <Text styleAs="help" className={styles.spotifyArtist}>
+                    <Text styleAs="notation" className={styles.spotifyArtist}>
                       {track.artists?.map((a: any) => a.name).join(', ')}
                     </Text>
                   </div>
@@ -196,11 +195,11 @@ function SongCard({ song, onPlay }: { song: Song; onPlay: (s: Song) => void }) {
       )}
       <div className={styles.songInfo}>
         <Text styleAs="label" className={styles.songTitle}>{song.title}</Text>
-        <Text styleAs="help" className={styles.songArtist}>{song.artist}</Text>
+        <Text styleAs="notation" className={styles.songArtist}>{song.artist}</Text>
         <FlexLayout gap={1} align="center" className={styles.songMeta}>
           <span className="sonora-tag">{song.genre}</span>
-          <Text styleAs="help" className={styles.duration}>{song.formatted_duration}</Text>
-          {song.id > 0 && <Text styleAs="help" className={styles.songId}>ID: {song.id}</Text>}
+          <Text styleAs="notation" className={styles.duration}>{song.formatted_duration}</Text>
+          {song.id > 0 && <Text styleAs="notation" className={styles.songId}>ID: {song.id}</Text>}
         </FlexLayout>
       </div>
       <FlexLayout gap={1} align="center" className={styles.songActions}>
