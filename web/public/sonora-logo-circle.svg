@@ -19,8 +19,8 @@
     </clipPath>
   </defs>
 
-  <!-- Dark circle — transparent outside -->
-  <circle cx="100" cy="96" r="90" fill="#0d0d0d" stroke="#222" stroke-width="1.5"/>
+  <!-- Transparent background — no fill -->
+  <circle cx="100" cy="96" r="90" fill="none"/>
 
   <g clip-path="url(#circleClip)">
 
@@ -54,7 +54,7 @@
           filter="url(#clefGlow)">𝄞</text>
 
     <!-- SONORA wordmark -->
-    <text x="100" y="158" font-size="11" text-anchor="middle"
+    <text x="100" y="140" font-size="11" text-anchor="middle"
           fill="#dddddd" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
           letter-spacing="7" font-weight="700">SONORA</text>
   </g>
