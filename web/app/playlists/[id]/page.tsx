@@ -56,7 +56,7 @@ export default function PlaylistDetailPage() {
           )}
           <div className={styles.headerInfo}>
             <H1 className={styles.name}>{playlist.name}</H1>
-            <Text styleAs="help" className={styles.meta}>
+            <Text styleAs="notation" className={styles.meta}>
               {playlist.visibility} · by {playlist.user.username} · {playlist.songs.length} songs
             </Text>
             {playlist.description && (
@@ -80,7 +80,7 @@ export default function PlaylistDetailPage() {
           <StackLayout gap={1} className={styles.songList}>
             {playlist.songs.map((song, i) => (
               <div key={song.id} className={styles.songRow}>
-                <Text styleAs="help" className={styles.songIndex}>{i + 1}</Text>
+                <Text styleAs="notation" className={styles.songIndex}>{i + 1}</Text>
                 {song.album_cover ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={song.album_cover} alt={song.title} className={styles.songArt} />
@@ -89,9 +89,9 @@ export default function PlaylistDetailPage() {
                 )}
                 <div className={styles.songInfo}>
                   <Text styleAs="label" className={styles.songTitle}>{song.title}</Text>
-                  <Text styleAs="help" className={styles.songArtist}>{song.artist}</Text>
+                  <Text styleAs="notation" className={styles.songArtist}>{song.artist}</Text>
                 </div>
-                <Text styleAs="help" className={styles.songDuration}>{song.formatted_duration}</Text>
+                <Text styleAs="notation" className={styles.songDuration}>{song.formatted_duration}</Text>
                 <FlexLayout gap={1} align="center">
                   <Button variant="primary" onClick={() => play(song)} className={styles.playBtn}>
                     {song.preview_url ? '▶' : '♫'}
