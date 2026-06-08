@@ -304,3 +304,31 @@ export async function importSpotifyPlaylist(spotifyPlaylistId: string, name?: st
     },
   );
 }
+
+export async function updateProfile(userId: number, data: { bio?: string; profile_picture?: string }) {
+  return request<any>(`/profiles/${userId}/`, { method: 'PATCH', body: JSON.stringify(data) });
+}
+
+export async function createSong(data: {
+  title: string; artist: string; album?: string; genre: string; album_cover?: string;
+}) {
+  return request<any>('/songs/', { method: 'POST', body: JSON.stringify(data) });
+}
+
+export async function uploadImage(uri: string, folder = 'uploads', mimeType = 'image/jpeg'): Promise<{ url: string }> {
+  const token = await getAccessToken();
+  const form = new FormData();
+  const filename = uri.split('/').pop() ?? 'photo.jpg';
+  (form as any).append('image', { uri, name: filename, type: mimeType });
+  (form as any).append('folder', folder);
+  const resp = await fetch(`${API_BASE}/upload/image/`, {
+    method: 'POST',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Content-Type': 'multipart/form-data',
+    },
+    body: form,
+  });
+  if (!resp.ok) throw new Error(await resp.text());
+  return resp.json();
+}
