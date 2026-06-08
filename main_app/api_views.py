@@ -588,6 +588,101 @@ def spotify_import_playlist(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
+def spotify_web_callback(request):
+    """
+    Handles the Spotify OAuth redirect for the web app.
+    Spotify redirects here with ?code=... after user authorization.
+    We exchange the code, store the token (if user is authenticated via JWT
+    in the session cookie), then redirect back to the frontend.
+    """
+    from django.shortcuts import redirect as django_redirect
+    from rest_framework_simplejwt.authentication import JWTAuthentication
+
+    code = request.query_params.get('code')
+    error = request.query_params.get('error')
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
+    if error or not code:
+        return django_redirect(f'{frontend_url}/profile?spotify=error')
+
+    # Try to identify the user from the JWT passed in state param
+    state = request.query_params.get('state', '')
+    user = None
+    if state:
+        try:
+            from rest_framework_simplejwt.tokens import AccessToken
+            token_obj = AccessToken(state)
+            from django.contrib.auth.models import User as DjangoUser
+            user = DjangoUser.objects.get(id=token_obj['user_id'])
+        except Exception:
+            pass
+
+    if not user:
+        return django_redirect(f'{frontend_url}/profile?spotify=error&reason=unauthenticated')
+
+    redirect_uri = os.environ.get('SPOTIFY_WEB_REDIRECT_URI',
+                                  f'{request.scheme}://{request.get_host()}/api/spotify/web-callback/')
+    client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
+    client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
+
+    resp = requests.post(
+        'https://accounts.spotify.com/api/token',
+        data={
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': redirect_uri,
+        },
+        auth=(client_id, client_secret),
+        timeout=10,
+    )
+
+    if not resp.ok:
+        return django_redirect(f'{frontend_url}/profile?spotify=error')
+
+    data = resp.json()
+    expires_at = timezone.now() + timedelta(seconds=data.get('expires_in', 3600))
+    SpotifyToken.objects.update_or_create(
+        user=user,
+        defaults={
+            'access_token': data['access_token'],
+            'refresh_token': data.get('refresh_token', ''),
+            'expires_at': expires_at,
+            'scope': data.get('scope', ''),
+        },
+    )
+    return django_redirect(f'{frontend_url}/profile?spotify=connected')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def spotify_web_auth_url(request):
+    """Return the Spotify OAuth URL for the web app, using the backend redirect URI."""
+    client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
+    redirect_uri = os.environ.get(
+        'SPOTIFY_WEB_REDIRECT_URI',
+        f'{request.scheme}://{request.get_host()}/api/spotify/web-callback/',
+    )
+    scopes = ' '.join([
+        'user-read-private', 'user-read-email',
+        'playlist-read-private', 'playlist-read-collaborative',
+    ])
+    # Pass the user's JWT access token as state so we can identify them on callback
+    from rest_framework_simplejwt.tokens import AccessToken
+    state = str(AccessToken.for_user(request.user))
+
+    params = {
+        'client_id': client_id,
+        'response_type': 'code',
+        'redirect_uri': redirect_uri,
+        'scope': scopes,
+        'state': state,
+    }
+    url = 'https://accounts.spotify.com/authorize?' + urllib.parse.urlencode(params)
+    return Response({'url': url, 'redirect_uri': redirect_uri})
+
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def spotify_track_detail(request, track_id):
     """Fetch a single Spotify track's details."""
