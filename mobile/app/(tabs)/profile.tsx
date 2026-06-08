@@ -5,13 +5,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  spotifyStatus, spotifyDisconnect,
+  spotifyStatus, spotifyDisconnect, uploadImage, updateProfile, spotifyExchangeToken,
 } from '@/services/api';
 import { useSpotifyAuth } from '@/services/spotify';
-import { spotifyExchangeToken } from '@/services/api';
 
 export default function ProfileScreen() {
   const { user, profile, logout, refreshProfile } = useAuth();
@@ -19,12 +20,20 @@ export default function ProfileScreen() {
 
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const [loadingSpotify, setLoadingSpotify] = useState(false);
+  const [uploadingPic, setUploadingPic] = useState(false);
 
   useEffect(() => {
     spotifyStatus().then((s) => setSpotifyConnected(s.connected)).catch(() => {});
   }, []);
 
   const handleConnectSpotify = async () => {
+    if (!user) {
+      Alert.alert('Sign in required', 'Please log in to connect Spotify.', [
+        { text: 'Log In', onPress: () => router.push('/login') },
+        { text: 'Cancel', style: 'cancel' },
+      ]);
+      return;
+    }
     setLoadingSpotify(true);
     try {
       const result = await authorize();
@@ -36,6 +45,32 @@ export default function ProfileScreen() {
       Alert.alert('Error', 'Could not connect Spotify. Check your credentials.');
     } finally {
       setLoadingSpotify(false);
+    }
+  };
+
+  const handleChangePicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow photo access to change your profile picture.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (result.canceled || !result.assets?.[0]) return;
+    const asset = result.assets[0];
+    setUploadingPic(true);
+    try {
+      const { url } = await uploadImage(asset.uri, 'profile_pictures', asset.mimeType ?? 'image/jpeg');
+      await updateProfile(user!.id, { profile_picture: url });
+      await refreshProfile();
+    } catch {
+      Alert.alert('Error', 'Could not upload photo. Try again.');
+    } finally {
+      setUploadingPic(false);
     }
   };
 
@@ -69,13 +104,20 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Profile header */}
         <View style={styles.profileHeader}>
-          {profile.profile_picture ? (
-            <Image source={{ uri: profile.profile_picture }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatar, styles.avatarPlaceholder]}>
-              <Ionicons name="person" size={40} color={Colors.textMuted} />
+          <TouchableOpacity onPress={handleChangePicture} style={styles.avatarWrapper}>
+            {profile.profile_picture ? (
+              <Image source={{ uri: profile.profile_picture }} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, styles.avatarPlaceholder]}>
+                <Ionicons name="person" size={40} color={Colors.textMuted} />
+              </View>
+            )}
+            <View style={styles.avatarCameraBtn}>
+              {uploadingPic
+                ? <ActivityIndicator size="small" color="#000" />
+                : <Ionicons name="camera" size={14} color="#000" />}
             </View>
-          )}
+          </TouchableOpacity>
           <Text style={styles.username}>{user.username}</Text>
           {user.email ? <Text style={styles.email}>{user.email}</Text> : null}
           {profile.bio ? <Text style={styles.bio}>{profile.bio}</Text> : null}
@@ -148,10 +190,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   scroll: { padding: 20, paddingTop: 10 },
   profileHeader: { alignItems: 'center', marginBottom: 24 },
-  avatar: { width: 90, height: 90, borderRadius: 45, marginBottom: 12 },
+  avatarWrapper: { position: 'relative', marginBottom: 12 },
+  avatar: { width: 90, height: 90, borderRadius: 45 },
   avatarPlaceholder: {
     backgroundColor: Colors.surfaceAlt,
     alignItems: 'center', justifyContent: 'center',
+  },
+  avatarCameraBtn: {
+    position: 'absolute', bottom: 0, right: 0,
+    width: 26, height: 26, borderRadius: 13,
+    backgroundColor: Colors.primary,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: Colors.background,
   },
   username: { color: Colors.text, fontSize: 22, fontWeight: '800' },
   email: { color: Colors.textMuted, fontSize: 13, marginTop: 4 },

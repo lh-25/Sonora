@@ -10,6 +10,7 @@ import { Colors } from '@/constants/colors';
 import SongCard from '@/components/SongCard';
 import SpotifySearchModal from '@/components/SpotifySearchModal';
 import { getSongs, linkSpotifyTrack, type Song } from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import type { SpotifyTrack } from '@/services/spotify';
 import { usePlayer } from '@/contexts/PlayerContext';
 
@@ -18,6 +19,7 @@ const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY',
 export default function SongsScreen() {
   const router = useRouter();
   const { play } = usePlayer();
+  const { user } = useAuth();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -80,7 +82,17 @@ export default function SongsScreen() {
         <Text style={styles.headerTitle}>Songs</Text>
         <TouchableOpacity
           style={styles.spotifySearchBtn}
-          onPress={() => { setPendingLinkSong(null); setSpotifyOpen(true); }}
+          onPress={() => {
+            if (!user) {
+              Alert.alert('Sign in required', 'Please log in to search Spotify.', [
+                { text: 'Log In', onPress: () => router.push('/login') },
+                { text: 'Cancel', style: 'cancel' },
+              ]);
+              return;
+            }
+            setPendingLinkSong(null);
+            setSpotifyOpen(true);
+          }}
         >
           <Ionicons name="search" size={16} color={Colors.primary} />
           <Text style={styles.spotifySearchText}>Spotify</Text>

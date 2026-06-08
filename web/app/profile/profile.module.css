@@ -139,3 +139,48 @@
   color: #e74c3c !important;
   border-color: #e74c3c !important;
 }
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarUploadBtn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--sonora-cyan);
+  border: 2px solid var(--sonora-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.editLink {
+  background: none;
+  border: none;
+  color: var(--sonora-cyan);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+  margin-top: 4px;
+  text-align: left;
+}
+.editLink:hover { text-decoration: underline; }
+
+.noBio { color: #555; font-style: italic; }
+
+.editCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+  max-width: 560px;
+}
