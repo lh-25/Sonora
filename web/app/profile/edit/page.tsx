@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Text, H1, FlexLayout } from '@salt-ds/core';
-import { updateProfile } from '@/services/api';
+import { updateProfileMultipart } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './edit.module.css';
 
@@ -43,7 +43,7 @@ export default function EditProfilePage() {
         formData.append('profile_picture', pictureFile);
       }
 
-      await updateProfile(formData);
+      await updateProfileMultipart(formData);
 
       if (refreshProfile) {
         await refreshProfile();
