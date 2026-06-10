@@ -1,0 +1,247 @@
+.page {
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
+}
+
+.title {
+  color: var(--sonora-cyan) !important;
+  font-weight: 800 !important;
+  margin-bottom: 28px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sonora-cyan);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+.backLink:hover {
+  color: var(--sonora-magenta);
+}
+
+.formCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: var(--sonora-cyan) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.input {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.select {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.select:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.textarea {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.textarea:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.fileInput {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.fileInput:focus {
+  outline: none;
+  border-color: var(--sonora-cyan);
+}
+
+.fileHint {
+  color: var(--sonora-text-muted) !important;
+  font-size: 12px !important;
+}
+
+.imagePreview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+/* Selected song preview */
+.selectedSong {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--sonora-surface-alt);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.songArt {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.songName {
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.songArtist {
+  color: var(--sonora-text-muted) !important;
+  font-size: 13px !important;
+}
+
+/* Song search results */
+.searchResults {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  background: #141414;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--sonora-border);
+  cursor: pointer;
+  transition: background 0.15s;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  width: 100%;
+}
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+.searchResultItem:hover {
+  background: rgba(0, 212, 255, 0.07);
+}
+
+.searchArt {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.searchTitle {
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: block;
+}
+
+.searchArtist {
+  color: var(--sonora-text-muted) !important;
+  font-size: 12px !important;
+}
+
+.error {
+  color: #ff4040 !important;
+  font-size: 13px !important;
+}
+
+.actions {
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.submitBtn {
+  background: linear-gradient(90deg, #ff4040, #ff7b40) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 10px 28px !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.submitBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(255, 64, 64, 0.4) !important;
+}
+
+.cancelBtn {
+  color: var(--sonora-text-muted) !important;
+  border-radius: 25px !important;
+}

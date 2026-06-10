@@ -1,5 +1,7 @@
 .page {
-  padding: 32px 0 120px;
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
 }
 
 .header {
@@ -7,8 +9,9 @@
 }
 
 .title {
-  color: #fff !important;
-  margin-bottom: 0;
+  color: var(--sonora-cyan) !important;
+  font-weight: 800 !important;
+  margin-bottom: 24px;
 }
 
 .addBtn {
@@ -55,12 +58,16 @@
 .pill {
   cursor: pointer;
   transition: all 0.15s;
+  border-radius: 20px !important;
+  border-color: var(--sonora-border) !important;
+  color: var(--sonora-text-muted) !important;
 }
 
 .pillActive {
-  background: var(--sonora-green) !important;
-  color: #000 !important;
-  border-color: var(--sonora-green) !important;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  font-weight: 600 !important;
 }
 
 /* Spotify panel */
@@ -70,13 +77,14 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 28px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .spotifyLabel {
-  color: var(--sonora-green) !important;
+  color: var(--sonora-cyan) !important;
   font-weight: 700 !important;
 }
 
@@ -125,7 +133,7 @@
 }
 
 .spotifyArtist {
-  color: #888 !important;
+  color: var(--sonora-text-muted) !important;
 }
 
 /* Song grid */
@@ -135,7 +143,7 @@
 
 .empty {
   margin-top: 60px;
-  color: #666;
+  color: var(--sonora-text-muted);
 }
 
 .songGrid {
@@ -152,10 +160,15 @@
   background: var(--sonora-surface);
   border: 1px solid var(--sonora-border);
   border-radius: 10px;
-  transition: border-color 0.15s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.15s;
+  text-decoration: none;
+  color: inherit;
 }
 .songCard:hover {
-  border-color: #444;
+  border-color: var(--sonora-cyan);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
 }
 
 .songArt {
@@ -194,7 +207,7 @@
 }
 
 .songArtist {
-  color: #888 !important;
+  color: var(--sonora-text-muted) !important;
   display: block;
   margin-top: 2px;
 }
@@ -218,15 +231,16 @@
 }
 
 .spotifyDot {
-  color: var(--sonora-green);
+  color: var(--sonora-cyan);
   font-size: 10px;
-  title: 'Linked to Spotify';
 }
 
 .playBtn {
   min-width: 40px !important;
-  background: var(--sonora-green) !important;
-  color: #000 !important;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 20px !important;
 }
 
 .loadMore {

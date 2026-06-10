@@ -25,6 +25,20 @@ from .serializers import (
 )
 
 
+def _s3_upload(file_obj, folder='uploads'):
+    """Upload a file object to S3 and return its URL, or None on error."""
+    try:
+        s3 = boto3.client('s3')
+        ext = os.path.splitext(file_obj.name)[1] if '.' in file_obj.name else ''
+        key = f"{folder}/{uuid.uuid4().hex}{ext}"
+        bucket = os.environ['S3_BUCKET']
+        s3.upload_fileobj(file_obj, bucket, key)
+        return f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+    except Exception as e:
+        print(f'S3 upload error: {e}')
+        return None
+
+
 # ─── Auth ────────────────────────────────────────────────────────────────────
 
 @api_view(['POST'])
@@ -42,13 +56,42 @@ def api_signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def api_me(request):
     profile = getattr(request.user, 'profile', None)
+    if request.method == 'GET':
+        return Response({
+            'user': UserSerializer(request.user).data,
+            'profile': ProfileSerializer(profile).data if profile else None,
+        })
+
+    # PATCH — update profile
+    user = request.user
+    if 'username' in request.data:
+        new_username = request.data['username'].strip()
+        if new_username and new_username != user.username:
+            if User.objects.filter(username=new_username).exclude(pk=user.pk).exists():
+                return Response({'error': 'Username already taken'}, status=status.HTTP_400_BAD_REQUEST)
+            user.username = new_username
+            user.save()
+
+    if profile is None:
+        profile = Profile.objects.create(user=user)
+
+    if 'bio' in request.data:
+        profile.bio = request.data['bio']
+
+    pic_file = request.FILES.get('profile_picture')
+    if pic_file:
+        url = _s3_upload(pic_file, 'profile_picture')
+        if url:
+            profile.profile_picture = url
+
+    profile.save()
     return Response({
-        'user': UserSerializer(request.user).data,
-        'profile': ProfileSerializer(profile).data if profile else None,
+        'user': UserSerializer(user).data,
+        'profile': ProfileSerializer(profile).data,
     })
 
 
@@ -195,8 +238,14 @@ def api_posts(request):
 
     serializer = SongOfTheDaySerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        post = serializer.save(user=request.user)
+        pic_file = request.FILES.get('post_image')
+        if pic_file:
+            url = _s3_upload(pic_file, 'post_images')
+            if url:
+                post.post_image = url
+                post.save()
+        return Response(SongOfTheDaySerializer(post, context={'request': request}).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -281,6 +330,29 @@ def api_like_comment(request, comment_id):
     return Response({'liked': liked, 'total_likes': comment.total_likes()})
 
 
+@api_view(['PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def api_comment_detail(request, comment_id):
+    try:
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        return Response({'error': 'Comment not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if comment.user != request.user:
+        return Response({'error': 'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'DELETE':
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    content = request.data.get('content', '').strip()
+    if not content:
+        return Response({'error': 'Content required'}, status=status.HTTP_400_BAD_REQUEST)
+    comment.content = content
+    comment.save()
+    return Response(CommentSerializer(comment, context={'request': request}).data)
+
+
 # ─── Profiles ─────────────────────────────────────────────────────────────────
 
 @api_view(['GET'])
@@ -335,6 +407,34 @@ def api_follow_unfollow(request, user_id):
         profile_to_follow.followers.add(my_profile)
         following = True
     return Response({'following': following, 'total_followers': profile_to_follow.total_followers()})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_followers(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    profiles = user.profile.followers.all()
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+    page = paginator.paginate_queryset(profiles, request)
+    return paginator.get_paginated_response(ProfileSerializer(page, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_following(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    profiles = user.profile.following.all()
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+    page = paginator.paginate_queryset(profiles, request)
+    return paginator.get_paginated_response(ProfileSerializer(page, many=True).data)
 
 
 # ─── Spotify ──────────────────────────────────────────────────────────────────
