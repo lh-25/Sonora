@@ -178,6 +178,10 @@ export default function ProfileScreen() {
             <Ionicons name="add-circle-outline" size={20} color={Colors.magenta} />
             <Text style={[styles.actionText, { color: Colors.magenta }]}>New Post</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionRow, { marginTop: 12 }]} onPress={() => router.push('/about')}>
+            <Ionicons name="information-circle-outline" size={20} color={Colors.textMuted} />
+            <Text style={[styles.actionText, { color: Colors.textMuted }]}>About Sonora</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={[styles.actionRow, { marginTop: 12 }]} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color={Colors.error} />
             <Text style={[styles.actionText, { color: Colors.error }]}>Log Out</Text>
