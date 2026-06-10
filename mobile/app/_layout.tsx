@@ -16,7 +16,7 @@ function RootLayoutNav() {
     if (isLoading) return;
     const inAuth = segments[0] === '(auth)';
     if (!isAuthenticated && !inAuth) {
-      router.replace('/(auth)/login');
+      router.replace('/(auth)/landing');
     } else if (isAuthenticated && inAuth) {
       router.replace('/(tabs)/feed');
     }
@@ -33,6 +33,11 @@ function RootLayoutNav() {
       <Stack.Screen name="song/[id]" options={{ headerShown: true, title: 'Song', headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.text }} />
       <Stack.Screen name="playlist/[id]" options={{ headerShown: true, title: 'Playlist', headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.text }} />
       <Stack.Screen name="post/[id]" options={{ headerShown: true, title: 'Post', headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.text }} />
+      <Stack.Screen name="post/new" options={{ headerShown: false }} />
+      <Stack.Screen name="users/index" options={{ headerShown: false }} />
+      <Stack.Screen name="users/[id]" options={{ headerShown: true, title: 'Profile', headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.text }} />
+      <Stack.Screen name="profile/edit" options={{ headerShown: false }} />
+      <Stack.Screen name="about" options={{ headerShown: true, title: 'About', headerStyle: { backgroundColor: Colors.surface }, headerTintColor: Colors.text }} />
     </Stack>
   );
 }

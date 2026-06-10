@@ -6,7 +6,7 @@ import {
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
-import { getPost, likePost, addComment, likeComment, type Post, type Comment } from '@/services/api';
+import { getPost, likePost, addComment, likeComment, editComment, deleteComment, type Post, type Comment } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlayer } from '@/contexts/PlayerContext';
 
@@ -21,6 +21,7 @@ export default function PostDetailScreen() {
   const [comment, setComment] = useState('');
   const [replyTo, setReplyTo] = useState<{ id: number; username: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [editingComment, setEditingComment] = useState<{ id: number; content: string } | null>(null);
 
   useEffect(() => {
     getPost(Number(id))
@@ -44,24 +45,61 @@ export default function PostDetailScreen() {
     if (!comment.trim() || !post) return;
     setSubmitting(true);
     try {
-      const newComment = await addComment(post.id, comment.trim(), replyTo?.id);
-      setPost((p) => {
-        if (!p) return p;
-        if (replyTo) {
-          const updated = (p.comments ?? []).map((c) =>
-            c.id === replyTo.id ? { ...c, replies: [...c.replies, newComment] } : c,
-          );
-          return { ...p, comments: updated };
-        }
-        return { ...p, comments: [...(p.comments ?? []), newComment], comment_count: p.comment_count + 1 };
-      });
+      if (editingComment) {
+        const updated = await editComment(editingComment.id, comment.trim());
+        setPost((p) => {
+          if (!p) return p;
+          const updateContent = (comments: Comment[]): Comment[] =>
+            comments.map((c) =>
+              c.id === updated.id
+                ? { ...c, content: updated.content }
+                : { ...c, replies: updateContent(c.replies) },
+            );
+          return { ...p, comments: updateContent(p.comments ?? []) };
+        });
+        setEditingComment(null);
+      } else {
+        const newComment = await addComment(post.id, comment.trim(), replyTo?.id);
+        setPost((p) => {
+          if (!p) return p;
+          if (replyTo) {
+            const updated = (p.comments ?? []).map((c) =>
+              c.id === replyTo.id ? { ...c, replies: [...c.replies, newComment] } : c,
+            );
+            return { ...p, comments: updated };
+          }
+          return { ...p, comments: [...(p.comments ?? []), newComment], comment_count: p.comment_count + 1 };
+        });
+        setReplyTo(null);
+      }
       setComment('');
-      setReplyTo(null);
     } catch {
       Alert.alert('Error', 'Could not post comment.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleDeleteComment = (commentId: number) => {
+    Alert.alert('Delete Comment', 'Delete this comment?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete', style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteComment(commentId);
+            setPost((p) => {
+              if (!p) return p;
+              const remove = (comments: Comment[]): Comment[] =>
+                comments.filter((c) => c.id !== commentId).map((c) => ({ ...c, replies: remove(c.replies) }));
+              return { ...p, comments: remove(p.comments ?? []), comment_count: p.comment_count - 1 };
+            });
+          } catch {
+            Alert.alert('Error', 'Could not delete comment.');
+          }
+        },
+      },
+    ]);
   };
 
   if (loading) return <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />;
@@ -122,7 +160,9 @@ export default function PostDetailScreen() {
               key={c.id}
               comment={c}
               currentUserId={user?.id}
-              onReply={(id, username) => setReplyTo({ id, username })}
+              onReply={(id, username) => { setReplyTo({ id, username }); setEditingComment(null); }}
+              onEdit={(id, content) => { setEditingComment({ id, content }); setComment(content); setReplyTo(null); }}
+              onDelete={handleDeleteComment}
               onLike={async (id) => {
                 const r = await likeComment(id);
                 setPost((p) => {
@@ -143,10 +183,12 @@ export default function PostDetailScreen() {
 
       {/* Comment input */}
       <View style={styles.commentInput}>
-        {replyTo && (
+        {(replyTo || editingComment) && (
           <View style={styles.replyBanner}>
-            <Text style={styles.replyText}>Replying to @{replyTo.username}</Text>
-            <TouchableOpacity onPress={() => setReplyTo(null)}>
+            <Text style={styles.replyText}>
+              {editingComment ? 'Editing comment' : `Replying to @${replyTo!.username}`}
+            </Text>
+            <TouchableOpacity onPress={() => { setReplyTo(null); setEditingComment(null); setComment(''); }}>
               <Ionicons name="close" size={16} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>
@@ -156,7 +198,7 @@ export default function PostDetailScreen() {
             style={styles.input}
             value={comment}
             onChangeText={setComment}
-            placeholder={replyTo ? `Reply to @${replyTo.username}…` : 'Add a comment…'}
+            placeholder={replyTo ? `Reply to @${replyTo.username}…` : editingComment ? 'Edit comment…' : 'Add a comment…'}
             placeholderTextColor={Colors.textMuted}
             multiline
           />
@@ -178,26 +220,41 @@ export default function PostDetailScreen() {
 }
 
 function CommentItem({
-  comment, depth = 0, onReply, onLike, currentUserId,
+  comment, depth = 0, onReply, onLike, onEdit, onDelete, currentUserId,
 }: {
   comment: Comment;
   depth?: number;
   onReply: (id: number, username: string) => void;
   onLike: (id: number) => void;
+  onEdit: (id: number, content: string) => void;
+  onDelete: (id: number) => void;
   currentUserId?: number;
 }) {
+  const isOwner = currentUserId === comment.user.id;
   return (
     <View style={[styles.comment, depth > 0 && styles.commentIndented]}>
       <View style={styles.commentHeader}>
         <Text style={styles.commentUser}>@{comment.user.username}</Text>
-        <TouchableOpacity style={styles.commentLike} onPress={() => onLike(comment.id)}>
-          <Ionicons
-            name={comment.is_liked ? 'heart' : 'heart-outline'}
-            size={14}
-            color={comment.is_liked ? Colors.like : Colors.textMuted}
-          />
-          <Text style={styles.commentLikeCount}>{comment.total_likes}</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          {isOwner && (
+            <>
+              <TouchableOpacity onPress={() => onEdit(comment.id, comment.content)}>
+                <Ionicons name="pencil-outline" size={14} color={Colors.textMuted} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onDelete(comment.id)}>
+                <Ionicons name="trash-outline" size={14} color={Colors.error} />
+              </TouchableOpacity>
+            </>
+          )}
+          <TouchableOpacity style={styles.commentLike} onPress={() => onLike(comment.id)}>
+            <Ionicons
+              name={comment.is_liked ? 'heart' : 'heart-outline'}
+              size={14}
+              color={comment.is_liked ? Colors.like : Colors.textMuted}
+            />
+            <Text style={styles.commentLikeCount}>{comment.total_likes}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <Text style={styles.commentContent}>{comment.content}</Text>
       <TouchableOpacity onPress={() => onReply(comment.id, comment.user.username)}>
@@ -210,6 +267,8 @@ function CommentItem({
           depth={depth + 1}
           onReply={onReply}
           onLike={onLike}
+          onEdit={onEdit}
+          onDelete={onDelete}
           currentUserId={currentUserId}
         />
       ))}
@@ -238,7 +297,7 @@ const styles = StyleSheet.create({
   },
   blockText: { color: Colors.textSecondary, fontSize: 14, lineHeight: 20 },
   lyricBlock: {
-    borderLeftWidth: 3, borderLeftColor: Colors.primary,
+    borderLeftWidth: 3, borderLeftColor: Colors.magenta,
     paddingLeft: 14, marginBottom: 16,
   },
   lyricText: { color: Colors.textSecondary, fontStyle: 'italic', fontSize: 15, lineHeight: 22 },
