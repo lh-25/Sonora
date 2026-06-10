@@ -33,9 +33,11 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <StackLayout gap={2} align="center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/sonora-logo.PNG" alt="Sonora" className={styles.logoImg} />
+        <StackLayout gap={3} align="center">
+          <div className={styles.logo}>
+            <span className={styles.logoIcon}>♪</span>
+            <H1 className={styles.logoText}>Sonora</H1>
+          </div>
           <Text styleAs="h4" className={styles.subtitle}>Sign in to your account</Text>
         </StackLayout>
 
@@ -47,16 +49,17 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername((e.target as HTMLInputElement).value)}
                 placeholder="Enter your username"
+                inputProps={{ autoComplete: 'username' }}
               />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Password</FormFieldLabel>
               <Input
-                inputProps={{ type: 'password' }}
                 value={password}
                 onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
                 placeholder="Enter your password"
+                inputProps={{ type: 'password', autoComplete: 'current-password' }}
               />
             </FormField>
 
