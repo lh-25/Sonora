@@ -154,7 +154,10 @@ def api_song_detail(request, song_id):
 def api_playlists(request):
     if request.method == 'GET':
         show = request.query_params.get('filter', 'public')
-        if show == 'mine':
+        user_id = request.query_params.get('user_id')
+        if user_id:
+            playlists = Playlist.objects.filter(user_id=user_id, visibility='PUBLIC')
+        elif show == 'mine':
             playlists = Playlist.objects.filter(user=request.user)
         else:
             playlists = Playlist.objects.filter(visibility='PUBLIC')
@@ -229,7 +232,13 @@ def api_playlist_songs(request, playlist_id, song_id=None):
 def api_posts(request):
     if request.method == 'GET':
         show = request.query_params.get('filter', 'all')
-        posts = SongOfTheDay.objects.all() if show != 'mine' else SongOfTheDay.objects.filter(user=request.user)
+        user_id = request.query_params.get('user_id')
+        if user_id:
+            posts = SongOfTheDay.objects.filter(user_id=user_id)
+        elif show == 'mine':
+            posts = SongOfTheDay.objects.filter(user=request.user)
+        else:
+            posts = SongOfTheDay.objects.all().order_by('-date_posted')
         paginator = PageNumberPagination()
         paginator.page_size = 12
         page = paginator.paginate_queryset(posts, request)
