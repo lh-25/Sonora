@@ -243,6 +243,17 @@ export async function likeComment(id: number): Promise<{ liked: boolean; total_l
   return request(`/comments/${id}/like/`, { method: 'POST' });
 }
 
+export async function editComment(id: number, content: string): Promise<Comment> {
+  return request(`/comments/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function deleteComment(id: number): Promise<void> {
+  return request(`/comments/${id}/`, { method: 'DELETE' });
+}
+
 // ─── Profiles ─────────────────────────────────────────────────────────────────
 
 export type User = { id: number; username: string; email: string };
@@ -267,6 +278,64 @@ export async function getProfile(userId: number): Promise<Profile> {
 
 export async function followUnfollow(userId: number): Promise<{ following: boolean; total_followers: number }> {
   return request(`/profiles/${userId}/follow/`, { method: 'POST' });
+}
+
+export async function getFollowers(userId: number, page = 1): Promise<PaginatedResponse<Profile>> {
+  return request(`/profiles/${userId}/followers/?page=${page}`);
+}
+
+export async function getFollowing(userId: number, page = 1): Promise<PaginatedResponse<Profile>> {
+  return request(`/profiles/${userId}/following/?page=${page}`);
+}
+
+export async function getUserPosts(userId: number, page = 1): Promise<PaginatedResponse<Post>> {
+  return request(`/posts/?filter=user&user_id=${userId}&page=${page}`);
+}
+
+export async function updateProfile(formData: FormData): Promise<{ user: User; profile: Profile }> {
+  let token = await getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const resp = await fetch(`${API_BASE}/auth/me/`, {
+    method: 'PATCH',
+    headers,
+    body: formData,
+  });
+  if (resp.status === 401) {
+    token = await refreshAccessToken();
+    if (token) {
+      const headers2: Record<string, string> = { Authorization: `Bearer ${token}` };
+      const resp2 = await fetch(`${API_BASE}/auth/me/`, { method: 'PATCH', headers: headers2, body: formData });
+      if (!resp2.ok) throw new Error(await resp2.text());
+      return resp2.json();
+    }
+    throw new Error('UNAUTHORIZED');
+  }
+  if (!resp.ok) throw new Error(await resp.text());
+  return resp.json();
+}
+
+export async function createPostMultipart(formData: FormData): Promise<Post> {
+  let token = await getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const resp = await fetch(`${API_BASE}/posts/`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  if (resp.status === 401) {
+    token = await refreshAccessToken();
+    if (token) {
+      const headers2: Record<string, string> = { Authorization: `Bearer ${token}` };
+      const resp2 = await fetch(`${API_BASE}/posts/`, { method: 'POST', headers: headers2, body: formData });
+      if (!resp2.ok) throw new Error(await resp2.text());
+      return resp2.json();
+    }
+    throw new Error('UNAUTHORIZED');
+  }
+  if (!resp.ok) throw new Error(await resp.text());
+  return resp.json();
 }
 
 // ─── Spotify ──────────────────────────────────────────────────────────────────
