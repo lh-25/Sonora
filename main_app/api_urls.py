@@ -27,12 +27,15 @@ urlpatterns = [
     path('posts/<int:post_id>/comments/', api_views.api_add_comment, name='api-add-comment'),
 
     # Comments
+    path('comments/<int:comment_id>/', api_views.api_comment_detail, name='api-comment-detail'),
     path('comments/<int:comment_id>/like/', api_views.api_like_comment, name='api-like-comment'),
 
     # Profiles
     path('profiles/', api_views.api_profiles, name='api-profiles'),
     path('profiles/<int:user_id>/', api_views.api_profile_detail, name='api-profile-detail'),
     path('profiles/<int:user_id>/follow/', api_views.api_follow_unfollow, name='api-follow-unfollow'),
+    path('profiles/<int:user_id>/followers/', api_views.api_followers, name='api-followers'),
+    path('profiles/<int:user_id>/following/', api_views.api_following, name='api-following'),
 
     # Spotify
     path('spotify/search/', api_views.spotify_search, name='spotify-search'),

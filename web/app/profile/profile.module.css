@@ -1,9 +1,12 @@
 .page {
-  padding: 32px 0 120px;
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
 }
 
 .title {
-  color: #fff !important;
+  color: var(--sonora-cyan) !important;
+  font-weight: 800 !important;
   margin-bottom: 28px;
 }
 
@@ -20,6 +23,12 @@
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.profileCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85);
 }
 
 .avatar {
@@ -28,13 +37,14 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 3px solid var(--sonora-cyan);
 }
 
 .avatarPlaceholder {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: var(--sonora-green);
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,13 +54,14 @@
 .avatarInitial {
   font-size: 36px;
   font-weight: 800;
-  color: #000;
+  color: #fff;
 }
 
 .profileInfo {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
 }
 
 .username {
@@ -59,13 +70,28 @@
 }
 
 .email {
-  color: #666 !important;
+  color: var(--sonora-text-muted) !important;
 }
 
 .bio {
-  color: #aaa !important;
+  color: var(--sonora-text-muted) !important;
   line-height: 1.5;
   margin-top: 4px;
+}
+
+.editBtn {
+  align-self: flex-start;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.editBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4) !important;
 }
 
 .statsGrid {
@@ -82,17 +108,23 @@
   border-radius: 12px;
   padding: 20px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
 }
 
 .statValue {
   font-size: 28px !important;
   font-weight: 800 !important;
-  color: #fff !important;
+  color: var(--sonora-cyan) !important;
   display: block;
 }
 
 .statLabel {
-  color: #666 !important;
+  color: var(--sonora-text-muted) !important;
   margin-top: 4px;
   display: block;
 }
@@ -104,40 +136,52 @@
   padding: 24px;
   margin-bottom: 16px;
   max-width: 560px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .sectionTitle {
-  color: #888 !important;
+  color: var(--sonora-cyan) !important;
   font-size: 13px !important;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: 16px;
+  font-weight: 700 !important;
 }
 
 .connectedText {
-  color: var(--sonora-green) !important;
+  color: #1db954 !important;
   font-weight: 600;
 }
 
 .hint {
-  color: #666 !important;
+  color: var(--sonora-text-muted) !important;
   line-height: 1.5;
 }
 
 .spotifyBtn {
-  background: var(--sonora-green) !important;
-  color: #000 !important;
+  background: linear-gradient(90deg, #1db954, #1ed760) !important;
+  color: #fff !important;
   font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
   align-self: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.spotifyBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4) !important;
 }
 
 .disconnectBtn {
   align-self: flex-start;
+  color: var(--sonora-text-muted) !important;
+  border-radius: 20px !important;
 }
 
 .logoutBtn {
-  color: #e74c3c !important;
-  border-color: #e74c3c !important;
+  color: #ff4040 !important;
+  border-color: #ff4040 !important;
+  border-radius: 20px !important;
 }
 
 .avatarWrapper {
