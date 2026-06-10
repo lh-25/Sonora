@@ -1,0 +1,364 @@
+.page {
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
+}
+
+.spinner {
+  margin-top: 80px;
+}
+
+.error {
+  margin-top: 80px;
+  text-align: center;
+  color: #ff4040;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sonora-cyan);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+.backLink:hover {
+  color: var(--sonora-magenta);
+}
+
+.postCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  margin-bottom: 28px;
+  max-width: 720px;
+}
+
+.postImage {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  display: block;
+}
+
+.postBody {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Song row */
+.songRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--sonora-surface-alt);
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+.songRow:hover {
+  background: rgba(0, 212, 255, 0.07);
+}
+
+.albumArt {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.songInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.songTitle {
+  color: #fff !important;
+  font-weight: 700 !important;
+  display: block;
+}
+
+.songArtist {
+  color: var(--sonora-text-muted) !important;
+  display: block;
+  font-size: 13px;
+}
+
+.playIcon {
+  color: var(--sonora-cyan);
+  font-size: 20px;
+}
+
+.postTitle {
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.reasonSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reasonLabel {
+  color: var(--sonora-cyan) !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700 !important;
+}
+
+.reasonText {
+  color: var(--sonora-text-muted) !important;
+  line-height: 1.6;
+}
+
+.lyric {
+  padding: 12px 16px;
+  border-left: 4px solid var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.06);
+  border-radius: 0 8px 8px 0;
+  color: var(--sonora-text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.postMeta {
+  padding-top: 12px;
+  border-top: 1px solid var(--sonora-border);
+}
+
+.postedBy {
+  color: var(--sonora-text-muted) !important;
+  font-size: 13px !important;
+}
+
+.postedByLink {
+  color: var(--sonora-cyan);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.postedByLink:hover {
+  color: var(--sonora-magenta);
+}
+
+.postDate {
+  color: var(--sonora-text-muted) !important;
+  font-size: 13px !important;
+}
+
+.likeBtn {
+  background: transparent;
+  border: 1px solid var(--sonora-border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  color: var(--sonora-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.likeBtn:hover {
+  border-color: #ff4040;
+  color: #ff4040;
+}
+
+.likeBtnActive {
+  background: rgba(255, 64, 64, 0.15);
+  border-color: #ff4040;
+  color: #ff4040;
+}
+
+/* Comments section */
+.commentsSection {
+  max-width: 720px;
+}
+
+.commentsTitle {
+  color: var(--sonora-cyan) !important;
+  font-weight: 700 !important;
+  margin-bottom: 20px;
+}
+
+.addCommentForm {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.commentTextarea {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.commentTextarea:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.submitCommentBtn {
+  align-self: flex-end;
+  background: linear-gradient(90deg, #ff4040, #ff7b40) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.submitCommentBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(255, 64, 64, 0.4) !important;
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.commentCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.commentCard.replyCard {
+  margin-left: 32px;
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.commentHeader {
+  margin-bottom: 8px;
+}
+
+.commentAuthor {
+  color: var(--sonora-cyan) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.commentDate {
+  color: #555 !important;
+  font-size: 12px !important;
+}
+
+.commentContent {
+  color: var(--sonora-text) !important;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.commentActions {
+  gap: 8px;
+}
+
+.commentActionBtn {
+  background: transparent;
+  border: none;
+  color: var(--sonora-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+.commentActionBtn:hover {
+  color: var(--sonora-cyan);
+}
+
+.commentLikeBtn {
+  color: var(--sonora-text-muted);
+}
+.commentLikeBtnActive {
+  color: #ff4040 !important;
+}
+
+.replyForm {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.replyTextarea {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.replyTextarea:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.replyActions {
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.submitReplyBtn {
+  background: linear-gradient(90deg, #ff4040, #ff7b40) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  border: none !important;
+  font-size: 12px !important;
+}
+
+.cancelReplyBtn {
+  color: var(--sonora-text-muted) !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+}
+
+.deleteCommentBtn {
+  color: #ff4040 !important;
+}
+.deleteCommentBtn:hover {
+  color: #ff6060 !important;
+}
+
+.replies {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

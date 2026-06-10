@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import {
   Button, Text, H1, H2, H3, StackLayout, FlexLayout, Spinner, Input, MultilineInput, FormField, FormFieldLabel,
 } from '@salt-ds/core';
