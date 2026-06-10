@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   Button, Text, H1, H2, H3, StackLayout, FlexLayout,
   Card, Badge, Spinner, ToggleButton, ToggleButtonGroup,
@@ -50,13 +51,18 @@ export default function FeedPage() {
       <div className="page-container">
         <FlexLayout justify="space-between" align="center" className={styles.header}>
           <H1 className={styles.title}>Song of the Day</H1>
-          <ToggleButtonGroup
-            value={filter}
-            onChange={(e: React.SyntheticEvent<HTMLButtonElement>) => setFilter(e.currentTarget.value as 'all' | 'mine')}
-          >
-            <ToggleButton value="all">All Posts</ToggleButton>
-            <ToggleButton value="mine">My Posts</ToggleButton>
-          </ToggleButtonGroup>
+          <FlexLayout gap={2} align="center">
+            <ToggleButtonGroup
+              value={filter}
+              onChange={(e: React.SyntheticEvent<HTMLButtonElement>) => setFilter(e.currentTarget.value as 'all' | 'mine')}
+            >
+              <ToggleButton value="all">All Posts</ToggleButton>
+              <ToggleButton value="mine">My Posts</ToggleButton>
+            </ToggleButtonGroup>
+            <Link href="/feed/new" className={styles.newPostBtn} style={{ textDecoration: 'none', padding: '6px 18px', borderRadius: '25px', fontWeight: 700, fontSize: '14px', background: 'linear-gradient(90deg, #00d4ff, #ff40ff)', color: '#fff', display: 'inline-flex', alignItems: 'center' }}>
+              + New Post
+            </Link>
+          </FlexLayout>
         </FlexLayout>
 
         {loading ? (
@@ -125,7 +131,7 @@ function PostCard({
 
       {post.standout_lyric && (
         <blockquote className={styles.lyric}>
-          <Text>"{post.standout_lyric}"</Text>
+          <Text >"{post.standout_lyric}"</Text>
         </blockquote>
       )}
 
@@ -140,9 +146,9 @@ function PostCard({
           >
             ♥ {post.total_likes}
           </Button>
-          <Text styleAs="notation" className={styles.commentCount}>
+          <Link href={`/feed/${post.id}`} className={styles.viewBtn}>
             💬 {post.comment_count}
-          </Text>
+          </Link>
         </FlexLayout>
       </FlexLayout>
     </Card>

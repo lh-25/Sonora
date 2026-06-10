@@ -75,6 +75,32 @@ export async function request<T>(
   return resp.json();
 }
 
+export async function multipartRequest<T>(
+  path: string,
+  formData: FormData,
+  method = 'POST',
+  retry = true,
+): Promise<T> {
+  let token = getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const resp = await fetch(`${API_BASE}${path}`, { method, headers, body: formData });
+
+  if (resp.status === 401 && retry) {
+    token = await refreshAccessToken();
+    if (token) return multipartRequest<T>(path, formData, method, false);
+    throw new Error('UNAUTHORIZED');
+  }
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(body || `HTTP ${resp.status}`);
+  }
+  if (resp.status === 204) return undefined as T;
+  return resp.json();
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type User = { id: number; username: string; email: string };
@@ -241,6 +267,23 @@ export async function createPost(data: {
   return request<Post>('/posts/', { method: 'POST', body: JSON.stringify(data) });
 }
 
+export async function createPostMultipart(formData: FormData) {
+  let token = getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  // Do NOT set Content-Type — browser sets it with boundary for multipart
+  const resp = await fetch(`${API_BASE}/posts/`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(body || `HTTP ${resp.status}`);
+  }
+  return resp.json() as Promise<Post>;
+}
+
 export async function likePost(id: number) {
   return request<{ liked: boolean; total_likes: number }>(`/posts/${id}/like/`, { method: 'POST' });
 }
@@ -254,6 +297,17 @@ export async function addComment(postId: number, content: string, parentId?: num
 
 export async function likeComment(id: number) {
   return request<{ liked: boolean; total_likes: number }>(`/comments/${id}/like/`, { method: 'POST' });
+}
+
+export async function editComment(id: number, content: string) {
+  return request<Comment>(`/comments/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function deleteComment(id: number) {
+  return request<void>(`/comments/${id}/`, { method: 'DELETE' });
 }
 
 // ─── Profiles ─────────────────────────────────────────────────────────────────
@@ -271,6 +325,38 @@ export async function followUnfollow(userId: number) {
     `/profiles/${userId}/follow/`,
     { method: 'POST' },
   );
+}
+
+export async function getFollowers(userId: number, page = 1) {
+  return request<PaginatedResponse<Profile>>(`/profiles/${userId}/followers/?page=${page}`);
+}
+
+export async function getFollowing(userId: number, page = 1) {
+  return request<PaginatedResponse<Profile>>(`/profiles/${userId}/following/?page=${page}`);
+}
+
+export async function getUsers(page = 1) {
+  return request<PaginatedResponse<Profile>>(`/profiles/?page=${page}`);
+}
+
+export async function getUserProfile(userId: number) {
+  return request<Profile>(`/profiles/${userId}/`);
+}
+
+export async function getUserPlaylists(userId: number, page = 1) {
+  return request<PaginatedResponse<Playlist>>(`/playlists/?filter=user&user_id=${userId}&page=${page}`);
+}
+
+export async function getUserPosts(userId: number, page = 1) {
+  return request<PaginatedResponse<Post>>(`/posts/?filter=user&user_id=${userId}&page=${page}`);
+}
+
+export async function getPostDetail(id: number) {
+  return request<Post>(`/posts/${id}/`);
+}
+
+export async function updateProfile(formData: FormData) {
+  return multipartRequest<{ user: User; profile: Profile }>('/auth/me/', formData, 'PATCH');
 }
 
 // ─── Spotify ──────────────────────────────────────────────────────────────────
