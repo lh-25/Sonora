@@ -4,17 +4,20 @@ import {
   ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import {
+
   spotifyStatus, spotifyDisconnect, uploadImage, updateProfile, spotifyExchangeToken,
 } from '@/services/api';
 import { useSpotifyAuth } from '@/services/spotify';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { user, profile, logout, refreshProfile } = useAuth();
   const { authorize } = useSpotifyAuth();
 
@@ -136,7 +139,7 @@ export default function ProfileScreen() {
           {spotifyConnected ? (
             <View style={styles.spotifyConnected}>
               <View style={styles.spotifyRow}>
-                <Ionicons name="checkmark-circle" size={22} color={Colors.primary} />
+                <Ionicons name="checkmark-circle" size={22} color={Colors.green} />
                 <Text style={styles.spotifyStatus}>Connected to Spotify</Text>
               </View>
               <TouchableOpacity style={styles.disconnectBtn} onPress={handleDisconnectSpotify}>
@@ -167,7 +170,15 @@ export default function ProfileScreen() {
         {/* Actions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
-          <TouchableOpacity style={styles.actionRow} onPress={handleLogout}>
+          <TouchableOpacity style={styles.actionRow} onPress={() => router.push('/profile/edit')}>
+            <Ionicons name="create-outline" size={20} color={Colors.primary} />
+            <Text style={[styles.actionText, { color: Colors.primary }]}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionRow, { marginTop: 12 }]} onPress={() => router.push('/post/new')}>
+            <Ionicons name="add-circle-outline" size={20} color={Colors.magenta} />
+            <Text style={[styles.actionText, { color: Colors.magenta }]}>New Post</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionRow, { marginTop: 12 }]} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color={Colors.error} />
             <Text style={[styles.actionText, { color: Colors.error }]}>Log Out</Text>
           </TouchableOpacity>
@@ -242,7 +253,7 @@ const styles = StyleSheet.create({
   },
   disconnectText: { color: Colors.textSecondary, fontSize: 13 },
   connectBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.green,
     borderRadius: 10, paddingVertical: 12,
     flexDirection: 'row', alignItems: 'center',
     justifyContent: 'center', gap: 8,

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   lyricContainer: {
     borderLeftWidth: 3,
-    borderLeftColor: Colors.primary,
+    borderLeftColor: Colors.magenta,
     paddingLeft: 10,
   },
   lyricQuote: {
