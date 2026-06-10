@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Navigation from './Navigation';
 import MusicPlayer from './MusicPlayer';
 
-const PUBLIC_PATHS = ['/login', '/signup'];
+const PUBLIC_PATHS = ['/', '/login', '/signup', '/about'];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
