@@ -355,7 +355,7 @@ export async function getPostDetail(id: number) {
   return request<Post>(`/posts/${id}/`);
 }
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfileMultipart(formData: FormData) {
   return multipartRequest<{ user: User; profile: Profile }>('/auth/me/', formData, 'PATCH');
 }
 
