@@ -56,12 +56,12 @@ export default function SignupPage() {
 
             <FormField>
               <FormFieldLabel>Email *</FormFieldLabel>
-              <Input inputProps={{ type: 'email' }} value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} placeholder="you@example.com" />
+              <Input value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} placeholder="you@example.com" inputProps={{ type: 'email' }} />
             </FormField>
 
             <FormField>
               <FormFieldLabel>Password *</FormFieldLabel>
-              <Input inputProps={{ type: 'password' }} value={password} onChange={(e) => setPassword((e.target as HTMLInputElement).value)} placeholder="At least 8 characters" />
+              <Input value={password} onChange={(e) => setPassword((e.target as HTMLInputElement).value)} placeholder="At least 8 characters" inputProps={{ type: 'password' }} />
             </FormField>
 
             <FormField>
