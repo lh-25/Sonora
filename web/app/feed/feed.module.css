@@ -1,5 +1,7 @@
 .page {
-  padding: 32px 0 120px;
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
 }
 
 .header {
@@ -7,7 +9,8 @@
 }
 
 .title {
-  color: #fff !important;
+  color: var(--sonora-cyan) !important;
+  font-weight: 800 !important;
 }
 
 .spinnerWrapper {
@@ -18,7 +21,7 @@
   margin-top: 80px;
   text-align: center;
   gap: 8px;
-  color: #666;
+  color: var(--sonora-text-muted);
 }
 
 .feed {
@@ -30,8 +33,14 @@
   background: var(--sonora-surface) !important;
   border: 1px solid var(--sonora-border) !important;
   border-radius: 14px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
   overflow: hidden;
   padding: 0 !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.postCard:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85) !important;
 }
 
 .postImage {
@@ -54,7 +63,7 @@
   transition: background 0.15s;
 }
 .songRow:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 212, 255, 0.07);
 }
 
 .albumArt {
@@ -80,12 +89,12 @@
 }
 
 .songArtist {
-  color: #888 !important;
+  color: var(--sonora-text-muted) !important;
   display: block;
 }
 
 .playIcon {
-  color: var(--sonora-green);
+  color: var(--sonora-cyan);
   font-size: 18px;
 }
 
@@ -97,8 +106,8 @@
 .lyric {
   margin: 0 16px 12px;
   padding-left: 12px;
-  border-left: 3px solid var(--sonora-green);
-  color: #888;
+  border-left: 3px solid var(--sonora-cyan);
+  color: var(--sonora-text-muted);
   font-style: italic;
 }
 
@@ -108,15 +117,38 @@
 }
 
 .postedBy {
-  color: #555 !important;
+  color: var(--sonora-text-muted) !important;
 }
 
 .likedBtn {
-  background: rgba(231, 76, 60, 0.2) !important;
-  color: #e74c3c !important;
-  border-color: #e74c3c !important;
+  background: rgba(255, 64, 64, 0.2) !important;
+  color: #ff4040 !important;
+  border-color: #ff4040 !important;
 }
 
 .commentCount {
-  color: #666 !important;
+  color: var(--sonora-text-muted) !important;
+}
+
+.newPostBtn {
+  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.newPostBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4) !important;
+}
+
+.viewBtn {
+  color: var(--sonora-cyan) !important;
+  font-size: 13px !important;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.viewBtn:hover {
+  color: var(--sonora-magenta) !important;
 }

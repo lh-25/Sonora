@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
   --sonora-bg: #0d0d0d;
   --sonora-surface: #1a1a1a;
@@ -7,10 +9,11 @@
   --sonora-magenta: #ff40ff;
   --sonora-red: #ff4040;
   --sonora-orange: #ff7b40;
+  --sonora-green: #1db954;
   --sonora-text: #e0e0e0;
   --sonora-text-muted: #b3b3b3;
-  --sonora-gradient: linear-gradient(90deg, #00d4ff, #ff40ff);
-  --sonora-gradient-btn: linear-gradient(90deg, #ff4040, #ff7b40);
+  --sonora-gradient-primary: linear-gradient(90deg, #00d4ff, #ff40ff);
+  --sonora-gradient-action: linear-gradient(90deg, #ff4040, #ff7b40);
 }
 
 * {
@@ -25,13 +28,12 @@ body {
   background-color: var(--sonora-bg);
   color: var(--sonora-text);
   font-family: 'Inter', var(--salt-typography-fontFamily), system-ui, sans-serif;
-  line-height: 1.7;
-  animation: fadeIn 1.2s ease-in-out;
+  animation: fadeIn 1.2s ease;
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(-10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Scrollbar */
@@ -46,18 +48,65 @@ body {
   --salt-separable-secondary-borderColor: var(--sonora-border);
 }
 
-/* Sonora-specific utilities */
+/* ─── Salt Button overrides ─────────────────────────────────────────────── */
+
+/* Primary buttons → red-orange gradient (submit/action) */
+.saltButton[data-variant='primary'] {
+  background: var(--sonora-gradient-action) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.saltButton[data-variant='primary']:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(255, 64, 64, 0.45) !important;
+}
+
+/* Secondary buttons → cyan style */
+.saltButton[data-variant='secondary'] {
+  color: var(--sonora-cyan) !important;
+  border-color: var(--sonora-cyan) !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.saltButton[data-variant='secondary']:hover {
+  color: var(--sonora-magenta) !important;
+  border-color: var(--sonora-magenta) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.3) !important;
+}
+
+/* ─── Salt Input overrides ─────────────────────────────────────────────── */
+
+.saltInput {
+  background: #141414 !important;
+  border: 1px solid var(--sonora-border) !important;
+  border-radius: 8px !important;
+  color: var(--sonora-text) !important;
+}
+.saltInput:focus-within,
+.saltInput[data-focused='true'] {
+  border-color: var(--sonora-cyan) !important;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5) !important;
+}
+
+/* ─── Sonora-specific utilities ─────────────────────────────────────────── */
+
 .sonora-card {
   background: var(--sonora-surface);
   border: 1px solid var(--sonora-border);
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 .sonora-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.9);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85);
 }
 
 .sonora-grid {
@@ -87,14 +136,13 @@ body {
   color: #888;
 }
 
-.sonora-gradient-text {
-  background: var(--sonora-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.sonora-cyan {
+  color: var(--sonora-cyan);
 }
 
-.sonora-cyan { color: var(--sonora-cyan); }
+.sonora-green {
+  color: var(--sonora-green);
+}
 
 .page-container {
   max-width: 1200px;
