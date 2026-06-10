@@ -3,14 +3,16 @@
   top: 0;
   z-index: 100;
   background: linear-gradient(90deg, #141414, #1f1f1f);
-  border-bottom: 1px solid #333;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sonora-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px;
-  height: 70px;
+  padding: 0 24px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,19 +22,28 @@
 .logo {
   display: flex;
   align-items: center;
+  gap: 8px;
   text-decoration: none;
+  color: inherit;
   flex-shrink: 0;
 }
 
-.logoImg {
-  height: 56px;
-  transition: transform 0.4s ease, filter 0.4s ease;
-  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+.logoIcon {
+  font-size: 22px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.logoImg:hover {
-  transform: scale(1.1) rotate(-3deg);
-  filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.8));
+.logoText {
+  color: #fff !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .links {
@@ -41,41 +52,34 @@
 }
 
 .link {
-  color: #e0e0e0;
+  color: var(--sonora-text-muted);
   text-decoration: none;
-  font-size: 1.05rem;
+  font-size: 14px;
   font-weight: 500;
   padding: 6px 14px;
-  position: relative;
-  transition: color 0.3s ease;
+  border-radius: 20px;
+  transition: all 0.2s;
 }
 
-.link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #00d4ff, #ff40ff);
-  transition: width 0.3s ease;
+.link:hover {
+  color: var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.08);
 }
 
-.link:hover::after,
-.linkActive::after {
-  width: 100%;
-}
-
-.link:hover,
 .linkActive {
-  color: #00d4ff;
+  color: var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.12);
+  font-weight: 600;
 }
 
 .username {
-  color: #b3b3b3 !important;
+  color: var(--sonora-text-muted) !important;
   font-size: 13px;
 }
 
 .logoutBtn {
   font-size: 13px !important;
+  color: #ff4040 !important;
+  border-color: #ff4040 !important;
+  border-radius: 20px !important;
 }

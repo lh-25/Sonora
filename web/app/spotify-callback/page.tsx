@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Spinner, Text, StackLayout } from '@salt-ds/core';
+import { spotifyExchangeToken } from '@/services/api';
 
 export default function SpotifyCallbackPage() {
   const router = useRouter();
@@ -10,21 +11,6 @@ export default function SpotifyCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   useEffect(() => {
-    const spotify = searchParams.get('spotify');
-
-    if (spotify === 'connected') {
-      setStatus('success');
-      setTimeout(() => router.push('/profile'), 1500);
-      return;
-    }
-
-    if (spotify === 'error') {
-      setStatus('error');
-      setTimeout(() => router.push('/profile'), 2000);
-      return;
-    }
-
-    // Legacy: direct code exchange (fallback)
     const code = searchParams.get('code');
     const error = searchParams.get('error');
 
@@ -34,14 +20,20 @@ export default function SpotifyCallbackPage() {
       return;
     }
 
-    // If we somehow land here with a code, just redirect to profile
-    // (the backend web-callback handler should have handled it already)
-    setStatus('error');
-    setTimeout(() => router.push('/profile'), 2000);
+    const redirectUri = `${window.location.origin}/spotify-callback`;
+    spotifyExchangeToken(code, redirectUri)
+      .then(() => {
+        setStatus('success');
+        setTimeout(() => router.push('/profile'), 1500);
+      })
+      .catch(() => {
+        setStatus('error');
+        setTimeout(() => router.push('/profile'), 2000);
+      });
   }, []);
 
   return (
-    <StackLayout align="center" style={{ height: '100vh', gap: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <StackLayout align="center" style={{ height: '100vh', gap: 16, justifyContent: 'center' }}>
       {status === 'loading' && (
         <>
           <Spinner size="large" />

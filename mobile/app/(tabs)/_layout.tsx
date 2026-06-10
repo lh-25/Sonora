@@ -2,9 +2,11 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import MusicPlayer from '@/components/MusicPlayer';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function TabsLayout() {
+  const router = useRouter();
   return (
     <View style={{ flex: 1 }}>
       <Tabs
@@ -44,10 +46,18 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="users"
+          options={{
+            title: 'People',
+            tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen
           name="profile"
           options={{
             title: 'Profile',
             tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
+            headerShown: false,
           }}
         />
       </Tabs>

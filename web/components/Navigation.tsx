@@ -10,7 +10,9 @@ const NAV_LINKS = [
   { href: '/feed', label: 'Feed' },
   { href: '/songs', label: 'Songs' },
   { href: '/playlists', label: 'Playlists' },
+  { href: '/users', label: 'Users' },
   { href: '/profile', label: 'Profile' },
+  { href: '/about', label: 'About' },
 ];
 
 export default function Navigation() {

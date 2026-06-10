@@ -1,0 +1,154 @@
+.page {
+  padding: 40px 0 120px;
+  background: var(--sonora-bg);
+  min-height: 100vh;
+}
+
+.title {
+  color: var(--sonora-cyan) !important;
+  font-weight: 800 !important;
+  margin-bottom: 28px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sonora-cyan);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+.backLink:hover {
+  color: var(--sonora-magenta);
+}
+
+.formCard {
+  background: var(--sonora-surface);
+  border: 1px solid var(--sonora-border);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 520px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: var(--sonora-cyan) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.textarea {
+  width: 100%;
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.textarea:focus {
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+/* Profile picture section */
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.currentAvatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--sonora-cyan);
+}
+
+.avatarPlaceholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #00d4ff, #ff40ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.fileInput {
+  background: #141414;
+  border: 1px solid var(--sonora-border);
+  border-radius: 8px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.fileInput:focus {
+  outline: none;
+  border-color: var(--sonora-cyan);
+}
+
+.fileHint {
+  color: var(--sonora-text-muted) !important;
+  font-size: 12px !important;
+}
+
+.error {
+  color: #ff4040 !important;
+  font-size: 13px !important;
+}
+
+.success {
+  color: #1db954 !important;
+  font-size: 13px !important;
+}
+
+.actions {
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.submitBtn {
+  background: linear-gradient(90deg, #ff4040, #ff7b40) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 10px 28px !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.submitBtn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(255, 64, 64, 0.4) !important;
+}
+
+.cancelBtn {
+  color: var(--sonora-text-muted) !important;
+  border-radius: 25px !important;
+}
