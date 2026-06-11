@@ -502,17 +502,33 @@ def spotify_search(request):
 
     token = _spotify_client_token()
     if not token:
-        return Response({'error': 'Spotify not configured'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            {'error': 'Spotify not configured. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
 
-    resp = requests.get(
-        'https://api.spotify.com/v1/search',
-        params={'q': query, 'type': search_type, 'limit': limit},
-        headers={'Authorization': f'Bearer {token}'},
-        timeout=10,
-    )
+    try:
+        resp = requests.get(
+            'https://api.spotify.com/v1/search',
+            params={'q': query, 'type': search_type, 'limit': limit, 'market': 'US'},
+            headers={'Authorization': f'Bearer {token}'},
+            timeout=10,
+        )
+    except requests.RequestException as exc:
+        return Response(
+            {'error': f'Could not reach Spotify: {exc}'},
+            status=status.HTTP_502_BAD_GATEWAY,
+        )
+
     if resp.ok:
         return Response(resp.json())
-    return Response({'error': 'Spotify search failed'}, status=resp.status_code)
+
+    # Surface Spotify's actual error so the client can show something useful.
+    try:
+        detail = resp.json().get('error', {}).get('message', resp.text)
+    except ValueError:
+        detail = resp.text
+    return Response({'error': f'Spotify search failed: {detail}'}, status=resp.status_code)
 
 
 @api_view(['GET'])
@@ -667,22 +683,27 @@ def spotify_import_playlist(request):
         playlist_cover=pl_data.get('images', [{}])[0].get('url'),
     )
 
-    # Fetch all tracks (paginated)
+    # Fetch all tracks (paginated). The first call carries query params; the
+    # `next` URL returned by Spotify already includes its own params, so we must
+    # NOT re-attach them on subsequent calls.
     imported = 0
     tracks_url = f'https://api.spotify.com/v1/playlists/{spotify_playlist_id}/tracks'
+    params = {'limit': 100, 'market': 'US', 'additional_types': 'track'}
     while tracks_url:
         tr_resp = requests.get(
             tracks_url,
-            params={'limit': 100},
+            params=params,
             headers={'Authorization': f'Bearer {token}'},
             timeout=10,
         )
+        params = None  # subsequent `next` URLs are already fully-formed
         if not tr_resp.ok:
             break
         tr_data = tr_resp.json()
         for item in tr_data.get('items', []):
             track = item.get('track')
-            if not track or track.get('type') != 'track':
+            # Skip podcasts, local files, and unavailable tracks (no id).
+            if not track or track.get('type') != 'track' or not track.get('id'):
                 continue
             # Match or create Song by spotify_track_id
             song, _ = Song.objects.get_or_create(
@@ -692,7 +713,7 @@ def spotify_import_playlist(request):
                     'artist': ', '.join(a['name'] for a in track.get('artists', [])),
                     'album': track.get('album', {}).get('name', ''),
                     'duration': timedelta(milliseconds=track.get('duration_ms', 0)),
-                    'album_cover': track.get('album', {}).get('images', [{}])[0].get('url'),
+                    'album_cover': (track.get('album', {}).get('images') or [{}])[0].get('url'),
                     'preview_url': track.get('preview_url'),
                     'genre': 'OTHER',
                 },
