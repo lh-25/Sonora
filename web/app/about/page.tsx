@@ -1,20 +1,12 @@
 import Link from 'next/link';
+import AboutNav from './AboutNav';
 import styles from './about.module.css';
 
 export default function AboutPage() {
   return (
     <div className={styles.page}>
-      {/* Minimal nav for public pages */}
-      <nav className={styles.nav}>
-        <Link href="/" className={styles.navLogo}>
-          <span className={styles.navLogoIcon}>♪</span>
-          <span className={styles.navLogoText}>Sonora</span>
-        </Link>
-        <div className={styles.navLinks}>
-          <Link href="/login" className={styles.navLink}>Log In</Link>
-          <Link href="/signup" className={styles.navLinkPrimary}>Sign Up</Link>
-        </div>
-      </nav>
+      {/* Minimal nav — only shown to logged-out visitors */}
+      <AboutNav />
 
       {/* About Hero */}
       <section className={styles.aboutHero}>
