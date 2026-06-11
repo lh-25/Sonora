@@ -2,10 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Button, Input, MultilineInput, FormField, FormFieldLabel,
-  Text, H2, StackLayout, FlexLayout,
-} from '@salt-ds/core';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './signup.module.css';
 
@@ -42,50 +38,73 @@ export default function SignupPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <FlexLayout gap={1} align="center" justify="center" className={styles.header}>
+        <div className={styles.logoRow}>
           <span className={styles.logoIcon}>♪</span>
-          <H2 className={styles.logoText}>Create Account</H2>
-        </FlexLayout>
+          <h2 className={styles.logoText}>Create Account</h2>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <StackLayout gap={2}>
-            <FormField>
-              <FormFieldLabel>Username *</FormFieldLabel>
-              <Input value={username} onChange={(e) => setUsername((e.target as HTMLInputElement).value)} placeholder="Choose a username" />
-            </FormField>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="username">Username *</label>
+            <input
+              id="username"
+              className={styles.input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Choose a username"
+              autoComplete="username"
+            />
+          </div>
 
-            <FormField>
-              <FormFieldLabel>Email *</FormFieldLabel>
-              <Input value={email} onChange={(e) => setEmail((e.target as HTMLInputElement).value)} placeholder="you@example.com" inputProps={{ type: 'email' }} />
-            </FormField>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="email">Email *</label>
+            <input
+              id="email"
+              className={styles.input}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+            />
+          </div>
 
-            <FormField>
-              <FormFieldLabel>Password *</FormFieldLabel>
-              <Input value={password} onChange={(e) => setPassword((e.target as HTMLInputElement).value)} placeholder="At least 8 characters" inputProps={{ type: 'password' }} />
-            </FormField>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="password">Password *</label>
+            <input
+              id="password"
+              className={styles.input}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              autoComplete="new-password"
+            />
+          </div>
 
-            <FormField>
-              <FormFieldLabel>Bio</FormFieldLabel>
-              <MultilineInput
-                value={bio}
-                onChange={(e) => setBio((e.target as HTMLTextAreaElement).value)}
-                placeholder="Tell us about yourself (optional)"
-                rows={3}
-              />
-            </FormField>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="bio">Bio</label>
+            <textarea
+              id="bio"
+              className={styles.textarea}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Tell us about yourself (optional)"
+              rows={3}
+            />
+          </div>
 
-            {error && <Text styleAs="notation" className={styles.error}>{error}</Text>}
+          {error && <p className={styles.error}>{error}</p>}
 
-            <Button type="submit" variant="primary" loading={loading} className={styles.submitBtn}>
-              Create Account
-            </Button>
-          </StackLayout>
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? <span className={styles.spinner} /> : 'Create Account'}
+          </button>
         </form>
 
-        <FlexLayout justify="center" gap={1} align="center">
-          <Text styleAs="notation" className={styles.footerText}>Already have an account?</Text>
+        <div className={styles.footer}>
+          <span className={styles.footerText}>Already have an account?</span>
           <Link href="/login" className={styles.link}>Log in</Link>
-        </FlexLayout>
+        </div>
       </div>
     </div>
   );
