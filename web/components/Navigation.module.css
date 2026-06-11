@@ -2,10 +2,11 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: linear-gradient(90deg, #141414, #1f1f1f);
+  background: var(--sonora-nav-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--sonora-border);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--sonora-nav-shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inner {
@@ -34,24 +35,6 @@
   object-fit: contain;
 }
 
-.logoIcon {
-  font-size: 22px;
-  background: linear-gradient(90deg, #00d4ff, #ff40ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.logoText {
-  color: #fff !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.5px;
-  background: linear-gradient(90deg, #00d4ff, #ff40ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 .links {
   flex: 1;
   justify-content: center;
@@ -78,9 +61,38 @@
   font-weight: 600;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .username {
   color: var(--sonora-text-muted) !important;
   font-size: 13px;
+}
+
+.themeToggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--sonora-border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  line-height: 1;
+  padding: 0;
+}
+
+.themeToggle:hover {
+  border-color: var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.08);
+  transform: rotate(20deg);
 }
 
 .logoutBtn {
