@@ -29,6 +29,7 @@ export default function SongsPage() {
   const [spotifyQuery, setSpotifyQuery] = useState('');
   const [spotifyResults, setSpotifyResults] = useState<any[]>([]);
   const [spotifyLoading, setSpotifyLoading] = useState(false);
+  const [spotifyError, setSpotifyError] = useState('');
 
   // Add song dialog
   const [addOpen, setAddOpen] = useState(false);
@@ -65,11 +66,19 @@ export default function SongsPage() {
     if (!isAuthenticated) { router.push('/login'); return; }
     if (!spotifyQuery.trim()) return;
     setSpotifyLoading(true);
+    setSpotifyError('');
     try {
       const data = await spotifySearch(spotifyQuery);
-      setSpotifyResults(data?.tracks?.items ?? []);
-    } catch {
+      const items = data?.tracks?.items ?? [];
+      setSpotifyResults(items);
+      if (items.length === 0) setSpotifyError('No results found.');
+    } catch (err: any) {
       setSpotifyResults([]);
+      if (err.message?.includes('503') || err.message?.includes('Spotify not configured')) {
+        setSpotifyError('Spotify search is not configured on the server. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in your environment.');
+      } else {
+        setSpotifyError('Spotify search failed. Please try again.');
+      }
     } finally {
       setSpotifyLoading(false);
     }
@@ -163,6 +172,10 @@ export default function SongsPage() {
               Search Spotify
             </Button>
           </FlexLayout>
+
+          {spotifyError && (
+            <Text styleAs="notation" style={{ color: '#ff4040', marginTop: 8 }}>{spotifyError}</Text>
+          )}
 
           {spotifyResults.length > 0 && (
             <div className={styles.spotifyResults}>

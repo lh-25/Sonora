@@ -2,10 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Button, Input, FormField, FormFieldLabel, FormFieldHelperText,
-  Text, H1, StackLayout, FlexLayout,
-} from '@salt-ds/core';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './login.module.css';
 
@@ -33,50 +29,49 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <StackLayout gap={3} align="center">
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>♪</span>
-            <H1 className={styles.logoText}>Sonora</H1>
-          </div>
-          <Text styleAs="h4" className={styles.subtitle}>Sign in to your account</Text>
-        </StackLayout>
+        <div className={styles.logoRow}>
+          <span className={styles.logoIcon}>♪</span>
+          <h1 className={styles.logoText}>Sonora</h1>
+        </div>
+        <p className={styles.subtitle}>Sign in to your account</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          <StackLayout gap={2}>
-            <FormField>
-              <FormFieldLabel>Username</FormFieldLabel>
-              <Input
-                value={username}
-                onChange={(e) => setUsername((e.target as HTMLInputElement).value)}
-                placeholder="Enter your username"
-                inputProps={{ autoComplete: 'username' }}
-              />
-            </FormField>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="username">Username</label>
+            <input
+              id="username"
+              className={styles.input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              autoComplete="username"
+            />
+          </div>
 
-            <FormField>
-              <FormFieldLabel>Password</FormFieldLabel>
-              <Input
-                value={password}
-                onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
-                placeholder="Enter your password"
-                inputProps={{ type: 'password', autoComplete: 'current-password' }}
-              />
-            </FormField>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="password">Password</label>
+            <input
+              id="password"
+              className={styles.input}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+            />
+          </div>
 
-            {error && (
-              <Text styleAs="notation" className={styles.error}>{error}</Text>
-            )}
+          {error && <p className={styles.error}>{error}</p>}
 
-            <Button type="submit" variant="primary" loading={loading} className={styles.submitBtn}>
-              Log In
-            </Button>
-          </StackLayout>
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? <span className={styles.spinner} /> : 'Log In'}
+          </button>
         </form>
 
-        <FlexLayout justify="center" gap={1} className={styles.footer}>
-          <Text styleAs="notation" className={styles.footerText}>Don&apos;t have an account?</Text>
+        <div className={styles.footer}>
+          <span className={styles.footerText}>Don&apos;t have an account?</span>
           <Link href="/signup" className={styles.link}>Sign up</Link>
-        </FlexLayout>
+        </div>
       </div>
     </div>
   );
