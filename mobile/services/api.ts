@@ -292,7 +292,7 @@ export async function getUserPosts(userId: number, page = 1): Promise<PaginatedR
   return request(`/posts/?filter=user&user_id=${userId}&page=${page}`);
 }
 
-export async function updateProfile(formData: FormData): Promise<{ user: User; profile: Profile }> {
+export async function updateProfileMultipart(formData: FormData): Promise<{ user: User; profile: Profile }> {
   let token = await getAccessToken();
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;

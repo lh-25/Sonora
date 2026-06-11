@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
-import { updateProfile } from '@/services/api';
+import { updateProfileMultipart } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function EditProfileScreen() {
@@ -51,7 +51,7 @@ export default function EditProfileScreen() {
           type: image.type,
         } as any);
       }
-      await updateProfile(formData);
+      await updateProfileMultipart(formData);
       await refreshProfile();
       router.back();
     } catch (err: any) {
