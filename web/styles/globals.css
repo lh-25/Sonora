@@ -14,6 +14,36 @@
   --sonora-text-muted: #b3b3b3;
   --sonora-gradient-primary: linear-gradient(90deg, #00d4ff, #ff40ff);
   --sonora-gradient-action: linear-gradient(90deg, #ff4040, #ff7b40);
+
+  /* Component-specific tokens */
+  --sonora-nav-bg: linear-gradient(90deg, #141414, #1f1f1f);
+  --sonora-nav-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  --sonora-input-bg: #141414;
+  --sonora-placeholder: #555;
+  --sonora-card-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  --sonora-card-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.85);
+}
+
+/* ─── Light mode overrides ────────────────────────────────────────────────── */
+
+html[data-sonora-theme='light'] {
+  --sonora-bg: #f5f5f5;
+  --sonora-surface: #ffffff;
+  --sonora-surface-alt: #eeeeee;
+  --sonora-border: #ddd;
+  --sonora-text: #111111;
+  --sonora-text-muted: #666666;
+
+  --sonora-nav-bg: linear-gradient(90deg, #f0f0f0, #e8e8e8);
+  --sonora-nav-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --sonora-input-bg: #ffffff;
+  --sonora-placeholder: #aaa;
+  --sonora-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --sonora-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+html[data-sonora-theme='light'] ::-webkit-scrollbar-thumb {
+  background: #ccc;
 }
 
 * {
@@ -29,6 +59,7 @@ body {
   color: var(--sonora-text);
   font-family: 'Inter', var(--salt-typography-fontFamily), system-ui, sans-serif;
   animation: fadeIn 1.2s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -48,9 +79,18 @@ body {
   --salt-separable-secondary-borderColor: var(--sonora-border);
 }
 
+/* Salt light mode overrides */
+.salt-theme[data-mode='light'] {
+  --salt-container-primary-background: var(--sonora-surface);
+  --salt-container-secondary-background: var(--sonora-surface-alt);
+  --salt-separable-secondary-borderColor: var(--sonora-border);
+  --salt-text-primary-foreground: var(--sonora-text);
+  --salt-text-secondary-foreground: var(--sonora-text-muted);
+  --salt-background: var(--sonora-bg);
+}
+
 /* ─── Salt Button overrides ─────────────────────────────────────────────── */
 
-/* Primary buttons → red-orange gradient (submit/action) */
 .saltButton[data-variant='primary'] {
   background: var(--sonora-gradient-action) !important;
   color: #fff !important;
@@ -64,7 +104,6 @@ body {
   box-shadow: 0 6px 20px rgba(255, 64, 64, 0.45) !important;
 }
 
-/* Secondary buttons → cyan style */
 .saltButton[data-variant='secondary'] {
   color: var(--sonora-cyan) !important;
   border-color: var(--sonora-cyan) !important;
@@ -83,7 +122,7 @@ body {
 /* ─── Salt Input overrides ─────────────────────────────────────────────── */
 
 .saltInput {
-  background: #141414 !important;
+  background: var(--sonora-input-bg) !important;
   border: 1px solid var(--sonora-border) !important;
   border-radius: 8px !important;
   color: var(--sonora-text) !important;
@@ -101,12 +140,12 @@ body {
   border: 1px solid var(--sonora-border);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--sonora-card-shadow);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .sonora-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85);
+  box-shadow: var(--sonora-card-shadow-hover);
 }
 
 .sonora-grid {
@@ -133,7 +172,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #888;
+  color: var(--sonora-text-muted);
 }
 
 .sonora-cyan {
