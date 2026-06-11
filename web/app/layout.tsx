@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import '@salt-ds/theme/index.css';
 import Providers from '@/components/Providers';
 import '@/styles/globals.css';
 

@@ -229,7 +229,7 @@ export async function getPlaylist(id: number) {
   return request<Playlist>(`/playlists/${id}/`);
 }
 
-export async function createPlaylist(data: { name: string; description?: string; visibility?: string }) {
+export async function createPlaylist(data: { name: string; description?: string; visibility?: string; playlist_cover?: string }) {
   return request<Playlist>('/playlists/', { method: 'POST', body: JSON.stringify(data) });
 }
 

@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  Button, Text, H1, H2, H3, StackLayout, FlexLayout, Spinner,
+  Button, Text, H1, H3, StackLayout, FlexLayout, Spinner,
   Dialog, DialogHeader, DialogContent, DialogActions,
   FormField, FormFieldLabel, Input, MultilineInput, RadioButton, RadioButtonGroup,
   ToggleButton, ToggleButtonGroup,
 } from '@salt-ds/core';
 import {
   getPlaylists, createPlaylist, getSpotifyPlaylists, importSpotifyPlaylist,
-  spotifyStatus, type Playlist,
+  spotifyStatus, uploadImage, type Playlist,
 } from '@/services/api';
 import styles from './playlists.module.css';
 import Link from 'next/link';
@@ -24,7 +24,10 @@ export default function PlaylistsPage() {
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newVisibility, setNewVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PRIVATE');
+  const [coverUrl, setCoverUrl] = useState('');
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [creating, setCreating] = useState(false);
+  const coverRef = useRef<HTMLInputElement>(null);
 
   // Spotify import
   const [spotifyConnected, setSpotifyConnected] = useState(false);
@@ -36,19 +39,44 @@ export default function PlaylistsPage() {
     setLoading(true);
     Promise.all([
       getPlaylists(filter).then((d) => setPlaylists(d.results)),
-      spotifyStatus().then((s) => setSpotifyConnected(s.connected)),
+      spotifyStatus().then((s) => setSpotifyConnected(s.connected)).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, [filter]);
+
+  const resetCreateForm = () => {
+    setNewName(''); setNewDesc(''); setNewVisibility('PRIVATE'); setCoverUrl('');
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCover(true);
+    try {
+      const { url } = await uploadImage(file, 'playlist_covers');
+      setCoverUrl(url);
+    } catch {
+      alert('Could not upload cover image.');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      await createPlaylist({ name: newName, description: newDesc, visibility: newVisibility });
+      await createPlaylist({
+        name: newName.trim(),
+        description: newDesc.trim(),
+        visibility: newVisibility,
+        playlist_cover: coverUrl || undefined,
+      });
       setCreateOpen(false);
-      setNewName(''); setNewDesc('');
+      resetCreateForm();
       const d = await getPlaylists(filter);
       setPlaylists(d.results);
+    } catch {
+      alert('Could not create playlist. Please try again.');
     } finally {
       setCreating(false);
     }
@@ -143,17 +171,40 @@ export default function PlaylistsPage() {
       </div>
 
       {/* Create dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog open={createOpen} onOpenChange={(o) => { setCreateOpen(o); if (!o) resetCreateForm(); }}>
         <DialogHeader header="New Playlist" />
         <DialogContent>
-          <StackLayout gap={2}>
+          <StackLayout gap={3}>
+            {/* Cover */}
+            <div className={styles.coverField}>
+              {coverUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={coverUrl} alt="cover" className={styles.coverPreview} />
+              ) : (
+                <div className={styles.coverPlaceholder}>♬</div>
+              )}
+              <div>
+                <Button variant="secondary" onClick={() => coverRef.current?.click()} loading={uploadingCover}>
+                  {coverUrl ? 'Change Cover' : 'Upload Cover'}
+                </Button>
+                <input
+                  ref={coverRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleCoverUpload}
+                />
+                <Text styleAs="notation" className={styles.coverHint}>Optional · JPG or PNG</Text>
+              </div>
+            </div>
+
             <FormField>
               <FormFieldLabel>Name *</FormFieldLabel>
               <Input value={newName} onChange={(e) => setNewName((e.target as HTMLInputElement).value)} placeholder="Playlist name" />
             </FormField>
             <FormField>
               <FormFieldLabel>Description</FormFieldLabel>
-              <MultilineInput value={newDesc} onChange={(e) => setNewDesc((e.target as HTMLTextAreaElement).value)} rows={3} />
+              <MultilineInput value={newDesc} onChange={(e) => setNewDesc((e.target as HTMLTextAreaElement).value)} rows={3} placeholder="What's this playlist about?" />
             </FormField>
             <FormField>
               <FormFieldLabel>Visibility</FormFieldLabel>
@@ -169,8 +220,8 @@ export default function PlaylistsPage() {
           </StackLayout>
         </DialogContent>
         <DialogActions>
-          <Button variant="secondary" onClick={() => setCreateOpen(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleCreate} loading={creating}>Create</Button>
+          <Button variant="secondary" onClick={() => { setCreateOpen(false); resetCreateForm(); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} loading={creating} disabled={!newName.trim()}>Create</Button>
         </DialogActions>
       </Dialog>
 
@@ -178,26 +229,32 @@ export default function PlaylistsPage() {
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogHeader header="Import from Spotify" />
         <DialogContent>
-          <StackLayout gap={1} className={styles.importList}>
+          <div className={styles.importList}>
             {spotifyPls.length === 0 && (
-              <Text styleAs="notation">No Spotify playlists found.</Text>
+              <Text styleAs="notation" className={styles.importEmpty}>No Spotify playlists found.</Text>
             )}
             {spotifyPls.map((pl: any) => (
-              <FlexLayout key={pl.id} justify="space-between" align="center" className={styles.importRow}>
-                <div>
+              <div key={pl.id} className={styles.importRow}>
+                {pl.images?.[0]?.url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={pl.images[0].url} alt={pl.name} className={styles.importCover} />
+                ) : (
+                  <div className={styles.importCoverPlaceholder}>♬</div>
+                )}
+                <div className={styles.importInfo}>
                   <Text styleAs="label" className={styles.importName}>{pl.name}</Text>
-                  <Text styleAs="notation" className={styles.importMeta}>{pl.tracks?.total} tracks</Text>
+                  <Text styleAs="notation" className={styles.importMeta}>{pl.tracks?.total ?? 0} tracks</Text>
                 </div>
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   onClick={() => handleImport(pl.id, pl.name)}
                   loading={importing === pl.id}
                 >
                   Import
                 </Button>
-              </FlexLayout>
+              </div>
             ))}
-          </StackLayout>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button variant="secondary" onClick={() => setImportOpen(false)}>Close</Button>
