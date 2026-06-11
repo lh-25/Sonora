@@ -10,24 +10,32 @@
   z-index: 200;
 }
 
-.progress {
-  height: 2px !important;
-  border-radius: 0 !important;
-  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
-}
-
-.content {
+.bar {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 24px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+}
+
+.embed {
+  flex: 1;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.fallback {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
 }
 
 .art {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 6px;
   object-fit: cover;
   flex-shrink: 0;
@@ -35,8 +43,8 @@
 }
 
 .artPlaceholder {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 6px;
   background: var(--sonora-surface-alt);
   display: flex;
@@ -48,52 +56,53 @@
 }
 
 .info {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
 .title {
-  color: #fff !important;
-  font-weight: 600 !important;
+  color: var(--sonora-text);
+  font-weight: 600;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: block;
 }
 
 .artist {
-  color: var(--sonora-text-muted) !important;
+  color: var(--sonora-text-muted);
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: block;
-}
-
-.playBtn {
-  min-width: 40px !important;
-  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
-  color: #fff !important;
-  border: none !important;
-  border-radius: 20px !important;
-}
-
-.spotifyBtn {
-  font-size: 12px !important;
-  color: var(--sonora-cyan) !important;
-  border-color: var(--sonora-cyan) !important;
-  border-radius: 20px !important;
-}
-
-.closeBtn {
-  min-width: 36px !important;
-  font-size: 12px !important;
-  color: var(--sonora-text-muted) !important;
-  border-radius: 18px !important;
 }
 
 .noPreview {
-  color: #555 !important;
-  text-align: center;
-  display: block;
-  padding-bottom: 6px;
+  color: #777;
+  font-size: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--sonora-border);
+  background: transparent;
+  color: var(--sonora-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.closeBtn:hover {
+  border-color: #ff4040;
+  color: #ff4040;
+  background: rgba(255, 64, 64, 0.08);
 }
