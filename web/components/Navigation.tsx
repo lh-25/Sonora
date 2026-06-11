@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button, Text, StackLayout, FlexLayout } from '@salt-ds/core';
+import { Button, Text, FlexLayout } from '@salt-ds/core';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import styles from './Navigation.module.css';
 
 const NAV_LINKS = [
@@ -19,6 +20,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, user, logout } = useAuth();
+  const { mode, toggle } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -47,12 +49,20 @@ export default function Navigation() {
           ))}
         </FlexLayout>
 
-        <FlexLayout gap={1} align="center">
+        <div className={styles.actions}>
           <Text className={styles.username}>@{user?.username}</Text>
+          <button
+            className={styles.themeToggle}
+            onClick={toggle}
+            title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle theme"
+          >
+            {mode === 'dark' ? '☀' : '☾'}
+          </button>
           <Button variant="secondary" onClick={handleLogout} className={styles.logoutBtn}>
             Log out
           </Button>
-        </FlexLayout>
+        </div>
       </div>
     </nav>
   );
