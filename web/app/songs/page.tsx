@@ -74,11 +74,17 @@ export default function SongsPage() {
       if (items.length === 0) setSpotifyError('No results found.');
     } catch (err: any) {
       setSpotifyResults([]);
-      if (err.message?.includes('503') || err.message?.includes('Spotify not configured')) {
-        setSpotifyError('Spotify search is not configured on the server. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in your environment.');
-      } else {
-        setSpotifyError('Spotify search failed. Please try again.');
+      // The backend returns a JSON body like {"error": "..."}; surface it.
+      let msg = 'Spotify search failed. Please try again.';
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed?.error) msg = parsed.error;
+      } catch {
+        if (err.message?.includes('Spotify not configured')) {
+          msg = 'Spotify search is not configured on the server. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.';
+        }
       }
+      setSpotifyError(msg);
     } finally {
       setSpotifyLoading(false);
     }
