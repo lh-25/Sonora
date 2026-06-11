@@ -73,7 +73,7 @@
 .input,
 .textarea {
   width: 100%;
-  background: #141414;
+  background: var(--sonora-input-bg);
   border: 1px solid var(--sonora-border);
   border-radius: 8px;
   color: var(--sonora-text);
@@ -81,7 +81,7 @@
   padding: 11px 14px;
   outline: none;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
 .textarea {
@@ -91,7 +91,7 @@
 
 .input::placeholder,
 .textarea::placeholder {
-  color: #555;
+  color: var(--sonora-placeholder);
 }
 
 .input:focus,
