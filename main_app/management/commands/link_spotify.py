@@ -10,6 +10,7 @@ and saves the best match's track id. Also backfills album_cover and album
 when missing.
 """
 
+import re
 import time
 
 import requests
@@ -25,6 +26,25 @@ SEARCH_LIMIT = 5
 
 def _norm(s):
     return ''.join(ch for ch in (s or '').lower() if ch.isalnum() or ch == ' ').strip()
+
+
+def _clean_title(title):
+    """Strip parentheticals/brackets and feat./ft. suffixes that break searches."""
+    t = re.sub(r'[\(\[][^\)\]]*[\)\]]', ' ', title or '')
+    t = re.split(r'\b(?:feat\.?|ft\.?|featuring)\b', t, flags=re.IGNORECASE)[0]
+    return re.sub(r'\s+', ' ', t).strip()
+
+
+def _queries(song):
+    """Search queries to try, strictest first."""
+    cleaned = _clean_title(song.title)
+    out = [f'track:{song.title} artist:{song.artist}']
+    if cleaned and cleaned.lower() != song.title.lower():
+        out.append(f'track:{cleaned} artist:{song.artist}')
+    out.append(f'{song.title} {song.artist}')
+    if cleaned and cleaned.lower() != song.title.lower():
+        out.append(f'{cleaned} {song.artist}')
+    return out
 
 
 def _pick_match(song, items):
@@ -70,40 +90,46 @@ class Command(BaseCommand):
 
         linked = exact = skipped = failed = 0
         for song in qs:
-            query = f'track:{song.title} artist:{song.artist}'
-            try:
-                resp = requests.get(
-                    SEARCH_URL,
-                    params={'q': query, 'type': 'track', 'limit': SEARCH_LIMIT, 'market': 'US'},
-                    headers={'Authorization': f'Bearer {token}'},
-                    timeout=10,
-                )
-                # Token expired mid-run (>1h) — refresh once and retry.
-                if resp.status_code == 401:
-                    token = _spotify_client_token()
+            items = []
+            for query in _queries(song):
+                try:
                     resp = requests.get(
                         SEARCH_URL,
                         params={'q': query, 'type': 'track', 'limit': SEARCH_LIMIT, 'market': 'US'},
                         headers={'Authorization': f'Bearer {token}'},
                         timeout=10,
                     )
-                # Rate limited — wait as instructed and retry once.
-                if resp.status_code == 429:
-                    wait = int(resp.headers.get('Retry-After', 2))
-                    self.stdout.write(f'  rate limited, waiting {wait}s...')
-                    time.sleep(wait)
-                    resp = requests.get(
-                        SEARCH_URL,
-                        params={'q': query, 'type': 'track', 'limit': SEARCH_LIMIT, 'market': 'US'},
-                        headers={'Authorization': f'Bearer {token}'},
-                        timeout=10,
-                    )
-                resp.raise_for_status()
-                items = resp.json().get('tracks', {}).get('items', [])
-            except requests.RequestException as exc:
-                failed += 1
-                self.stdout.write(self.style.ERROR(f'✗ {song} — request failed: {exc}'))
-                continue
+                    if resp.status_code == 401:
+                        token = _spotify_client_token()
+                        resp = requests.get(
+                            SEARCH_URL,
+                            params={'q': query, 'type': 'track', 'limit': SEARCH_LIMIT, 'market': 'US'},
+                            headers={'Authorization': f'Bearer {token}'},
+                            timeout=10,
+                        )
+                    if resp.status_code == 429:
+                        wait = int(resp.headers.get('Retry-After', 2))
+                        self.stdout.write(f'  rate limited, waiting {wait}s...')
+                        time.sleep(wait)
+                        resp = requests.get(
+                            SEARCH_URL,
+                            params={'q': query, 'type': 'track', 'limit': SEARCH_LIMIT, 'market': 'US'},
+                            headers={'Authorization': f'Bearer {token}'},
+                            timeout=10,
+                        )
+                    resp.raise_for_status()
+                    items = resp.json().get('tracks', {}).get('items', [])
+                except requests.RequestException as exc:
+                    failed += 1
+                    self.stdout.write(self.style.ERROR(f'✗ {song} — request failed: {exc}'))
+                    items = None
+                    break
+                if items:
+                    break  # found results, stop trying fallback queries
+                time.sleep(0.1)
+
+            if items is None:
+                continue  # request error already counted
 
             track, is_exact = _pick_match(song, items)
             if not track:
