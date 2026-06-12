@@ -495,7 +495,9 @@ def spotify_search(request):
     """Search Spotify catalog using client credentials (no user auth required)."""
     query = request.query_params.get('q', '')
     search_type = request.query_params.get('type', 'track')
-    limit = min(int(request.query_params.get('limit', 20)), 50)
+    # Spotify caps the search limit at 10 for client-credentials (app) tokens;
+    # anything higher returns 400 "Invalid limit".
+    limit = min(int(request.query_params.get('limit', 10)), 10)
 
     if not query:
         return Response({'error': 'q parameter required'}, status=status.HTTP_400_BAD_REQUEST)
