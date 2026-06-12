@@ -30,13 +30,51 @@
 }
 
 .genreSelect {
-  background: #141414;
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: #e0e0e0;
-  padding: 8px 12px;
+  background: var(--sonora-input-bg);
+  border: 1px solid var(--sonora-border);
+  border-radius: 10px;
+  color: var(--sonora-text);
+  padding: 10px 12px;
   font-size: 14px;
   width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.genreSelect:focus {
+  outline: none;
+  border-color: var(--sonora-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.18);
+}
+
+/* Link-to-song dialog */
+.linkPreview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--sonora-surface-alt);
+  border: 1px solid var(--sonora-border);
+}
+.linkArt {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.linkInfo {
+  min-width: 0;
+}
+.linkName {
+  color: var(--sonora-text) !important;
+  font-weight: 600 !important;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.linkArtist {
+  color: var(--sonora-text-muted) !important;
 }
 
 .filters {
