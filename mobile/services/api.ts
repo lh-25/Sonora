@@ -340,7 +340,7 @@ export async function createPostMultipart(formData: FormData): Promise<Post> {
 
 // ─── Spotify ──────────────────────────────────────────────────────────────────
 
-export async function spotifySearch(q: string, type = 'track', limit = 20) {
+export async function spotifySearch(q: string, type = 'track', limit = 10) {
   const qs = new URLSearchParams({ q, type, limit: String(limit) });
   return request<any>(`/spotify/search/?${qs}`);
 }
