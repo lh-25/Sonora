@@ -31,6 +31,11 @@ export default function SongsPage() {
   const [spotifyLoading, setSpotifyLoading] = useState(false);
   const [spotifyError, setSpotifyError] = useState('');
 
+  // Link-to-song dialog
+  const [linkTrack, setLinkTrack] = useState<any | null>(null);
+  const [linkSongId, setLinkSongId] = useState('');
+  const [linking, setLinking] = useState(false);
+
   // Add song dialog
   const [addOpen, setAddOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -90,14 +95,25 @@ export default function SongsPage() {
     }
   };
 
-  const handleLinkTrack = async (song: Song, spotifyTrack: any) => {
+  const openLink = (track: any) => {
     if (!isAuthenticated) { router.push('/login'); return; }
+    setLinkTrack(track);
+    setLinkSongId('');
+  };
+
+  const confirmLink = async () => {
+    const song = songs.find((s) => s.id === Number(linkSongId));
+    if (!song || !linkTrack) return;
+    setLinking(true);
     try {
-      const updated = await linkSpotifyTrack(song.id, spotifyTrack.id, spotifyTrack.preview_url);
+      const updated = await linkSpotifyTrack(song.id, linkTrack.id, linkTrack.preview_url);
       setSongs((prev) => prev.map((s) => s.id === updated.id ? updated : s));
-      alert(`"${song.title}" linked to Spotify!`);
+      setLinkTrack(null);
+      setLinkSongId('');
     } catch {
       alert('Could not link — try again.');
+    } finally {
+      setLinking(false);
     }
   };
 
@@ -210,16 +226,7 @@ export default function SongsPage() {
                         Preview
                       </Button>
                     )}
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        const target = prompt('Enter song ID to link (from the library below):');
-                        if (!target) return;
-                        const song = songs.find((s) => s.id === Number(target));
-                        if (song) handleLinkTrack(song, track);
-                        else alert('Song not found — check the ID.');
-                      }}
-                    >
+                    <Button variant="secondary" onClick={() => openLink(track)}>
                       Link
                     </Button>
                   </FlexLayout>
@@ -302,6 +309,48 @@ export default function SongsPage() {
           <Button variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
           <Button variant="primary" onClick={handleAddSong} loading={addingSong} disabled={!newTitle.trim() || !newArtist.trim()}>
             Add Song
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Link-to-song Dialog */}
+      <Dialog open={!!linkTrack} onOpenChange={(open) => { if (!open) setLinkTrack(null); }}>
+        <DialogHeader header="Link to a Song" />
+        <DialogContent>
+          {linkTrack && (
+            <StackLayout gap={2}>
+              <div className={styles.linkPreview}>
+                {linkTrack.album?.images?.[0]?.url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={linkTrack.album.images[0].url} alt={linkTrack.name} className={styles.linkArt} />
+                )}
+                <div className={styles.linkInfo}>
+                  <Text styleAs="label" className={styles.linkName}>{linkTrack.name}</Text>
+                  <Text styleAs="notation" className={styles.linkArtist}>
+                    {linkTrack.artists?.map((a: any) => a.name).join(', ')}
+                  </Text>
+                </div>
+              </div>
+              <FormField>
+                <FormFieldLabel>Choose one of your songs to link this track to</FormFieldLabel>
+                <select
+                  value={linkSongId}
+                  onChange={(e) => setLinkSongId(e.target.value)}
+                  className={styles.genreSelect}
+                >
+                  <option value="">Select a song…</option>
+                  {songs.filter((s) => s.id > 0).map((s) => (
+                    <option key={s.id} value={s.id}>{s.title} — {s.artist}</option>
+                  ))}
+                </select>
+              </FormField>
+            </StackLayout>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="secondary" onClick={() => setLinkTrack(null)}>Cancel</Button>
+          <Button variant="primary" onClick={confirmLink} loading={linking} disabled={!linkSongId}>
+            Link
           </Button>
         </DialogActions>
       </Dialog>
