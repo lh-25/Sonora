@@ -27,23 +27,40 @@
 /* ─── Light mode overrides ────────────────────────────────────────────────── */
 
 html[data-sonora-theme='light'] {
-  --sonora-bg: #f5f5f5;
+  /* Soft, slightly cool neutrals so the cyan/magenta brand reads as an accent
+     rather than fighting a pure-white glare. */
+  --sonora-bg: #f1f3f7;
   --sonora-surface: #ffffff;
-  --sonora-surface-alt: #eeeeee;
-  --sonora-border: #ddd;
-  --sonora-text: #111111;
-  --sonora-text-muted: #666666;
+  --sonora-surface-alt: #eef1f6;
+  --sonora-border: #d9dee8;
+  --sonora-text: #15171c;
+  --sonora-text-muted: #5b6472;
 
-  --sonora-nav-bg: linear-gradient(90deg, #f0f0f0, #e8e8e8);
-  --sonora-nav-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  /* Deepen the accents for readable contrast on light surfaces.
+     Gradients use literal colors elsewhere, so they stay vivid. */
+  --sonora-cyan: #008fb3;
+  --sonora-magenta: #c81dc8;
+
+  --sonora-nav-bg: linear-gradient(90deg, #ffffff, #f3f5f9);
+  --sonora-nav-shadow: 0 2px 14px rgba(20, 30, 60, 0.08);
   --sonora-input-bg: #ffffff;
-  --sonora-placeholder: #aaa;
-  --sonora-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --sonora-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --sonora-placeholder: #97a0b0;
+  --sonora-card-shadow: 0 4px 16px rgba(20, 30, 60, 0.08);
+  --sonora-card-shadow-hover: 0 10px 28px rgba(20, 30, 60, 0.14);
 }
 
 html[data-sonora-theme='light'] ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #c4ccd9;
+}
+
+/* Light-mode dialog: lift the shadow and soften the scrim for a cleaner feel */
+html[data-sonora-theme='light'] .saltDialog {
+  box-shadow: 0 24px 60px rgba(20, 30, 60, 0.22) !important;
+}
+html[data-sonora-theme='light'] .saltButton-solid.saltButton-neutral:disabled,
+html[data-sonora-theme='light'] .saltButton-solid.saltButton-neutral[aria-disabled='true'] {
+  background: #e4e8f0 !important;
+  color: #9aa3b2 !important;
 }
 
 * {
@@ -90,47 +107,165 @@ body {
 }
 
 /* ─── Salt Button overrides ─────────────────────────────────────────────── */
+/* Salt v1 maps the legacy `variant` prop onto appearance + sentiment classes:
+   primary  -> solid + neutral
+   secondary-> transparent + neutral
+   cta      -> solid + accented
+   We target those combinations so brand styling actually lands. */
 
-.saltButton[data-variant='primary'] {
+.saltButton {
+  border-radius: 24px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  padding: 0 20px !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
+}
+
+/* primary — the main brand gradient button */
+.saltButton-solid.saltButton-neutral {
+  background: var(--sonora-gradient-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.25) !important;
+}
+.saltButton-solid.saltButton-neutral:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(255, 64, 255, 0.4) !important;
+  filter: brightness(1.06) !important;
+}
+.saltButton-solid.saltButton-neutral:disabled,
+.saltButton-solid.saltButton-neutral[aria-disabled='true'] {
+  background: var(--sonora-surface-alt) !important;
+  color: var(--sonora-text-muted) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  opacity: 0.6 !important;
+}
+
+/* cta — strong action gradient (red/orange) */
+.saltButton-solid.saltButton-accented {
   background: var(--sonora-gradient-action) !important;
   color: #fff !important;
   border: none !important;
-  border-radius: 25px !important;
-  font-weight: 600 !important;
-  transition: transform 0.2s, box-shadow 0.2s !important;
+  box-shadow: 0 4px 14px rgba(255, 64, 64, 0.3) !important;
 }
-.saltButton[data-variant='primary']:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 6px 20px rgba(255, 64, 64, 0.45) !important;
+.saltButton-solid.saltButton-accented:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 22px rgba(255, 123, 64, 0.45) !important;
+  filter: brightness(1.06) !important;
 }
 
-.saltButton[data-variant='secondary'] {
+/* secondary — outlined */
+.saltButton-transparent.saltButton-neutral {
   color: var(--sonora-cyan) !important;
-  border-color: var(--sonora-cyan) !important;
-  border-radius: 25px !important;
-  font-weight: 600 !important;
+  border: 1.5px solid var(--sonora-cyan) !important;
   background: transparent !important;
-  transition: transform 0.2s, box-shadow 0.2s !important;
 }
-.saltButton[data-variant='secondary']:hover {
+.saltButton-transparent.saltButton-neutral:hover {
   color: var(--sonora-magenta) !important;
   border-color: var(--sonora-magenta) !important;
+  background: rgba(0, 212, 255, 0.06) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.25) !important;
 }
 
 /* ─── Salt Input overrides ─────────────────────────────────────────────── */
 
-.saltInput {
+.saltInput,
+.saltMultilineInput {
   background: var(--sonora-input-bg) !important;
   border: 1px solid var(--sonora-border) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   color: var(--sonora-text) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.saltInput:hover,
+.saltMultilineInput:hover {
+  border-color: var(--sonora-text-muted) !important;
 }
 .saltInput:focus-within,
-.saltInput[data-focused='true'] {
+.saltInput[data-focused='true'],
+.saltMultilineInput:focus-within {
   border-color: var(--sonora-cyan) !important;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.18) !important;
+}
+.saltInput input::placeholder,
+.saltMultilineInput textarea::placeholder {
+  color: var(--sonora-placeholder) !important;
+}
+
+/* ─── Salt Dialog overrides — production-grade modals ───────────────────── */
+
+.saltScrim {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(6px) !important;
+}
+html[data-sonora-theme='light'] .saltScrim {
+  background: rgba(20, 30, 60, 0.35) !important;
+}
+
+.saltDialog {
+  position: relative !important;
+  background: var(--sonora-surface) !important;
+  border: 1px solid var(--sonora-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.02) inset !important;
+  color: var(--sonora-text) !important;
+  overflow: hidden !important;
+  max-width: 560px !important;
+  width: calc(100vw - 48px) !important;
+}
+
+/* Gradient hairline across the very top of every dialog */
+.saltDialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--sonora-gradient-primary);
+  z-index: 2;
+}
+
+.saltDialogHeader {
+  padding: 28px 28px 12px !important;
+  border-bottom: none !important;
+}
+.saltDialogHeader .saltText,
+.saltDialogHeader h2,
+.saltDialogHeader [class*='saltDialogHeader-title'] {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: var(--sonora-text) !important;
+  letter-spacing: -0.02em !important;
+}
+/* Remove Salt's default status accent bar — we use the top gradient instead */
+.saltDialogHeader::before,
+.saltDialogHeader [class*='accent'] {
+  display: none !important;
+}
+
+.saltDialogContent {
+  padding: 8px 28px 8px !important;
+  color: var(--sonora-text) !important;
+}
+
+.saltDialogActions {
+  padding: 20px 28px 26px !important;
+  gap: 12px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+/* Form labels inside dialogs */
+.saltFormFieldLabel {
+  color: var(--sonora-text-muted) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 6px !important;
 }
 
 /* ─── Sonora-specific utilities ─────────────────────────────────────────── */

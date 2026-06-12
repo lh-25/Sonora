@@ -155,10 +155,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: var(--sonora-surface-alt);
   border: 1px solid var(--sonora-border);
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.importRow:hover {
+  border-color: var(--sonora-cyan);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 212, 255, 0.12);
 }
 
 .importCover {
