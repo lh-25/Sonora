@@ -352,10 +352,10 @@ export async function spotifyStatus(): Promise<{ connected: boolean; scope?: str
   return request('/spotify/status/');
 }
 
-export async function spotifyExchangeToken(code: string, redirectUri: string) {
+export async function spotifyExchangeToken(code: string, redirectUri: string, codeVerifier: string) {
   return request('/spotify/exchange/', {
     method: 'POST',
-    body: JSON.stringify({ code, redirect_uri: redirectUri }),
+    body: JSON.stringify({ code, redirect_uri: redirectUri, code_verifier: codeVerifier }),
   });
 }
 

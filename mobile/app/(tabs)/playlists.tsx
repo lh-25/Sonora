@@ -83,7 +83,7 @@ export default function PlaylistsScreen() {
     const result = await authorize();
     if (!result) return;
     try {
-      await spotifyExchangeToken(result.code, result.redirectUri);
+      await spotifyExchangeToken(result.code, result.redirectUri, result.codeVerifier);
       setSpotifyConnected(true);
       toast.success('Spotify is now connected.');
     } catch {
