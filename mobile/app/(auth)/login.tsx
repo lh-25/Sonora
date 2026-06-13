@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
@@ -78,12 +79,19 @@ export default function LoginScreen() {
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
-          <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-            {loading ? (
-              <ActivityIndicator color="#000" />
-            ) : (
-              <Text style={styles.btnText}>Log In</Text>
-            )}
+          <TouchableOpacity onPress={handleLogin} disabled={loading} activeOpacity={0.85}>
+            <LinearGradient
+              colors={['#ff4040', '#ff7b40']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.btn}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.btnText}>Log In</Text>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
 
           <View style={styles.signupRow}>
@@ -164,14 +172,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   btn: {
-    backgroundColor: Colors.primary,
-    borderRadius: 10,
+    borderRadius: 25,
     paddingVertical: 15,
     alignItems: 'center',
     marginTop: 20,
   },
   btnText: {
-    color: '#000',
+    color: '#fff',
     fontWeight: '700',
     fontSize: 16,
   },
