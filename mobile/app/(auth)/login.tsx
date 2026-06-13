@@ -25,8 +25,13 @@ export default function LoginScreen() {
     setError('');
     try {
       await login(username.trim(), password);
-    } catch {
-      setError('Invalid username or password.');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '';
+      if (msg.includes('Network request failed')) {
+        setError("Can't reach the server. Check your connection and try again.");
+      } else {
+        setError('Invalid username or password.');
+      }
     } finally {
       setLoading(false);
     }
