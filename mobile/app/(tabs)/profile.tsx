@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     try {
       const result = await authorize();
       if (!result) { setLoadingSpotify(false); return; }
-      await spotifyExchangeToken(result.code, result.redirectUri);
+      await spotifyExchangeToken(result.code, result.redirectUri, result.codeVerifier);
       setSpotifyConnected(true);
       Alert.alert('Connected!', 'Spotify is now linked to your account.');
     } catch {

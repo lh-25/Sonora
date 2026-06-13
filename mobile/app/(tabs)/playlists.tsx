@@ -78,7 +78,7 @@ export default function PlaylistsScreen() {
     const result = await authorize();
     if (!result) return;
     try {
-      await spotifyExchangeToken(result.code, result.redirectUri);
+      await spotifyExchangeToken(result.code, result.redirectUri, result.codeVerifier);
       setSpotifyConnected(true);
       Alert.alert('Connected!', 'Spotify is now connected.');
     } catch {
