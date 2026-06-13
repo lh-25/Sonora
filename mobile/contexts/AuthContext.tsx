@@ -37,9 +37,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleLogin = async (username: string, password: string) => {
-    const data = await login(username, password);
-    setUser(data.user);
+    // /auth/login/ returns only the JWT pair (no user object),
+    // so fetch the user from /auth/me/ after the tokens are stored.
+    await login(username, password);
     const me = await getMe();
+    setUser(me.user);
     setProfile(me.profile);
   };
 
