@@ -76,7 +76,10 @@ async function request<T>(
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
-export type AuthTokens = { access: string; refresh: string; user: User };
+export type TokenPair = { access: string; refresh: string };
+// Only signup returns the user inline; login is SimpleJWT's stock view
+// and returns just the token pair.
+export type AuthTokens = TokenPair & { user: User };
 
 export async function signup(username: string, email: string, password: string, bio?: string): Promise<AuthTokens> {
   const data = await request<AuthTokens>('/auth/signup/', {
@@ -87,8 +90,8 @@ export async function signup(username: string, email: string, password: string, 
   return data;
 }
 
-export async function login(username: string, password: string): Promise<AuthTokens> {
-  const data = await request<AuthTokens>('/auth/login/', {
+export async function login(username: string, password: string): Promise<TokenPair> {
+  const data = await request<TokenPair>('/auth/login/', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
   });
