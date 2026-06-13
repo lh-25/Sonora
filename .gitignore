@@ -1,0 +1,44 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python / Django
+__pycache__/
+*.py[cod]
+db.sqlite3
+*.sqlite3
+staticfiles/
+media/
+.venv/
+venv/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js (web)
+web/.next/
+web/out/
+.vercel
+
+# Expo / React Native (mobile)
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/ios/
+mobile/android/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
