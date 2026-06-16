@@ -5,6 +5,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Colors } from '@/constants/colors';
+import GlassView from '@/components/GlassView';
 
 export default function MusicPlayer() {
   const { currentSong, isPlaying, position, duration, play, pause, resume, stop, openOnSpotify } = usePlayer();
@@ -15,7 +16,7 @@ export default function MusicPlayer() {
   const hasPreview = !!currentSong.preview_url;
 
   return (
-    <View style={styles.container}>
+    <GlassView style={styles.container} borderRadius={16} intensity={75}>
       {/* Progress bar */}
       <View style={styles.progressBar}>
         <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
@@ -64,7 +65,7 @@ export default function MusicPlayer() {
       {!hasPreview && (
         <Text style={styles.noPreview}>No preview — open in Spotify for full track</Text>
       )}
-    </View>
+    </GlassView>
   );
 }
 
@@ -74,18 +75,10 @@ const styles = StyleSheet.create({
     bottom: Platform.OS === 'ios' ? 84 : 64,
     left: 8,
     right: 8,
-    backgroundColor: Colors.surfaceAlt,
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
   },
   progressBar: {
     height: 2,
-    backgroundColor: Colors.border,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
   },
   progressFill: {
     height: 2,
@@ -103,7 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   artPlaceholder: {
-    backgroundColor: Colors.border,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
