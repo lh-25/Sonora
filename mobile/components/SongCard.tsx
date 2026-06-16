@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
+import GlassView from '@/components/GlassView';
 import type { Song } from '@/services/api';
 
 type Props = {
@@ -13,57 +14,59 @@ type Props = {
 
 export default function SongCard({ song, onPlay, onPress, showSpotifyBadge = true }: Props) {
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress?.(song)} activeOpacity={0.8}>
-      <View style={styles.artWrapper}>
-        {song.album_cover ? (
-          <Image source={{ uri: song.album_cover }} style={styles.art} />
-        ) : (
-          <View style={[styles.art, styles.artPlaceholder]}>
-            <Ionicons name="musical-note" size={28} color={Colors.textMuted} />
-          </View>
-        )}
-        {showSpotifyBadge && song.spotify_track_id && (
-          <View style={styles.spotifyBadge}>
-            <Ionicons name="logo-apple" size={8} color={Colors.primary} />
-          </View>
-        )}
-      </View>
-
-      <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={1}>{song.title}</Text>
-        <Text style={styles.artist} numberOfLines={1}>{song.artist}</Text>
-        {song.album && (
-          <Text style={styles.album} numberOfLines={1}>{song.album}</Text>
-        )}
-        <View style={styles.meta}>
-          <View style={styles.genreTag}>
-            <Text style={styles.genreText}>{song.genre}</Text>
-          </View>
-          <Text style={styles.duration}>{song.formatted_duration}</Text>
+    <TouchableOpacity onPress={() => onPress?.(song)} activeOpacity={0.8} style={styles.wrapper}>
+      <GlassView style={styles.card} borderRadius={12}>
+        <View style={styles.artWrapper}>
+          {song.album_cover ? (
+            <Image source={{ uri: song.album_cover }} style={styles.art} />
+          ) : (
+            <View style={[styles.art, styles.artPlaceholder]}>
+              <Ionicons name="musical-note" size={28} color={Colors.textMuted} />
+            </View>
+          )}
+          {showSpotifyBadge && song.spotify_track_id && (
+            <View style={styles.spotifyBadge}>
+              <Ionicons name="logo-apple" size={8} color={Colors.primary} />
+            </View>
+          )}
         </View>
-      </View>
 
-      {onPlay && (
-        <TouchableOpacity onPress={() => onPlay(song)} style={styles.playBtn}>
-          <Ionicons
-            name={song.preview_url ? 'play-circle' : 'open-outline'}
-            size={36}
-            color={Colors.primary}
-          />
-        </TouchableOpacity>
-      )}
+        <View style={styles.info}>
+          <Text style={styles.title} numberOfLines={1}>{song.title}</Text>
+          <Text style={styles.artist} numberOfLines={1}>{song.artist}</Text>
+          {song.album && (
+            <Text style={styles.album} numberOfLines={1}>{song.album}</Text>
+          )}
+          <View style={styles.meta}>
+            <View style={styles.genreTag}>
+              <Text style={styles.genreText}>{song.genre}</Text>
+            </View>
+            <Text style={styles.duration}>{song.formatted_duration}</Text>
+          </View>
+        </View>
+
+        {onPlay && (
+          <TouchableOpacity onPress={() => onPlay(song)} style={styles.playBtn}>
+            <Ionicons
+              name={song.preview_url ? 'play-circle' : 'open-outline'}
+              size={36}
+              color={Colors.primary}
+            />
+          </TouchableOpacity>
+        )}
+      </GlassView>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    marginBottom: 8,
+  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
     padding: 12,
-    marginBottom: 8,
     gap: 12,
   },
   artWrapper: {
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   artPlaceholder: {
-    backgroundColor: Colors.border,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -115,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   genreTag: {
-    backgroundColor: Colors.border,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,

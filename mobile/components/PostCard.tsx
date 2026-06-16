@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
+import GlassView from '@/components/GlassView';
 import type { Post } from '@/services/api';
 
 type Props = {
@@ -13,73 +14,77 @@ type Props = {
 
 export default function PostCard({ post, onPress, onLike, onPlaySong }: Props) {
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress?.(post)} activeOpacity={0.85}>
-      {post.post_image && (
-        <Image source={{ uri: post.post_image }} style={styles.image} />
-      )}
+    <TouchableOpacity onPress={() => onPress?.(post)} activeOpacity={0.85} style={styles.wrapper}>
+      <GlassView style={styles.card} borderRadius={14}>
+        {post.post_image && (
+          <Image source={{ uri: post.post_image }} style={styles.image} />
+        )}
 
-      <View style={styles.body}>
-        {/* Song info row */}
-        <TouchableOpacity style={styles.songRow} onPress={() => onPlaySong?.(post)}>
-          {post.song.album_cover ? (
-            <Image source={{ uri: post.song.album_cover }} style={styles.albumArt} />
-          ) : (
-            <View style={[styles.albumArt, styles.artPlaceholder]}>
-              <Ionicons name="musical-note" size={16} color={Colors.textMuted} />
+        <View style={styles.body}>
+          {/* Song info row */}
+          <TouchableOpacity style={styles.songRowWrapper} onPress={() => onPlaySong?.(post)}>
+            <GlassView style={styles.songRow} borderRadius={10} intensity={45}>
+              {post.song.album_cover ? (
+                <Image source={{ uri: post.song.album_cover }} style={styles.albumArt} />
+              ) : (
+                <View style={[styles.albumArt, styles.artPlaceholder]}>
+                  <Ionicons name="musical-note" size={16} color={Colors.textMuted} />
+                </View>
+              )}
+              <View style={styles.songInfo}>
+                <Text style={styles.songTitle} numberOfLines={1}>{post.song.title}</Text>
+                <Text style={styles.songArtist} numberOfLines={1}>{post.song.artist}</Text>
+              </View>
+              {(post.song.preview_url || post.song.spotify_track_id) && (
+                <Ionicons name="play-circle-outline" size={22} color={Colors.primary} />
+              )}
+            </GlassView>
+          </TouchableOpacity>
+
+          {/* Post content */}
+          <Text style={styles.postTitle}>{post.post_title}</Text>
+
+          {post.standout_lyric ? (
+            <View style={styles.lyricContainer}>
+              <Text style={styles.lyricQuote}>"{post.standout_lyric}"</Text>
             </View>
-          )}
-          <View style={styles.songInfo}>
-            <Text style={styles.songTitle} numberOfLines={1}>{post.song.title}</Text>
-            <Text style={styles.songArtist} numberOfLines={1}>{post.song.artist}</Text>
-          </View>
-          {(post.song.preview_url || post.song.spotify_track_id) && (
-            <Ionicons name="play-circle-outline" size={22} color={Colors.primary} />
-          )}
-        </TouchableOpacity>
+          ) : null}
 
-        {/* Post content */}
-        <Text style={styles.postTitle}>{post.post_title}</Text>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <View style={styles.userRow}>
+              <Ionicons name="person-circle-outline" size={18} color={Colors.textMuted} />
+              <Text style={styles.username}>{post.user.username}</Text>
+            </View>
 
-        {post.standout_lyric ? (
-          <View style={styles.lyricContainer}>
-            <Text style={styles.lyricQuote}>"{post.standout_lyric}"</Text>
-          </View>
-        ) : null}
+            <View style={styles.actions}>
+              <TouchableOpacity style={styles.action} onPress={() => onLike?.(post)}>
+                <Ionicons
+                  name={post.is_liked ? 'heart' : 'heart-outline'}
+                  size={18}
+                  color={post.is_liked ? Colors.like : Colors.textMuted}
+                />
+                <Text style={styles.actionText}>{post.total_likes}</Text>
+              </TouchableOpacity>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <View style={styles.userRow}>
-            <Ionicons name="person-circle-outline" size={18} color={Colors.textMuted} />
-            <Text style={styles.username}>{post.user.username}</Text>
-          </View>
-
-          <View style={styles.actions}>
-            <TouchableOpacity style={styles.action} onPress={() => onLike?.(post)}>
-              <Ionicons
-                name={post.is_liked ? 'heart' : 'heart-outline'}
-                size={18}
-                color={post.is_liked ? Colors.like : Colors.textMuted}
-              />
-              <Text style={styles.actionText}>{post.total_likes}</Text>
-            </TouchableOpacity>
-
-            <View style={styles.action}>
-              <Ionicons name="chatbubble-outline" size={16} color={Colors.textMuted} />
-              <Text style={styles.actionText}>{post.comment_count}</Text>
+              <View style={styles.action}>
+                <Ionicons name="chatbubble-outline" size={16} color={Colors.textMuted} />
+                <Text style={styles.actionText}>{post.comment_count}</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+      </GlassView>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 14,
-    overflow: 'hidden',
+  wrapper: {
     marginBottom: 12,
+  },
+  card: {
+    // borderRadius + overflow handled by GlassView
   },
   image: {
     width: '100%',
@@ -89,13 +94,14 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10,
   },
+  songRowWrapper: {
+    // TouchableOpacity wrapper for the inner song row
+  },
   songRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: Colors.surfaceAlt,
     padding: 8,
-    borderRadius: 8,
   },
   albumArt: {
     width: 40,
@@ -103,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   artPlaceholder: {
-    backgroundColor: Colors.border,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
