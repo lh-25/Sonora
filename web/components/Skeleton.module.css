@@ -1,0 +1,34 @@
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--sonora-surface-alt);
+  flex-shrink: 0;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.12) 60%,
+    transparent 100%
+  );
+  animation: sonoraShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes sonoraShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
