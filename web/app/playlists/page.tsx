@@ -11,6 +11,7 @@ import {
   getPlaylists, createPlaylist, getSpotifyPlaylists, importSpotifyPlaylist,
   spotifyStatus, uploadImage, type Playlist,
 } from '@/services/api';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './playlists.module.css';
 import Link from 'next/link';
 
@@ -34,6 +35,7 @@ export default function PlaylistsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [spotifyPls, setSpotifyPls] = useState<any[]>([]);
   const [importing, setImporting] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -55,7 +57,7 @@ export default function PlaylistsPage() {
       const { url } = await uploadImage(file, 'playlist_covers');
       setCoverUrl(url);
     } catch {
-      alert('Could not upload cover image.');
+      toast.error('Could not upload cover image.');
     } finally {
       setUploadingCover(false);
     }
@@ -75,8 +77,9 @@ export default function PlaylistsPage() {
       resetCreateForm();
       const d = await getPlaylists(filter);
       setPlaylists(d.results);
+      toast.success(`Playlist "${newName.trim()}" created`);
     } catch {
-      alert('Could not create playlist. Please try again.');
+      toast.error('Could not create playlist — please try again.');
     } finally {
       setCreating(false);
     }
@@ -88,7 +91,7 @@ export default function PlaylistsPage() {
       setSpotifyPls(data?.items ?? []);
       setImportOpen(true);
     } catch {
-      alert('Could not fetch Spotify playlists. Make sure Spotify is connected in your profile.');
+      toast.error('Could not load Spotify playlists. Make sure Spotify is connected in your profile.');
     }
   };
 
@@ -96,13 +99,13 @@ export default function PlaylistsPage() {
     setImporting(id);
     try {
       const r = await importSpotifyPlaylist(id, name);
-      alert(`Imported "${r.name}" with ${r.imported_tracks} tracks!`);
+      toast.success(`Imported "${r.name}" with ${r.imported_tracks} tracks`);
       const d = await getPlaylists('mine');
       setPlaylists(d.results);
       setFilter('mine');
       setImportOpen(false);
     } catch {
-      alert('Import failed.');
+      toast.error('Import failed — please try again.');
     } finally {
       setImporting(null);
     }

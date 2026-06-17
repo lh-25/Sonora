@@ -8,10 +8,12 @@ import {
 } from '@salt-ds/core';
 import { getPosts, likePost, type Post } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './feed.module.css';
 
 export default function FeedPage() {
   const { play } = usePlayer();
+  const toast = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -32,12 +34,16 @@ export default function FeedPage() {
   }, [filter, fetchPosts]);
 
   const handleLike = async (post: Post) => {
-    const result = await likePost(post.id);
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === post.id ? { ...p, is_liked: result.liked, total_likes: result.total_likes } : p,
-      ),
-    );
+    try {
+      const result = await likePost(post.id);
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === post.id ? { ...p, is_liked: result.liked, total_likes: result.total_likes } : p,
+        ),
+      );
+    } catch {
+      toast.error('Could not update like — please try again.');
+    }
   };
 
   const handleLoadMore = async () => {

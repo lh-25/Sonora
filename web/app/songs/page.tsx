@@ -9,6 +9,7 @@ import {
 import { getSongs, spotifySearch, linkSpotifyTrack, createSong, uploadImage, type Song } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
 import styles from './songs.module.css';
 
@@ -17,6 +18,7 @@ const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY',
 export default function SongsPage() {
   const { play } = usePlayer();
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
   const router = useRouter();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,10 +110,11 @@ export default function SongsPage() {
     try {
       const updated = await linkSpotifyTrack(song.id, linkTrack.id, linkTrack.preview_url);
       setSongs((prev) => prev.map((s) => s.id === updated.id ? updated : s));
+      toast.success(`"${linkTrack.name}" linked to ${song.title}`);
       setLinkTrack(null);
       setLinkSongId('');
     } catch {
-      alert('Could not link — try again.');
+      toast.error('Could not link track — please try again.');
     } finally {
       setLinking(false);
     }
@@ -125,7 +128,7 @@ export default function SongsPage() {
       const { url } = await uploadImage(file, 'album_covers');
       setNewCoverUrl(url);
     } catch {
-      alert('Could not upload cover image.');
+      toast.error('Could not upload cover image.');
     } finally {
       setUploadingCover(false);
     }
@@ -143,10 +146,11 @@ export default function SongsPage() {
         album_cover: newCoverUrl || undefined,
       });
       setSongs((prev) => [song, ...prev]);
+      toast.success(`"${newTitle.trim()}" added to your library`);
       setAddOpen(false);
       setNewTitle(''); setNewArtist(''); setNewAlbum(''); setNewGenre('POP'); setNewCoverUrl('');
     } catch {
-      alert('Could not add song. Try again.');
+      toast.error('Could not add song — please try again.');
     } finally {
       setAddingSong(false);
     }
