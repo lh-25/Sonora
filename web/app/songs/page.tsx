@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Button, Input, Text, H1, H3, StackLayout, FlexLayout,
+  Button, Input, Text, H1, StackLayout, FlexLayout,
   Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
   DialogContent, DialogActions, MultilineInput,
 } from '@salt-ds/core';
@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
 import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './songs.module.css';
 
 const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY', 'ELECTRONIC', 'OTHER'];
@@ -249,9 +250,29 @@ export default function SongsPage() {
             ))}
           </div>
         ) : songs.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <H3>No songs found</H3>
-          </StackLayout>
+          search || genre ? (
+            <EmptyState
+              variant="search"
+              title="No songs match your search"
+              description="Try a different keyword or clear the genre filter."
+              action={
+                <Button variant="secondary" onClick={() => { setSearch(''); setGenre(''); }}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              variant="music"
+              title="No songs yet"
+              description="Add a song to your library or search the Spotify catalog above."
+              action={
+                <Button variant="primary" onClick={() => setAddOpen(true)} className={styles.addBtn}>
+                  + Add Song
+                </Button>
+              }
+            />
+          )
         ) : (
           <>
             <div className={styles.songGrid}>
@@ -399,10 +420,15 @@ function SongCard({ song, onPlay }: { song: Song; onPlay: (s: Song) => void }) {
       </div>
       <FlexLayout gap={1} align="center" className={styles.songActions}>
         {song.spotify_track_id && (
-          <div className={styles.spotifyDot} title="Linked to Spotify">●</div>
+          <div className={styles.spotifyDot} title="Linked to Spotify" aria-label="Linked to Spotify" role="img">●</div>
         )}
-        <Button variant="primary" onClick={() => onPlay(song)} className={styles.playBtn}>
-          {song.preview_url ? '▶' : '♫'}
+        <Button
+          variant="primary"
+          onClick={() => onPlay(song)}
+          className={styles.playBtn}
+          aria-label={`Play ${song.title} by ${song.artist}`}
+        >
+          <span aria-hidden="true">{song.preview_url ? '▶' : '♫'}</span>
         </Button>
       </FlexLayout>
     </div>

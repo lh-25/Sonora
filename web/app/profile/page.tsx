@@ -115,8 +115,13 @@ export default function ProfilePage() {
                 <Text className={styles.avatarInitial}>{user.username[0].toUpperCase()}</Text>
               </div>
             )}
-            <button className={styles.avatarUploadBtn} onClick={() => fileRef.current?.click()} disabled={uploadingPic}>
-              {uploadingPic ? '…' : '📷'}
+            <button
+              className={styles.avatarUploadBtn}
+              onClick={() => fileRef.current?.click()}
+              disabled={uploadingPic}
+              aria-label={uploadingPic ? 'Uploading photo' : 'Change profile photo'}
+            >
+              <span aria-hidden="true">{uploadingPic ? '…' : '📷'}</span>
             </button>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePicChange} />
           </div>

@@ -185,12 +185,16 @@ export default function PostDetailPage() {
 
           <div className={styles.postBody}>
             {/* Song row */}
-            <button className={styles.songRow} onClick={() => play(post.song)}>
+            <button
+              className={styles.songRow}
+              onClick={() => play(post.song)}
+              aria-label={`Play ${post.song.title} by ${post.song.artist}`}
+            >
               {post.song.album_cover && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={post.song.album_cover}
-                  alt={post.song.title}
+                  alt=""
                   className={styles.albumArt}
                 />
               )}
@@ -199,7 +203,7 @@ export default function PostDetailPage() {
                 <Text className={styles.songArtist}>{post.song.artist}</Text>
               </div>
               {(post.song.preview_url || post.song.spotify_track_id) && (
-                <span className={styles.playIcon}>▶</span>
+                <span className={styles.playIcon} aria-hidden="true">▶</span>
               )}
             </button>
 
@@ -233,8 +237,10 @@ export default function PostDetailPage() {
               <button
                 className={`${styles.likeBtn} ${post.is_liked ? styles.likeBtnActive : ''}`}
                 onClick={handleLikePost}
+                aria-pressed={post.is_liked}
+                aria-label={`${post.is_liked ? 'Unlike' : 'Like'} this post (${post.total_likes} likes)`}
               >
-                ♥ {post.total_likes}
+                <span aria-hidden="true">♥</span> {post.total_likes}
               </button>
             </FlexLayout>
           </div>
@@ -386,8 +392,10 @@ function CommentItem({
         <button
           className={`${styles.commentActionBtn} ${styles.commentLikeBtn} ${comment.is_liked ? styles.commentLikeBtnActive : ''}`}
           onClick={() => onLike(comment.id)}
+          aria-pressed={comment.is_liked}
+          aria-label={`${comment.is_liked ? 'Unlike' : 'Like'} this comment (${comment.total_likes} likes)`}
         >
-          ♥ {comment.total_likes}
+          <span aria-hidden="true">♥</span> {comment.total_likes}
         </button>
 
         {!isReply && (

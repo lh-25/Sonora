@@ -10,6 +10,7 @@ import { getPosts, likePost, type Post } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useToast } from '@/contexts/ToastContext';
 import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './feed.module.css';
 
 export default function FeedPage() {
@@ -79,11 +80,20 @@ export default function FeedPage() {
             ))}
           </StackLayout>
         ) : posts.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <Text styleAs="h2">♪</Text>
-            <H3>No posts yet</H3>
-            <Text styleAs="notation">Be the first to share your Song of the Day!</Text>
-          </StackLayout>
+          <EmptyState
+            variant="posts"
+            title={filter === 'mine' ? 'You haven’t posted yet' : 'No posts yet'}
+            description={
+              filter === 'mine'
+                ? 'Share what you’re listening to and it’ll show up here.'
+                : 'Be the first to share your Song of the Day.'
+            }
+            action={
+              <Link href="/feed/new" className={styles.newPostBtn} style={{ textDecoration: 'none', padding: '10px 22px', borderRadius: '25px', fontWeight: 700, fontSize: '14px', background: 'linear-gradient(90deg, #00d4ff, #ff40ff)', color: '#fff', display: 'inline-flex', alignItems: 'center' }}>
+                + New Post
+              </Link>
+            }
+          />
         ) : (
           <StackLayout gap={3} className={styles.feed}>
             {posts.map((post) => (
@@ -145,17 +155,21 @@ function PostCard({
       )}
 
       {/* Song row */}
-      <button className={styles.songRow} onClick={() => onPlay(post.song)}>
+      <button
+        className={styles.songRow}
+        onClick={() => onPlay(post.song)}
+        aria-label={`Play ${post.song.title} by ${post.song.artist}`}
+      >
         {post.song.album_cover && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.song.album_cover} alt={post.song.title} className={styles.albumArt} />
+          <img src={post.song.album_cover} alt="" className={styles.albumArt} />
         )}
         <div className={styles.songInfo}>
           <Text styleAs="label" className={styles.songTitle}>{post.song.title}</Text>
           <Text styleAs="notation" className={styles.songArtist}>{post.song.artist}</Text>
         </div>
         {(post.song.preview_url || post.song.spotify_track_id) && (
-          <span className={styles.playIcon}>▶</span>
+          <span className={styles.playIcon} aria-hidden="true">▶</span>
         )}
       </button>
 
@@ -176,11 +190,17 @@ function PostCard({
             variant={post.is_liked ? 'primary' : 'secondary'}
             onClick={() => onLike(post)}
             className={post.is_liked ? styles.likedBtn : ''}
+            aria-pressed={post.is_liked}
+            aria-label={`${post.is_liked ? 'Unlike' : 'Like'} this post (${post.total_likes} likes)`}
           >
-            ♥ {post.total_likes}
+            <span aria-hidden="true">♥</span> {post.total_likes}
           </Button>
-          <Link href={`/feed/${post.id}`} className={styles.viewBtn}>
-            💬 {post.comment_count}
+          <Link
+            href={`/feed/${post.id}`}
+            className={styles.viewBtn}
+            aria-label={`View ${post.comment_count} comments`}
+          >
+            <span aria-hidden="true">💬</span> {post.comment_count}
           </Link>
         </FlexLayout>
       </FlexLayout>

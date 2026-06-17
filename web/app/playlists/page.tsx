@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  Button, Text, H1, H3, StackLayout, FlexLayout,
+  Button, Text, H1, StackLayout, FlexLayout,
   Dialog, DialogHeader, DialogContent, DialogActions,
   FormField, FormFieldLabel, Input, MultilineInput, RadioButton, RadioButtonGroup,
   ToggleButton, ToggleButtonGroup,
@@ -13,6 +13,7 @@ import {
 } from '@/services/api';
 import { useToast } from '@/contexts/ToastContext';
 import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './playlists.module.css';
 import Link from 'next/link';
 
@@ -145,12 +146,20 @@ export default function PlaylistsPage() {
             ))}
           </div>
         ) : playlists.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <H3>No playlists yet</H3>
-            <Button variant="primary" onClick={() => setCreateOpen(true)}>
-              Create your first playlist
-            </Button>
-          </StackLayout>
+          <EmptyState
+            variant="playlists"
+            title={filter === 'mine' ? 'You have no playlists yet' : 'No public playlists yet'}
+            description={
+              filter === 'mine'
+                ? 'Create a playlist or import one from Spotify to get started.'
+                : 'Public playlists from the community will appear here.'
+            }
+            action={
+              <Button variant="primary" onClick={() => setCreateOpen(true)}>
+                Create your first playlist
+              </Button>
+            }
+          />
         ) : (
           <div className={styles.grid}>
             {playlists.map((pl) => (

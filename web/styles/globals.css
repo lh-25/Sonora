@@ -89,6 +89,27 @@ body {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* ─── Keyboard focus ────────────────────────────────────────────────────── */
+/* A consistent, visible focus ring for keyboard users only (:focus-visible
+   excludes mouse clicks). Applies to links, native buttons, inputs and any
+   custom interactive element across the app. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--sonora-cyan);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Don't double up the ring on Salt buttons that already restyle focus */
+.saltButton:focus-visible {
+  outline-offset: 3px;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
