@@ -99,6 +99,17 @@
   box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
 }
 
+.inputError {
+  border-color: #ff4040 !important;
+  box-shadow: 0 0 0 3px rgba(255, 64, 64, 0.15) !important;
+}
+
+.fieldError {
+  color: #ff4040;
+  font-size: 12px;
+  margin-top: -2px;
+}
+
 .error {
   color: #ff4040;
   font-size: 13px;
