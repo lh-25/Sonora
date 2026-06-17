@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  Button, Text, H1, H3, StackLayout, FlexLayout, Spinner,
+  Button, Text, H1, H3, StackLayout, FlexLayout,
   Dialog, DialogHeader, DialogContent, DialogActions,
   FormField, FormFieldLabel, Input, MultilineInput, RadioButton, RadioButtonGroup,
   ToggleButton, ToggleButtonGroup,
@@ -12,6 +12,7 @@ import {
   spotifyStatus, uploadImage, type Playlist,
 } from '@/services/api';
 import { useToast } from '@/contexts/ToastContext';
+import Skeleton from '@/components/Skeleton';
 import styles from './playlists.module.css';
 import Link from 'next/link';
 
@@ -138,9 +139,11 @@ export default function PlaylistsPage() {
         </ToggleButtonGroup>
 
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinner}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <div className={styles.grid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <PlaylistCardSkeleton key={i} />
+            ))}
+          </div>
         ) : playlists.length === 0 ? (
           <StackLayout align="center" className={styles.empty}>
             <H3>No playlists yet</H3>
@@ -263,6 +266,19 @@ export default function PlaylistsPage() {
           <Button variant="secondary" onClick={() => setImportOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+    </div>
+  );
+}
+
+function PlaylistCardSkeleton() {
+  return (
+    <div className={styles.plCard}>
+      <Skeleton width="100%" height="auto" radius={0} style={{ aspectRatio: '1' }} />
+      <div className={styles.plInfo}>
+        <Skeleton width="70%" height={14} />
+        <Skeleton width="50%" height={12} style={{ marginTop: 6 }} />
+        <Skeleton width={56} height={18} radius={20} style={{ marginTop: 6 }} />
+      </div>
     </div>
   );
 }

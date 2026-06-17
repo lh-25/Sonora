@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  Button, Text, H1, H2, H3, StackLayout, FlexLayout,
-  Card, Badge, Spinner, ToggleButton, ToggleButtonGroup,
+  Button, Text, H1, H3, StackLayout, FlexLayout,
+  Card, ToggleButton, ToggleButtonGroup,
 } from '@salt-ds/core';
 import { getPosts, likePost, type Post } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useToast } from '@/contexts/ToastContext';
+import Skeleton from '@/components/Skeleton';
 import styles from './feed.module.css';
 
 export default function FeedPage() {
@@ -72,9 +73,11 @@ export default function FeedPage() {
         </FlexLayout>
 
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinnerWrapper}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <StackLayout gap={3} className={styles.feed}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <PostCardSkeleton key={i} />
+            ))}
+          </StackLayout>
         ) : posts.length === 0 ? (
           <StackLayout align="center" className={styles.empty}>
             <Text styleAs="h2">♪</Text>
@@ -98,6 +101,30 @@ export default function FeedPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function PostCardSkeleton() {
+  return (
+    <Card className={styles.postCard}>
+      <Skeleton width="100%" height={220} radius={0} />
+      <div className={styles.songRow}>
+        <Skeleton width={44} height={44} radius={6} />
+        <div className={styles.songInfo}>
+          <Skeleton width="50%" height={14} />
+          <Skeleton width="30%" height={12} style={{ marginTop: 8 }} />
+        </div>
+      </div>
+      <div style={{ padding: '16px' }}>
+        <Skeleton width="70%" height={18} />
+        <Skeleton width="90%" height={12} style={{ marginTop: 12 }} />
+        <Skeleton width="60%" height={12} style={{ marginTop: 8 }} />
+      </div>
+      <FlexLayout justify="space-between" align="center" className={styles.postFooter}>
+        <Skeleton width={90} height={12} />
+        <Skeleton width={120} height={28} radius={20} />
+      </FlexLayout>
+    </Card>
   );
 }
 

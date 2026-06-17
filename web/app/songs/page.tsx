@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button, Input, Text, H1, H3, StackLayout, FlexLayout,
-  Spinner, Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
+  Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
   DialogContent, DialogActions, MultilineInput,
 } from '@salt-ds/core';
 import { getSongs, spotifySearch, linkSpotifyTrack, createSong, uploadImage, type Song } from '@/services/api';
@@ -11,6 +11,7 @@ import { usePlayer } from '@/contexts/PlayerContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
+import Skeleton from '@/components/Skeleton';
 import styles from './songs.module.css';
 
 const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY', 'ELECTRONIC', 'OTHER'];
@@ -242,9 +243,11 @@ export default function SongsPage() {
 
         {/* Song library */}
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinner}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <div className={styles.songGrid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SongCardSkeleton key={i} />
+            ))}
+          </div>
         ) : songs.length === 0 ? (
           <StackLayout align="center" className={styles.empty}>
             <H3>No songs found</H3>
@@ -358,6 +361,20 @@ export default function SongsPage() {
           </Button>
         </DialogActions>
       </Dialog>
+    </div>
+  );
+}
+
+function SongCardSkeleton() {
+  return (
+    <div className={styles.songCard}>
+      <Skeleton width={52} height={52} radius={8} />
+      <div className={styles.songInfo}>
+        <Skeleton width="55%" height={14} />
+        <Skeleton width="35%" height={12} style={{ marginTop: 8 }} />
+        <Skeleton width="45%" height={12} style={{ marginTop: 8 }} />
+      </div>
+      <Skeleton width={40} height={32} radius={20} />
     </div>
   );
 }
