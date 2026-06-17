@@ -3,8 +3,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PlayerProvider } from '@/contexts/PlayerContext';
+import { ToastProvider } from '@/contexts/ToastContext';
 import { useRouter, useSegments } from 'expo-router';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/colors';
 
 function RootLayoutNav() {
@@ -44,11 +46,15 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <PlayerProvider>
-        <StatusBar style="light" />
-        <RootLayoutNav />
-      </PlayerProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <PlayerProvider>
+          <ToastProvider>
+            <StatusBar style="light" />
+            <RootLayoutNav />
+          </ToastProvider>
+        </PlayerProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

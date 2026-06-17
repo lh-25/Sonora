@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
-  ScrollView, Image, Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
+  ScrollView, Image, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -9,9 +9,11 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import { spotifySearch, createPostMultipart, type Song } from '@/services/api';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function NewPostScreen() {
   const router = useRouter();
+  const toast = useToast();
   const [songQuery, setSongQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [searching, setSearching] = useState(false);
@@ -44,7 +46,7 @@ export default function NewPostScreen() {
       }));
       setSearchResults(mapped);
     } catch {
-      Alert.alert('Error', 'Could not search songs. Make sure Spotify is connected in your profile.');
+      toast.error('Could not search songs. Make sure Spotify is connected in your profile.');
     } finally {
       setSearching(false);
     }
@@ -53,7 +55,7 @@ export default function NewPostScreen() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo library access to add an image.');
+      toast.info('Allow photo library access to add an image.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -69,9 +71,9 @@ export default function NewPostScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedSong) { Alert.alert('Required', 'Please select a song.'); return; }
-    if (!postTitle.trim()) { Alert.alert('Required', 'Please add a title.'); return; }
-    if (!reason.trim()) { Alert.alert('Required', 'Please add your reason for picking this song.'); return; }
+    if (!selectedSong) { toast.error('Please select a song.'); return; }
+    if (!postTitle.trim()) { toast.error('Please add a title.'); return; }
+    if (!reason.trim()) { toast.error('Please add your reason for picking this song.'); return; }
 
     setSubmitting(true);
     try {
@@ -97,9 +99,10 @@ export default function NewPostScreen() {
       }
 
       const post = await createPostMultipart(formData);
+      toast.success('Your post is live!');
       router.replace(`/post/${post.id}`);
     } catch (err: any) {
-      Alert.alert('Error', 'Could not create post. ' + (err.message ?? ''));
+      toast.error('Could not create post. ' + (err.message ?? ''));
     } finally {
       setSubmitting(false);
     }

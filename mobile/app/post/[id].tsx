@@ -9,12 +9,14 @@ import { Colors } from '@/constants/colors';
 import { getPost, likePost, addComment, likeComment, editComment, deleteComment, type Post, type Comment } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const { user } = useAuth();
   const { play } = usePlayer();
+  const toast = useToast();
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function PostDetailScreen() {
         setPost(p);
         navigation.setOptions({ title: p.post_title });
       })
-      .catch(() => Alert.alert('Error', 'Post not found'))
+      .catch(() => toast.error('Post not found.'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -74,7 +76,7 @@ export default function PostDetailScreen() {
       }
       setComment('');
     } catch {
-      Alert.alert('Error', 'Could not post comment.');
+      toast.error('Could not post comment.');
     } finally {
       setSubmitting(false);
     }
@@ -95,7 +97,7 @@ export default function PostDetailScreen() {
               return { ...p, comments: remove(p.comments ?? []), comment_count: p.comment_count - 1 };
             });
           } catch {
-            Alert.alert('Error', 'Could not delete comment.');
+            toast.error('Could not delete comment.');
           }
         },
       },

@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
 
   spotifyStatus, spotifyDisconnect, uploadImage, updateProfile, spotifyExchangeToken,
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, profile, logout, refreshProfile } = useAuth();
   const { authorize } = useSpotifyAuth();
+  const toast = useToast();
 
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const [loadingSpotify, setLoadingSpotify] = useState(false);
@@ -43,9 +45,9 @@ export default function ProfileScreen() {
       if (!result) { setLoadingSpotify(false); return; }
       await spotifyExchangeToken(result.code, result.redirectUri);
       setSpotifyConnected(true);
-      Alert.alert('Connected!', 'Spotify is now linked to your account.');
+      toast.success('Spotify is now linked to your account.');
     } catch {
-      Alert.alert('Error', 'Could not connect Spotify. Check your credentials.');
+      toast.error('Could not connect Spotify. Check your credentials.');
     } finally {
       setLoadingSpotify(false);
     }
@@ -54,7 +56,7 @@ export default function ProfileScreen() {
   const handleChangePicture = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to change your profile picture.');
+      toast.info('Allow photo access to change your profile picture.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -70,8 +72,9 @@ export default function ProfileScreen() {
       const { url } = await uploadImage(asset.uri, 'profile_pictures', asset.mimeType ?? 'image/jpeg');
       await updateProfile(user!.id, { profile_picture: url });
       await refreshProfile();
+      toast.success('Profile photo updated.');
     } catch {
-      Alert.alert('Error', 'Could not upload photo. Try again.');
+      toast.error('Could not upload photo. Try again.');
     } finally {
       setUploadingPic(false);
     }
@@ -84,8 +87,13 @@ export default function ProfileScreen() {
         text: 'Disconnect',
         style: 'destructive',
         onPress: async () => {
-          await spotifyDisconnect();
-          setSpotifyConnected(false);
+          try {
+            await spotifyDisconnect();
+            setSpotifyConnected(false);
+            toast.success('Spotify disconnected.');
+          } catch {
+            toast.error('Could not disconnect Spotify. Try again.');
+          }
         },
       },
     ]);

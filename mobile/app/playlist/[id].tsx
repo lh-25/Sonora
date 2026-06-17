@@ -10,6 +10,7 @@ import SongCard from '@/components/SongCard';
 import { getPlaylist, removeSongFromPlaylist, deletePlaylist, type Playlist } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'expo-router';
 
 export default function PlaylistDetailScreen() {
@@ -18,6 +19,7 @@ export default function PlaylistDetailScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { play } = usePlayer();
+  const toast = useToast();
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function PlaylistDetailScreen() {
         setPlaylist(p);
         navigation.setOptions({ title: p.name });
       })
-      .catch(() => Alert.alert('Error', 'Playlist not found'))
+      .catch(() => toast.error('Playlist not found.'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -42,8 +44,9 @@ export default function PlaylistDetailScreen() {
           try {
             await removeSongFromPlaylist(Number(id), songId);
             setPlaylist((p) => p ? { ...p, songs: p.songs.filter((s) => s.id !== songId) } : p);
+            toast.success('Song removed from playlist.');
           } catch {
-            Alert.alert('Error', 'Could not remove song.');
+            toast.error('Could not remove song.');
           }
         },
       },
@@ -59,9 +62,10 @@ export default function PlaylistDetailScreen() {
         onPress: async () => {
           try {
             await deletePlaylist(Number(id));
+            toast.success('Playlist deleted.');
             router.back();
           } catch {
-            Alert.alert('Error', 'Could not delete playlist.');
+            toast.error('Could not delete playlist.');
           }
         },
       },
