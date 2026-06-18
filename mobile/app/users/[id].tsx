@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity,
-  ScrollView, ActivityIndicator, Alert, FlatList,
+  ScrollView, ActivityIndicator, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -12,11 +12,13 @@ import {
   type Profile, type Post,
 } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user: me } = useAuth();
   const router = useRouter();
+  const toast = useToast();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -32,7 +34,7 @@ export default function UserProfileScreen() {
         setProfile(p);
         setPosts(postsData.results);
       })
-      .catch(() => Alert.alert('Error', 'Could not load profile.'))
+      .catch(() => toast.error('Could not load profile.'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -45,7 +47,7 @@ export default function UserProfileScreen() {
         p ? { ...p, is_following: result.following, total_followers: result.total_followers } : p,
       );
     } catch {
-      Alert.alert('Error', 'Could not update follow.');
+      toast.error('Could not update follow.');
     } finally {
       setFollowLoading(false);
     }

@@ -13,6 +13,7 @@ import { getSongs, linkSpotifyTrack, type Song } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import type { SpotifyTrack } from '@/services/spotify';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
 
 const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY', 'ELECTRONIC', 'OTHER'];
 
@@ -20,6 +21,7 @@ export default function SongsScreen() {
   const router = useRouter();
   const { play } = usePlayer();
   const { user } = useAuth();
+  const toast = useToast();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -68,9 +70,9 @@ export default function SongsScreen() {
     try {
       const updated = await linkSpotifyTrack(pendingLinkSong.id, track.id, track.preview_url ?? undefined);
       setSongs((prev) => prev.map((s) => s.id === updated.id ? updated : s));
-      Alert.alert('Linked!', `"${pendingLinkSong.title}" is now linked to Spotify.`);
+      toast.success(`"${pendingLinkSong.title}" is now linked to Spotify.`);
     } catch {
-      Alert.alert('Error', 'Could not link to Spotify. Try again.');
+      toast.error('Could not link to Spotify. Try again.');
     }
     setPendingLinkSong(null);
   };
