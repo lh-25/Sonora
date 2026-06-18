@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Button, Text, H1, H3, FlexLayout, Spinner, StackLayout } from '@salt-ds/core';
+import { Button, Text, H1 } from '@salt-ds/core';
 import { getUsers, type Profile } from '@/services/api';
+import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './users.module.css';
 
 export default function UsersPage() {
@@ -44,13 +46,17 @@ export default function UsersPage() {
         </div>
 
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinner}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <div className={styles.grid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <UserCardSkeleton key={i} />
+            ))}
+          </div>
         ) : users.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <H3>No users found</H3>
-          </StackLayout>
+          <EmptyState
+            variant="users"
+            title="No users found"
+            description="There’s no one here yet — check back soon."
+          />
         ) : (
           <>
             <div className={styles.grid}>
@@ -69,6 +75,18 @@ export default function UsersPage() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function UserCardSkeleton() {
+  return (
+    <div className={styles.userCard}>
+      <Skeleton width={72} height={72} radius="50%" />
+      <Skeleton width="60%" height={16} />
+      <Skeleton width="80%" height={12} />
+      <Skeleton width="40%" height={12} />
+      <Skeleton width="100%" height={34} radius={25} style={{ marginTop: 4 }} />
     </div>
   );
 }

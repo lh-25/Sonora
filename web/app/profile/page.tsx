@@ -3,15 +3,18 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  Button, Text, H1, H2, H3, StackLayout, FlexLayout, Spinner, Input, MultilineInput, FormField, FormFieldLabel,
+  Button, Text, H1, H2, H3, StackLayout, FlexLayout, Spinner, MultilineInput, FormField, FormFieldLabel,
 } from '@salt-ds/core';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { spotifyStatus, spotifyDisconnect, uploadImage, updateProfile } from '@/services/api';
 import { useRouter } from 'next/navigation';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import styles from './profile.module.css';
 
 export default function ProfilePage() {
   const { user, profile, logout, refreshProfile } = useAuth();
+  const toast = useToast();
   const router = useRouter();
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const [loadingSpotify, setLoadingSpotify] = useState(true);
@@ -19,6 +22,8 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -38,20 +43,19 @@ export default function ProfilePage() {
       const data = await request<{ url: string }>('/spotify/web-auth-url/');
       window.location.href = data.url;
     } catch {
-      alert('Could not start Spotify connection. Make sure the backend is running.');
+      toast.error('Could not start Spotify connection. Make sure the backend is running.');
     }
   };
 
   const handleDisconnect = async () => {
-    if (!confirm('Remove Spotify connection?')) return;
-    await spotifyDisconnect();
-    setSpotifyConnected(false);
-  };
-
-  const handleLogout = () => {
-    if (!confirm('Log out?')) return;
-    logout();
-    router.push('/login');
+    setConfirmDisconnect(false);
+    try {
+      await spotifyDisconnect();
+      setSpotifyConnected(false);
+      toast.success('Spotify disconnected');
+    } catch {
+      toast.error('Could not disconnect Spotify — please try again.');
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -60,8 +64,9 @@ export default function ProfilePage() {
       await updateProfile(user!.id, { bio });
       await refreshProfile();
       setEditing(false);
+      toast.success('Profile saved');
     } catch {
-      alert('Could not save profile. Try again.');
+      toast.error('Could not save profile — please try again.');
     } finally {
       setSaving(false);
     }
@@ -75,12 +80,19 @@ export default function ProfilePage() {
       const { url } = await uploadImage(file, 'profile_pictures');
       await updateProfile(user!.id, { profile_picture: url });
       await refreshProfile();
+      toast.success('Profile photo updated');
     } catch {
-      alert('Could not upload photo. Try again.');
+      toast.error('Could not upload photo — please try again.');
     } finally {
       setUploadingPic(false);
       if (fileRef.current) fileRef.current.value = '';
     }
+  };
+
+  const doLogout = () => {
+    setConfirmLogout(false);
+    logout();
+    router.push('/login');
   };
 
   if (!user || !profile) {
@@ -103,8 +115,13 @@ export default function ProfilePage() {
                 <Text className={styles.avatarInitial}>{user.username[0].toUpperCase()}</Text>
               </div>
             )}
-            <button className={styles.avatarUploadBtn} onClick={() => fileRef.current?.click()} disabled={uploadingPic}>
-              {uploadingPic ? '…' : '📷'}
+            <button
+              className={styles.avatarUploadBtn}
+              onClick={() => fileRef.current?.click()}
+              disabled={uploadingPic}
+              aria-label={uploadingPic ? 'Uploading photo' : 'Change profile photo'}
+            >
+              <span aria-hidden="true">{uploadingPic ? '…' : '📷'}</span>
             </button>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePicChange} />
           </div>
@@ -166,7 +183,7 @@ export default function ProfilePage() {
               <Text styleAs="notation" className={styles.hint}>
                 You can now import Spotify playlists and link songs to Spotify tracks.
               </Text>
-              <Button variant="secondary" onClick={handleDisconnect} className={styles.disconnectBtn}>
+              <Button variant="secondary" onClick={() => setConfirmDisconnect(true)} className={styles.disconnectBtn}>
                 Disconnect Spotify
               </Button>
             </StackLayout>
@@ -185,11 +202,30 @@ export default function ProfilePage() {
         {/* Account */}
         <div className={styles.section}>
           <H3 className={styles.sectionTitle}>Account</H3>
-          <Button variant="secondary" onClick={handleLogout} className={styles.logoutBtn}>
+          <Button variant="secondary" onClick={() => setConfirmLogout(true)} className={styles.logoutBtn}>
             Log Out
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDisconnect}
+        title="Disconnect Spotify"
+        message="This will remove your Spotify connection. You can reconnect anytime."
+        confirmLabel="Disconnect"
+        danger
+        onConfirm={handleDisconnect}
+        onClose={() => setConfirmDisconnect(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmLogout}
+        title="Log Out"
+        message="Are you sure you want to log out of Sonora?"
+        confirmLabel="Log Out"
+        onConfirm={doLogout}
+        onClose={() => setConfirmLogout(false)}
+      />
     </div>
   );
 }

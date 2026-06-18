@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  Image, ActivityIndicator, TextInput,
+  Image, TextInput, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
+import SkeletonBox from '@/components/SkeletonBox';
+import EmptyState from '@/components/EmptyState';
 import { getProfiles, type Profile } from '@/services/api';
 
 export default function UsersScreen() {
@@ -45,10 +47,6 @@ export default function UsersScreen() {
       )
     : profiles;
 
-  if (loading) {
-    return <ActivityIndicator color={Colors.primary} style={{ flex: 1, backgroundColor: Colors.background }} />;
-  }
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -64,43 +62,88 @@ export default function UsersScreen() {
           placeholder="Search users…"
           placeholderTextColor={Colors.textMuted}
         />
-      </View>
-
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.list}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={loadingMore ? <ActivityIndicator color={Colors.primary} style={{ padding: 16 }} /> : null}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => router.push(`/users/${item.user.id}`)}
-          >
-            {item.profile_picture ? (
-              <Image source={{ uri: item.profile_picture }} style={styles.avatar} />
-            ) : (
-              <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                <Text style={styles.avatarInitial}>
-                  {item.user.username[0].toUpperCase()}
-                </Text>
-              </View>
-            )}
-            <View style={styles.info}>
-              <Text style={styles.username}>@{item.user.username}</Text>
-              {item.bio && (
-                <Text style={styles.bio} numberOfLines={1}>{item.bio}</Text>
-              )}
-            </View>
-            <View style={styles.stats}>
-              <Text style={styles.statNum}>{item.total_followers}</Text>
-              <Text style={styles.statLbl}>followers</Text>
-            </View>
+        {search.length > 0 && (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <Ionicons name="close-circle" size={16} color={Colors.textMuted} />
           </TouchableOpacity>
         )}
-      />
+      </View>
+
+      {loading ? (
+        <ScrollView contentContainerStyle={styles.list} pointerEvents="none">
+          {[1, 2, 3, 4, 5].map((i) => <UserCardSkeleton key={i} />)}
+        </ScrollView>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => String(item.id)}
+          contentContainerStyle={styles.list}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.3}
+          ListEmptyComponent={
+            <EmptyState
+              icon={search ? 'search-outline' : 'people-outline'}
+              title={search ? 'No users found' : 'No users yet'}
+              subtitle={search
+                ? 'Try a different name or clear the search.'
+                : 'Be the first to join Sonora!'}
+              action={search ? (
+                <TouchableOpacity style={styles.clearBtn} onPress={() => setSearch('')}>
+                  <Text style={styles.clearBtnText}>Clear search</Text>
+                </TouchableOpacity>
+              ) : undefined}
+            />
+          }
+          ListFooterComponent={loadingMore ? (
+            <View style={{ padding: 16 }}>
+              <SkeletonBox height={72} radius={12} />
+            </View>
+          ) : null}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => router.push(`/users/${item.user.id}`)}
+            >
+              {item.profile_picture ? (
+                <Image source={{ uri: item.profile_picture }} style={styles.avatar} />
+              ) : (
+                <View style={[styles.avatar, styles.avatarPlaceholder]}>
+                  <Text style={styles.avatarInitial}>
+                    {item.user.username[0].toUpperCase()}
+                  </Text>
+                </View>
+              )}
+              <View style={styles.info}>
+                <Text style={styles.username}>@{item.user.username}</Text>
+                {item.bio && (
+                  <Text style={styles.bio} numberOfLines={1}>{item.bio}</Text>
+                )}
+              </View>
+              <View style={styles.stats}>
+                <Text style={styles.statNum}>{item.total_followers}</Text>
+                <Text style={styles.statLbl}>followers</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </SafeAreaView>
+  );
+}
+
+function UserCardSkeleton() {
+  return (
+    <View style={styles.card}>
+      <SkeletonBox width={50} height={50} radius={25} style={{ marginRight: 14 }} />
+      <View style={{ flex: 1, gap: 8 }}>
+        <SkeletonBox height={15} width="55%" />
+        <SkeletonBox height={12} width="40%" />
+      </View>
+      <View style={{ alignItems: 'center', gap: 4 }}>
+        <SkeletonBox width={32} height={16} radius={4} />
+        <SkeletonBox width={48} height={10} radius={4} />
+      </View>
+    </View>
   );
 }
 
@@ -133,4 +176,11 @@ const styles = StyleSheet.create({
   stats: { alignItems: 'center' },
   statNum: { color: Colors.primary, fontSize: 16, fontWeight: '800' },
   statLbl: { color: Colors.textMuted, fontSize: 10 },
+  clearBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  clearBtnText: { color: '#000', fontWeight: '700', fontSize: 14 },
 });

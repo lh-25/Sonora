@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  Button, Text, H1, H3, StackLayout, FlexLayout, Spinner,
+  Button, Text, H1, StackLayout, FlexLayout,
   Dialog, DialogHeader, DialogContent, DialogActions,
   FormField, FormFieldLabel, Input, MultilineInput, RadioButton, RadioButtonGroup,
   ToggleButton, ToggleButtonGroup,
@@ -11,6 +11,9 @@ import {
   getPlaylists, createPlaylist, getSpotifyPlaylists, importSpotifyPlaylist,
   spotifyStatus, uploadImage, type Playlist,
 } from '@/services/api';
+import { useToast } from '@/contexts/ToastContext';
+import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './playlists.module.css';
 import Link from 'next/link';
 
@@ -34,6 +37,7 @@ export default function PlaylistsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [spotifyPls, setSpotifyPls] = useState<any[]>([]);
   const [importing, setImporting] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -55,7 +59,7 @@ export default function PlaylistsPage() {
       const { url } = await uploadImage(file, 'playlist_covers');
       setCoverUrl(url);
     } catch {
-      alert('Could not upload cover image.');
+      toast.error('Could not upload cover image.');
     } finally {
       setUploadingCover(false);
     }
@@ -75,8 +79,9 @@ export default function PlaylistsPage() {
       resetCreateForm();
       const d = await getPlaylists(filter);
       setPlaylists(d.results);
+      toast.success(`Playlist "${newName.trim()}" created`);
     } catch {
-      alert('Could not create playlist. Please try again.');
+      toast.error('Could not create playlist — please try again.');
     } finally {
       setCreating(false);
     }
@@ -88,7 +93,7 @@ export default function PlaylistsPage() {
       setSpotifyPls(data?.items ?? []);
       setImportOpen(true);
     } catch {
-      alert('Could not fetch Spotify playlists. Make sure Spotify is connected in your profile.');
+      toast.error('Could not load Spotify playlists. Make sure Spotify is connected in your profile.');
     }
   };
 
@@ -96,13 +101,13 @@ export default function PlaylistsPage() {
     setImporting(id);
     try {
       const r = await importSpotifyPlaylist(id, name);
-      alert(`Imported "${r.name}" with ${r.imported_tracks} tracks!`);
+      toast.success(`Imported "${r.name}" with ${r.imported_tracks} tracks`);
       const d = await getPlaylists('mine');
       setPlaylists(d.results);
       setFilter('mine');
       setImportOpen(false);
     } catch {
-      alert('Import failed.');
+      toast.error('Import failed — please try again.');
     } finally {
       setImporting(null);
     }
@@ -135,16 +140,26 @@ export default function PlaylistsPage() {
         </ToggleButtonGroup>
 
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinner}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <div className={styles.grid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <PlaylistCardSkeleton key={i} />
+            ))}
+          </div>
         ) : playlists.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <H3>No playlists yet</H3>
-            <Button variant="primary" onClick={() => setCreateOpen(true)}>
-              Create your first playlist
-            </Button>
-          </StackLayout>
+          <EmptyState
+            variant="playlists"
+            title={filter === 'mine' ? 'You have no playlists yet' : 'No public playlists yet'}
+            description={
+              filter === 'mine'
+                ? 'Create a playlist or import one from Spotify to get started.'
+                : 'Public playlists from the community will appear here.'
+            }
+            action={
+              <Button variant="primary" onClick={() => setCreateOpen(true)}>
+                Create your first playlist
+              </Button>
+            }
+          />
         ) : (
           <div className={styles.grid}>
             {playlists.map((pl) => (
@@ -260,6 +275,19 @@ export default function PlaylistsPage() {
           <Button variant="secondary" onClick={() => setImportOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+    </div>
+  );
+}
+
+function PlaylistCardSkeleton() {
+  return (
+    <div className={styles.plCard}>
+      <Skeleton width="100%" height="auto" radius={0} style={{ aspectRatio: '1' }} />
+      <div className={styles.plInfo}>
+        <Skeleton width="70%" height={14} />
+        <Skeleton width="50%" height={12} style={{ marginTop: 6 }} />
+        <Skeleton width={56} height={18} radius={20} style={{ marginTop: 6 }} />
+      </div>
     </div>
   );
 }

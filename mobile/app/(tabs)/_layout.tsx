@@ -2,8 +2,32 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import MusicPlayer from '@/components/MusicPlayer';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+
+function GlassTabBar() {
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      <BlurView intensity={85} tint="dark" style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={['rgba(255,255,255,0.09)', 'rgba(255,255,255,0.00)']}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={[StyleSheet.absoluteFill, tabStyles.topBorder]} />
+    </View>
+  );
+}
+
+const tabStyles = StyleSheet.create({
+  topBorder: {
+    borderTopWidth: 0.5,
+    borderTopColor: 'rgba(255, 255, 255, 0.12)',
+  },
+});
 
 export default function TabsLayout() {
   const router = useRouter();
@@ -12,10 +36,10 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarBackground: () => <GlassTabBar />,
           tabBarStyle: {
-            backgroundColor: Colors.surface,
-            borderTopColor: Colors.border,
-            borderTopWidth: 1,
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
             height: 64,
             paddingBottom: 8,
           },

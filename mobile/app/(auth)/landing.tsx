@@ -6,6 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants/colors';
+import GlassView from '@/components/GlassView';
 
 const { height } = Dimensions.get('window');
 
@@ -59,24 +60,23 @@ export default function LandingScreen() {
         {FEATURES.map((f, i) => (
           <Animated.View
             key={f.title}
-            style={[
-              styles.featureCard,
-              {
-                opacity: cardAnim,
-                transform: [{
-                  translateX: cardAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [i % 2 === 0 ? -30 : 30, 0],
-                  }),
-                }],
-              },
-            ]}
+            style={{
+              opacity: cardAnim,
+              transform: [{
+                translateX: cardAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [i % 2 === 0 ? -30 : 30, 0],
+                }),
+              }],
+            }}
           >
-            <Text style={styles.featureIcon}>{f.icon}</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.featureTitle}>{f.title}</Text>
-              <Text style={styles.featureDesc}>{f.desc}</Text>
-            </View>
+            <GlassView style={styles.featureCard} borderRadius={14} intensity={55}>
+              <Text style={styles.featureIcon}>{f.icon}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.featureTitle}>{f.title}</Text>
+                <Text style={styles.featureDesc}>{f.desc}</Text>
+              </View>
+            </GlassView>
           </Animated.View>
         ))}
       </Animated.View>
@@ -131,19 +131,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -80,
     right: -80,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(0, 212, 255, 0.06)',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(0, 212, 255, 0.14)',
   },
   blobBottomLeft: {
     position: 'absolute',
     bottom: 60,
     left: -100,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(255, 64, 255, 0.05)',
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: 'rgba(255, 64, 255, 0.11)',
   },
   hero: {
     alignItems: 'flex-start',
@@ -183,12 +183,8 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: 14,
     padding: 14,
     gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   featureIcon: {
     fontSize: 24,

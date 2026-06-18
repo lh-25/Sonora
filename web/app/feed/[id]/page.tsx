@@ -16,6 +16,8 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import styles from './post.module.css';
 
 export default function PostDetailPage() {
@@ -23,12 +25,14 @@ export default function PostDetailPage() {
   const postId = Number(params.id);
   const { user: me } = useAuth();
   const { play } = usePlayer();
+  const toast = useToast();
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [commentText, setCommentText] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
 
   useEffect(() => {
     if (!postId) return;
@@ -41,10 +45,14 @@ export default function PostDetailPage() {
 
   const handleLikePost = async () => {
     if (!post) return;
-    const result = await likePost(post.id);
-    setPost((prev) =>
-      prev ? { ...prev, is_liked: result.liked, total_likes: result.total_likes } : prev,
-    );
+    try {
+      const result = await likePost(post.id);
+      setPost((prev) =>
+        prev ? { ...prev, is_liked: result.liked, total_likes: result.total_likes } : prev,
+      );
+    } catch {
+      toast.error('Could not update like — please try again.');
+    }
   };
 
   const handleAddComment = async () => {
@@ -62,12 +70,15 @@ export default function PostDetailPage() {
           : prev,
       );
       setCommentText('');
+    } catch {
+      toast.error('Could not post comment — please try again.');
     } finally {
       setSubmittingComment(false);
     }
   };
 
   const handleCommentLike = async (commentId: number) => {
+    try {
     const result = await likeComment(commentId);
     setPost((prev) => {
       if (!prev) return prev;
@@ -83,23 +94,34 @@ export default function PostDetailPage() {
         });
       return { ...prev, comments: updateComments(prev.comments ?? []) };
     });
+    } catch {
+      toast.error('Could not update like — please try again.');
+    }
   };
 
-  const handleDeleteComment = async (commentId: number) => {
-    if (!confirm('Delete this comment?')) return;
-    await deleteComment(commentId);
-    setPost((prev) => {
-      if (!prev) return prev;
-      const removeComment = (comments: Comment[]): Comment[] =>
-        comments
-          .filter((c) => c.id !== commentId)
-          .map((c) => ({ ...c, replies: removeComment(c.replies ?? []) }));
-      return {
-        ...prev,
-        comments: removeComment(prev.comments ?? []),
-        comment_count: prev.comment_count - 1,
-      };
-    });
+  const handleDeleteComment = (commentId: number) => setDeleteTarget(commentId);
+
+  const doDeleteComment = async () => {
+    const commentId = deleteTarget;
+    setDeleteTarget(null);
+    if (!commentId) return;
+    try {
+      await deleteComment(commentId);
+      setPost((prev) => {
+        if (!prev) return prev;
+        const removeComment = (comments: Comment[]): Comment[] =>
+          comments
+            .filter((c) => c.id !== commentId)
+            .map((c) => ({ ...c, replies: removeComment(c.replies ?? []) }));
+        return {
+          ...prev,
+          comments: removeComment(prev.comments ?? []),
+          comment_count: prev.comment_count - 1,
+        };
+      });
+    } catch {
+      toast.error('Could not delete comment — please try again.');
+    }
   };
 
   const handleAddReply = async (parentId: number, content: string) => {
@@ -163,12 +185,16 @@ export default function PostDetailPage() {
 
           <div className={styles.postBody}>
             {/* Song row */}
-            <button className={styles.songRow} onClick={() => play(post.song)}>
+            <button
+              className={styles.songRow}
+              onClick={() => play(post.song)}
+              aria-label={`Play ${post.song.title} by ${post.song.artist}`}
+            >
               {post.song.album_cover && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={post.song.album_cover}
-                  alt={post.song.title}
+                  alt=""
                   className={styles.albumArt}
                 />
               )}
@@ -177,7 +203,7 @@ export default function PostDetailPage() {
                 <Text className={styles.songArtist}>{post.song.artist}</Text>
               </div>
               {(post.song.preview_url || post.song.spotify_track_id) && (
-                <span className={styles.playIcon}>▶</span>
+                <span className={styles.playIcon} aria-hidden="true">▶</span>
               )}
             </button>
 
@@ -211,8 +237,10 @@ export default function PostDetailPage() {
               <button
                 className={`${styles.likeBtn} ${post.is_liked ? styles.likeBtnActive : ''}`}
                 onClick={handleLikePost}
+                aria-pressed={post.is_liked}
+                aria-label={`${post.is_liked ? 'Unlike' : 'Like'} this post (${post.total_likes} likes)`}
               >
-                ♥ {post.total_likes}
+                <span aria-hidden="true">♥</span> {post.total_likes}
               </button>
             </FlexLayout>
           </div>
@@ -259,6 +287,16 @@ export default function PostDetailPage() {
           </StackLayout>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Comment"
+        message="Are you sure you want to delete this comment? This cannot be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={doDeleteComment}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
@@ -284,14 +322,19 @@ function CommentItem({
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
   const [currentContent, setCurrentContent] = useState(comment.content);
+  const [editError, setEditError] = useState('');
+  const [replyError, setReplyError] = useState('');
 
   const handleSubmitReply = async () => {
     if (!replyText.trim()) return;
     setSubmittingReply(true);
+    setReplyError('');
     try {
       await onReply(comment.id, replyText.trim());
       setReplyText('');
       setShowReplyForm(false);
+    } catch {
+      setReplyError('Could not post reply — please try again.');
     } finally {
       setSubmittingReply(false);
     }
@@ -299,9 +342,14 @@ function CommentItem({
 
   const handleSaveEdit = async () => {
     if (!editText.trim()) return;
-    await editComment(comment.id, editText.trim());
-    setCurrentContent(editText.trim());
-    setEditing(false);
+    setEditError('');
+    try {
+      await editComment(comment.id, editText.trim());
+      setCurrentContent(editText.trim());
+      setEditing(false);
+    } catch {
+      setEditError('Could not save edit — please try again.');
+    }
   };
 
   const isOwn = currentUserId === comment.user.id;
@@ -326,6 +374,7 @@ function CommentItem({
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
           />
+          {editError && <Text style={{ color: 'var(--sonora-red)', fontSize: 12 }}>{editError}</Text>}
           <FlexLayout gap={1} className={styles.replyActions}>
             <Button variant="primary" className={styles.submitReplyBtn} onClick={handleSaveEdit}>
               Save
@@ -343,8 +392,10 @@ function CommentItem({
         <button
           className={`${styles.commentActionBtn} ${styles.commentLikeBtn} ${comment.is_liked ? styles.commentLikeBtnActive : ''}`}
           onClick={() => onLike(comment.id)}
+          aria-pressed={comment.is_liked}
+          aria-label={`${comment.is_liked ? 'Unlike' : 'Like'} this comment (${comment.total_likes} likes)`}
         >
-          ♥ {comment.total_likes}
+          <span aria-hidden="true">♥</span> {comment.total_likes}
         </button>
 
         {!isReply && (
@@ -382,6 +433,7 @@ function CommentItem({
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
           />
+          {replyError && <Text style={{ color: 'var(--sonora-red)', fontSize: 12 }}>{replyError}</Text>}
           <FlexLayout gap={1} className={styles.replyActions}>
             <Button
               variant="primary"

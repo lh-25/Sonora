@@ -3,15 +3,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  Button, Text, H1, H2, H3, StackLayout, FlexLayout,
-  Card, Badge, Spinner, ToggleButton, ToggleButtonGroup,
+  Button, Text, H1, H3, StackLayout, FlexLayout,
+  Card, ToggleButton, ToggleButtonGroup,
 } from '@salt-ds/core';
 import { getPosts, likePost, type Post } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
+import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './feed.module.css';
 
 export default function FeedPage() {
   const { play } = usePlayer();
+  const toast = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -32,12 +36,16 @@ export default function FeedPage() {
   }, [filter, fetchPosts]);
 
   const handleLike = async (post: Post) => {
-    const result = await likePost(post.id);
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === post.id ? { ...p, is_liked: result.liked, total_likes: result.total_likes } : p,
-      ),
-    );
+    try {
+      const result = await likePost(post.id);
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === post.id ? { ...p, is_liked: result.liked, total_likes: result.total_likes } : p,
+        ),
+      );
+    } catch {
+      toast.error('Could not update like — please try again.');
+    }
   };
 
   const handleLoadMore = async () => {
@@ -66,15 +74,26 @@ export default function FeedPage() {
         </FlexLayout>
 
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinnerWrapper}>
-            <Spinner size="large" />
-          </FlexLayout>
-        ) : posts.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <Text styleAs="h2">♪</Text>
-            <H3>No posts yet</H3>
-            <Text styleAs="notation">Be the first to share your Song of the Day!</Text>
+          <StackLayout gap={3} className={styles.feed}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <PostCardSkeleton key={i} />
+            ))}
           </StackLayout>
+        ) : posts.length === 0 ? (
+          <EmptyState
+            variant="posts"
+            title={filter === 'mine' ? 'You haven’t posted yet' : 'No posts yet'}
+            description={
+              filter === 'mine'
+                ? 'Share what you’re listening to and it’ll show up here.'
+                : 'Be the first to share your Song of the Day.'
+            }
+            action={
+              <Link href="/feed/new" className={styles.newPostBtn} style={{ textDecoration: 'none', padding: '10px 22px', borderRadius: '25px', fontWeight: 700, fontSize: '14px', background: 'linear-gradient(90deg, #00d4ff, #ff40ff)', color: '#fff', display: 'inline-flex', alignItems: 'center' }}>
+                + New Post
+              </Link>
+            }
+          />
         ) : (
           <StackLayout gap={3} className={styles.feed}>
             {posts.map((post) => (
@@ -95,6 +114,30 @@ export default function FeedPage() {
   );
 }
 
+function PostCardSkeleton() {
+  return (
+    <Card className={styles.postCard}>
+      <Skeleton width="100%" height={220} radius={0} />
+      <div className={styles.songRow}>
+        <Skeleton width={44} height={44} radius={6} />
+        <div className={styles.songInfo}>
+          <Skeleton width="50%" height={14} />
+          <Skeleton width="30%" height={12} style={{ marginTop: 8 }} />
+        </div>
+      </div>
+      <div style={{ padding: '16px' }}>
+        <Skeleton width="70%" height={18} />
+        <Skeleton width="90%" height={12} style={{ marginTop: 12 }} />
+        <Skeleton width="60%" height={12} style={{ marginTop: 8 }} />
+      </div>
+      <FlexLayout justify="space-between" align="center" className={styles.postFooter}>
+        <Skeleton width={90} height={12} />
+        <Skeleton width={120} height={28} radius={20} />
+      </FlexLayout>
+    </Card>
+  );
+}
+
 function PostCard({
   post,
   onLike,
@@ -112,17 +155,21 @@ function PostCard({
       )}
 
       {/* Song row */}
-      <button className={styles.songRow} onClick={() => onPlay(post.song)}>
+      <button
+        className={styles.songRow}
+        onClick={() => onPlay(post.song)}
+        aria-label={`Play ${post.song.title} by ${post.song.artist}`}
+      >
         {post.song.album_cover && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.song.album_cover} alt={post.song.title} className={styles.albumArt} />
+          <img src={post.song.album_cover} alt="" className={styles.albumArt} />
         )}
         <div className={styles.songInfo}>
           <Text styleAs="label" className={styles.songTitle}>{post.song.title}</Text>
           <Text styleAs="notation" className={styles.songArtist}>{post.song.artist}</Text>
         </div>
         {(post.song.preview_url || post.song.spotify_track_id) && (
-          <span className={styles.playIcon}>▶</span>
+          <span className={styles.playIcon} aria-hidden="true">▶</span>
         )}
       </button>
 
@@ -143,11 +190,17 @@ function PostCard({
             variant={post.is_liked ? 'primary' : 'secondary'}
             onClick={() => onLike(post)}
             className={post.is_liked ? styles.likedBtn : ''}
+            aria-pressed={post.is_liked}
+            aria-label={`${post.is_liked ? 'Unlike' : 'Like'} this post (${post.total_likes} likes)`}
           >
-            ♥ {post.total_likes}
+            <span aria-hidden="true">♥</span> {post.total_likes}
           </Button>
-          <Link href={`/feed/${post.id}`} className={styles.viewBtn}>
-            💬 {post.comment_count}
+          <Link
+            href={`/feed/${post.id}`}
+            className={styles.viewBtn}
+            aria-label={`View ${post.comment_count} comments`}
+          >
+            <span aria-hidden="true">💬</span> {post.comment_count}
           </Link>
         </FlexLayout>
       </FlexLayout>

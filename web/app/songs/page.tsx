@@ -2,14 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Button, Input, Text, H1, H3, StackLayout, FlexLayout,
-  Spinner, Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
+  Button, Input, Text, H1, StackLayout, FlexLayout,
+  Pill, FormField, FormFieldLabel, Dialog, DialogHeader,
   DialogContent, DialogActions, MultilineInput,
 } from '@salt-ds/core';
 import { getSongs, spotifySearch, linkSpotifyTrack, createSong, uploadImage, type Song } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
+import Skeleton from '@/components/Skeleton';
+import EmptyState from '@/components/EmptyState';
 import styles from './songs.module.css';
 
 const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY', 'ELECTRONIC', 'OTHER'];
@@ -17,6 +20,7 @@ const GENRES = ['', 'POP', 'ROCK', 'RAP', 'JAZZ', 'CLASSICAL', 'RNB', 'COUNTRY',
 export default function SongsPage() {
   const { play } = usePlayer();
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
   const router = useRouter();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,10 +112,11 @@ export default function SongsPage() {
     try {
       const updated = await linkSpotifyTrack(song.id, linkTrack.id, linkTrack.preview_url);
       setSongs((prev) => prev.map((s) => s.id === updated.id ? updated : s));
+      toast.success(`"${linkTrack.name}" linked to ${song.title}`);
       setLinkTrack(null);
       setLinkSongId('');
     } catch {
-      alert('Could not link — try again.');
+      toast.error('Could not link track — please try again.');
     } finally {
       setLinking(false);
     }
@@ -125,7 +130,7 @@ export default function SongsPage() {
       const { url } = await uploadImage(file, 'album_covers');
       setNewCoverUrl(url);
     } catch {
-      alert('Could not upload cover image.');
+      toast.error('Could not upload cover image.');
     } finally {
       setUploadingCover(false);
     }
@@ -143,10 +148,11 @@ export default function SongsPage() {
         album_cover: newCoverUrl || undefined,
       });
       setSongs((prev) => [song, ...prev]);
+      toast.success(`"${newTitle.trim()}" added to your library`);
       setAddOpen(false);
       setNewTitle(''); setNewArtist(''); setNewAlbum(''); setNewGenre('POP'); setNewCoverUrl('');
     } catch {
-      alert('Could not add song. Try again.');
+      toast.error('Could not add song — please try again.');
     } finally {
       setAddingSong(false);
     }
@@ -238,13 +244,35 @@ export default function SongsPage() {
 
         {/* Song library */}
         {loading ? (
-          <FlexLayout justify="center" className={styles.spinner}>
-            <Spinner size="large" />
-          </FlexLayout>
+          <div className={styles.songGrid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SongCardSkeleton key={i} />
+            ))}
+          </div>
         ) : songs.length === 0 ? (
-          <StackLayout align="center" className={styles.empty}>
-            <H3>No songs found</H3>
-          </StackLayout>
+          search || genre ? (
+            <EmptyState
+              variant="search"
+              title="No songs match your search"
+              description="Try a different keyword or clear the genre filter."
+              action={
+                <Button variant="secondary" onClick={() => { setSearch(''); setGenre(''); }}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              variant="music"
+              title="No songs yet"
+              description="Add a song to your library or search the Spotify catalog above."
+              action={
+                <Button variant="primary" onClick={() => setAddOpen(true)} className={styles.addBtn}>
+                  + Add Song
+                </Button>
+              }
+            />
+          )
         ) : (
           <>
             <div className={styles.songGrid}>
@@ -358,6 +386,20 @@ export default function SongsPage() {
   );
 }
 
+function SongCardSkeleton() {
+  return (
+    <div className={styles.songCard}>
+      <Skeleton width={52} height={52} radius={8} />
+      <div className={styles.songInfo}>
+        <Skeleton width="55%" height={14} />
+        <Skeleton width="35%" height={12} style={{ marginTop: 8 }} />
+        <Skeleton width="45%" height={12} style={{ marginTop: 8 }} />
+      </div>
+      <Skeleton width={40} height={32} radius={20} />
+    </div>
+  );
+}
+
 function SongCard({ song, onPlay }: { song: Song; onPlay: (s: Song) => void }) {
   return (
     <div className={styles.songCard}>
@@ -378,10 +420,15 @@ function SongCard({ song, onPlay }: { song: Song; onPlay: (s: Song) => void }) {
       </div>
       <FlexLayout gap={1} align="center" className={styles.songActions}>
         {song.spotify_track_id && (
-          <div className={styles.spotifyDot} title="Linked to Spotify">●</div>
+          <div className={styles.spotifyDot} title="Linked to Spotify" aria-label="Linked to Spotify" role="img">●</div>
         )}
-        <Button variant="primary" onClick={() => onPlay(song)} className={styles.playBtn}>
-          {song.preview_url ? '▶' : '♫'}
+        <Button
+          variant="primary"
+          onClick={() => onPlay(song)}
+          className={styles.playBtn}
+          aria-label={`Play ${song.title} by ${song.artist}`}
+        >
+          <span aria-hidden="true">{song.preview_url ? '▶' : '♫'}</span>
         </Button>
       </FlexLayout>
     </div>
