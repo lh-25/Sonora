@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ActivityIndicator,
-  TouchableOpacity, Alert, Modal, TextInput, ScrollView, RefreshControl,
+  TouchableOpacity, Modal, TextInput, ScrollView, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -15,10 +15,12 @@ import {
 } from '@/services/api';
 import { useSpotifyAuth } from '@/services/spotify';
 import { spotifyExchangeToken } from '@/services/api';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function PlaylistsScreen() {
   const router = useRouter();
   const { authorize } = useSpotifyAuth();
+  const toast = useToast();
 
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,15 +62,16 @@ export default function PlaylistsScreen() {
   };
 
   const handleCreate = async () => {
-    if (!newName.trim()) { Alert.alert('Name required'); return; }
+    if (!newName.trim()) { toast.error('Please enter a playlist name.'); return; }
     setCreating(true);
     try {
       await createPlaylist({ name: newName.trim(), description: newDesc, visibility: newVisibility });
       setCreateOpen(false);
       setNewName(''); setNewDesc('');
       fetchPlaylists(filter, true);
+      toast.success(`Playlist "${newName.trim()}" created.`);
     } catch {
-      Alert.alert('Error', 'Could not create playlist.');
+      toast.error('Could not create playlist.');
     } finally {
       setCreating(false);
     }
@@ -80,9 +83,9 @@ export default function PlaylistsScreen() {
     try {
       await spotifyExchangeToken(result.code, result.redirectUri);
       setSpotifyConnected(true);
-      Alert.alert('Connected!', 'Spotify is now connected.');
+      toast.success('Spotify is now connected.');
     } catch {
-      Alert.alert('Error', 'Could not connect Spotify. Make sure your Spotify Client ID is set.');
+      toast.error('Could not connect Spotify. Make sure your Spotify Client ID is set.');
     }
   };
 
@@ -92,7 +95,7 @@ export default function PlaylistsScreen() {
       setSpotifyPlaylists(data?.items ?? []);
       setImportOpen(true);
     } catch {
-      Alert.alert('Error', 'Could not fetch Spotify playlists.');
+      toast.error('Could not fetch Spotify playlists.');
     }
   };
 
@@ -100,11 +103,11 @@ export default function PlaylistsScreen() {
     setImporting(spotifyPlaylistId);
     try {
       const result = await importSpotifyPlaylist(spotifyPlaylistId, name);
-      Alert.alert('Imported!', `"${result.name}" created with ${result.imported_tracks} tracks.`);
+      toast.success(`"${result.name}" created with ${result.imported_tracks} tracks.`);
       fetchPlaylists('mine', true);
       setFilter('mine');
     } catch {
-      Alert.alert('Error', 'Import failed.');
+      toast.error('Import failed.');
     } finally {
       setImporting(null);
     }

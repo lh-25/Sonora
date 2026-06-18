@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
-  Image, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform,
+  Image, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -10,10 +10,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import { updateProfileMultipart } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function EditProfileScreen() {
   const router = useRouter();
   const { user, profile, refreshProfile } = useAuth();
+  const toast = useToast();
 
   const [bio, setBio] = useState(profile?.bio ?? '');
   const [image, setImage] = useState<{ uri: string; name: string; type: string } | null>(null);
@@ -22,7 +24,7 @@ export default function EditProfileScreen() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo library access to change your profile picture.');
+      toast.info('Allow photo library access to change your profile picture.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -53,9 +55,10 @@ export default function EditProfileScreen() {
       }
       await updateProfileMultipart(formData);
       await refreshProfile();
+      toast.success('Profile updated.');
       router.back();
     } catch (err: any) {
-      Alert.alert('Error', 'Could not save profile. ' + (err.message ?? ''));
+      toast.error('Could not save profile. ' + (err.message ?? ''));
     } finally {
       setSaving(false);
     }

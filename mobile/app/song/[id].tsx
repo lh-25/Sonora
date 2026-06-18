@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
-  ActivityIndicator, Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,11 +11,13 @@ import { getSong, linkSpotifyTrack, type Song } from '@/services/api';
 import type { SpotifyTrack } from '@/services/spotify';
 import { openInSpotify } from '@/services/spotify';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function SongDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const { play, currentSong, isPlaying, pause, resume } = usePlayer();
+  const toast = useToast();
 
   const [song, setSong] = useState<Song | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function SongDetailScreen() {
         setSong(s);
         navigation.setOptions({ title: s.title });
       })
-      .catch(() => Alert.alert('Error', 'Song not found'))
+      .catch(() => toast.error('Song not found.'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -36,9 +38,9 @@ export default function SongDetailScreen() {
     try {
       const updated = await linkSpotifyTrack(song.id, track.id, track.preview_url ?? undefined);
       setSong(updated);
-      Alert.alert('Linked!', `This song is now linked to Spotify.`);
+      toast.success('This song is now linked to Spotify.');
     } catch {
-      Alert.alert('Error', 'Could not link to Spotify.');
+      toast.error('Could not link to Spotify.');
     }
   };
 
