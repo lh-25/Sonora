@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator,
+  View, Text, FlatList, StyleSheet, ScrollView,
   TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import PostCard from '@/components/PostCard';
+import SkeletonBox from '@/components/SkeletonBox';
+import EmptyState from '@/components/EmptyState';
 import { getPosts, likePost, type Post } from '@/services/api';
 import { usePlayer } from '@/contexts/PlayerContext';
 
@@ -90,7 +92,11 @@ export default function FeedScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />
+        <ScrollView contentContainerStyle={styles.list} pointerEvents="none">
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+        </ScrollView>
       ) : (
         <FlatList
           data={posts}
@@ -100,13 +106,20 @@ export default function FeedScreen() {
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.3}
           ListEmptyComponent={
-            <View style={styles.empty}>
-              <Ionicons name="musical-note" size={48} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>No posts yet</Text>
-              <Text style={styles.emptySubText}>Be the first to share your Song of the Day!</Text>
-            </View>
+            <EmptyState
+              icon={filter === 'mine' ? 'document-outline' : 'musical-note-outline'}
+              title={filter === 'mine' ? 'No posts yet' : 'Nothing here yet'}
+              subtitle={filter === 'mine'
+                ? 'Share what you\'ve been listening to.'
+                : 'Be the first to share your Song of the Day!'}
+              action={filter === 'mine' ? (
+                <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/post/new')}>
+                  <Text style={styles.emptyBtnText}>New Post</Text>
+                </TouchableOpacity>
+              ) : undefined}
+            />
           }
-          ListFooterComponent={hasMore ? <ActivityIndicator color={Colors.primary} style={{ padding: 16 }} /> : null}
+          ListFooterComponent={hasMore ? <SkeletonBox height={4} radius={2} style={{ marginHorizontal: 16, marginVertical: 8 }} /> : null}
           renderItem={({ item }) => (
             <PostCard
               post={item}
@@ -120,6 +133,63 @@ export default function FeedScreen() {
     </SafeAreaView>
   );
 }
+
+function PostCardSkeleton() {
+  return (
+    <View style={skStyles.wrapper}>
+      <View style={skStyles.card}>
+        <View style={skStyles.body}>
+          <View style={skStyles.songRow}>
+            <SkeletonBox width={40} height={40} radius={6} />
+            <View style={skStyles.songInfo}>
+              <SkeletonBox height={13} width="70%" />
+              <SkeletonBox height={11} width="50%" style={{ marginTop: 6 }} />
+            </View>
+          </View>
+          <SkeletonBox height={16} width="85%" />
+          <View style={skStyles.lyricBlock}>
+            <SkeletonBox height={13} width="90%" />
+          </View>
+          <View style={skStyles.footer}>
+            <SkeletonBox width={80} height={12} radius={4} />
+            <SkeletonBox width={56} height={12} radius={4} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const skStyles = StyleSheet.create({
+  wrapper: { marginBottom: 12 },
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  body: { padding: 14, gap: 10 },
+  songRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 8,
+    backgroundColor: Colors.surfaceAlt,
+    borderRadius: 10,
+  },
+  songInfo: { flex: 1 },
+  lyricBlock: {
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.border,
+    paddingLeft: 10,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -173,19 +243,15 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
   },
-  empty: {
-    alignItems: 'center',
-    paddingTop: 80,
-    gap: 8,
+  emptyBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  emptyText: {
-    color: Colors.textSecondary,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  emptySubText: {
-    color: Colors.textMuted,
-    fontSize: 13,
-    textAlign: 'center',
+  emptyBtnText: {
+    color: '#000',
+    fontWeight: '700',
+    fontSize: 14,
   },
 });
