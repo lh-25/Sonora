@@ -8,6 +8,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { Colors } from '@/constants/colors';
 
+interface FieldErrors {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
+function validate(username: string, email: string, password: string): FieldErrors {
+  const errs: FieldErrors = {};
+  if (!username.trim()) errs.username = 'Username is required.';
+  else if (username.trim().length < 3) errs.username = 'Username must be at least 3 characters.';
+  if (!email.trim()) errs.email = 'Email is required.';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = 'Enter a valid email address.';
+  if (!password) errs.password = 'Password is required.';
+  else if (password.length < 8) errs.password = 'Password must be at least 8 characters.';
+  return errs;
+}
+
 export default function SignupScreen() {
   const { signup } = useAuth();
   const [username, setUsername] = useState('');
@@ -16,28 +33,58 @@ export default function SignupScreen() {
   const [bio, setBio] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [touched, setTouched] = useState({ username: false, email: false, password: false });
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState('');
+
+  const handleBlur = (field: 'username' | 'email' | 'password') => {
+    const next = { ...touched, [field]: true };
+    setTouched(next);
+    setFieldErrors(validate(username, email, password));
+  };
+
+  const handleChange = (field: 'username' | 'email' | 'password', value: string) => {
+    if (field === 'username') setUsername(value);
+    else if (field === 'email') setEmail(value);
+    else setPassword(value);
+    if (touched[field]) {
+      const u = field === 'username' ? value : username;
+      const em = field === 'email' ? value : email;
+      const p = field === 'password' ? value : password;
+      setFieldErrors(validate(u, em, p));
+    }
+  };
 
   const handleSignup = async () => {
-    if (!username.trim() || !email.trim() || !password) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
+    setTouched({ username: true, email: true, password: true });
+    const errs = validate(username, email, password);
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setLoading(true);
-    setError('');
+    setFormError('');
     try {
       await signup(username.trim(), email.trim(), password, bio);
     } catch (e: any) {
       try {
         const msg = JSON.parse(e.message);
-        const first = Object.values(msg)[0];
-        setError(Array.isArray(first) ? first[0] : String(first));
+        const serverErrs: FieldErrors = {};
+        let generic = '';
+        for (const [key, val] of Object.entries(msg)) {
+          const text = Array.isArray(val) ? (val as string[])[0] : String(val);
+          if (key === 'username') serverErrs.username = text;
+          else if (key === 'email') serverErrs.email = text;
+          else if (key === 'password') serverErrs.password = text;
+          else generic = text;
+        }
+        if (Object.keys(serverErrs).length > 0) {
+          setFieldErrors(serverErrs);
+          setTouched({ username: true, email: true, password: true });
+        } else {
+          setFormError(generic || 'Sign up failed. Please try again.');
+        }
       } catch {
-        setError('Sign up failed. Please try again.');
+        setFormError('Sign up failed. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -56,40 +103,55 @@ export default function SignupScreen() {
         <View style={styles.form}>
           <Text style={styles.label}>Username *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, touched.username && fieldErrors.username ? styles.inputError : null]}
             value={username}
-            onChangeText={setUsername}
+            onChangeText={(v) => handleChange('username', v)}
+            onBlur={() => handleBlur('username')}
             placeholder="Choose a username"
             placeholderTextColor={Colors.textMuted}
             autoCapitalize="none"
             autoCorrect={false}
+            accessibilityLabel="Username"
           />
+          {touched.username && fieldErrors.username ? (
+            <Text style={styles.fieldError}>{fieldErrors.username}</Text>
+          ) : null}
 
           <Text style={styles.label}>Email *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, touched.email && fieldErrors.email ? styles.inputError : null]}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(v) => handleChange('email', v)}
+            onBlur={() => handleBlur('email')}
             placeholder="Enter your email"
             placeholderTextColor={Colors.textMuted}
             keyboardType="email-address"
             autoCapitalize="none"
+            accessibilityLabel="Email"
           />
+          {touched.email && fieldErrors.email ? (
+            <Text style={styles.fieldError}>{fieldErrors.email}</Text>
+          ) : null}
 
           <Text style={styles.label}>Password *</Text>
           <View style={styles.passwordWrapper}>
             <TextInput
-              style={[styles.input, styles.passwordInput]}
+              style={[styles.input, styles.passwordInput, touched.password && fieldErrors.password ? styles.inputError : null]}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(v) => handleChange('password', v)}
+              onBlur={() => handleBlur('password')}
               placeholder="At least 8 characters"
               placeholderTextColor={Colors.textMuted}
               secureTextEntry={!showPass}
+              accessibilityLabel="Password"
             />
             <TouchableOpacity style={styles.eyeBtn} onPress={() => setShowPass(!showPass)}>
               <Ionicons name={showPass ? 'eye-off' : 'eye'} size={20} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>
+          {touched.password && fieldErrors.password ? (
+            <Text style={styles.fieldError}>{fieldErrors.password}</Text>
+          ) : null}
 
           <Text style={styles.label}>Bio</Text>
           <TextInput
@@ -102,7 +164,7 @@ export default function SignupScreen() {
             numberOfLines={3}
           />
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
           <TouchableOpacity style={styles.btn} onPress={handleSignup} disabled={loading}>
             {loading ? (
@@ -170,6 +232,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
+  inputError: {
+    borderColor: Colors.error,
+  },
+  fieldError: {
+    color: Colors.error,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  formError: {
+    color: Colors.error,
+    fontSize: 13,
+    marginTop: 12,
+    textAlign: 'center',
+  },
   passwordWrapper: {
     position: 'relative',
   },
@@ -187,11 +263,6 @@ const styles = StyleSheet.create({
     height: 80,
     textAlignVertical: 'top',
     paddingTop: 12,
-  },
-  error: {
-    color: Colors.error,
-    fontSize: 13,
-    marginTop: 8,
   },
   btn: {
     backgroundColor: Colors.primary,
