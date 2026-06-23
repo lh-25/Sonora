@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator,
+  View, Text, FlatList, StyleSheet,
   TouchableOpacity, TextInput, ScrollView, RefreshControl, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import SongCard from '@/components/SongCard';
+import SkeletonBox from '@/components/SkeletonBox';
+import EmptyState from '@/components/EmptyState';
 import SpotifySearchModal from '@/components/SpotifySearchModal';
 import { getSongs, linkSpotifyTrack, type Song } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -64,6 +66,8 @@ export default function SongsScreen() {
     await fetchSongs(1, search, genre, true);
     setRefreshing(false);
   };
+
+  const clearFilters = () => { setSearch(''); setGenre(''); };
 
   const handleSpotifySelect = async (track: SpotifyTrack) => {
     if (!pendingLinkSong) return;
@@ -135,7 +139,9 @@ export default function SongsScreen() {
       </ScrollView>
 
       {loading ? (
-        <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />
+        <ScrollView contentContainerStyle={styles.list} pointerEvents="none">
+          {[1, 2, 3, 4, 5, 6].map((i) => <SongCardSkeleton key={i} />)}
+        </ScrollView>
       ) : (
         <FlatList
           data={songs}
@@ -145,12 +151,20 @@ export default function SongsScreen() {
           onEndReached={() => { if (hasMore) fetchSongs(page + 1); }}
           onEndReachedThreshold={0.3}
           ListEmptyComponent={
-            <View style={styles.empty}>
-              <Ionicons name="musical-notes-outline" size={48} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>No songs found</Text>
-            </View>
+            <EmptyState
+              icon={search || genre ? 'search-outline' : 'musical-notes-outline'}
+              title={search || genre ? 'No songs match your search' : 'No songs yet'}
+              subtitle={search || genre
+                ? 'Try different keywords or clear your filters.'
+                : "Songs will appear here once they're added."}
+              action={search || genre ? (
+                <TouchableOpacity style={styles.clearBtn} onPress={clearFilters}>
+                  <Text style={styles.clearBtnText}>Clear filters</Text>
+                </TouchableOpacity>
+              ) : undefined}
+            />
           }
-          ListFooterComponent={hasMore ? <ActivityIndicator color={Colors.primary} style={{ padding: 16 }} /> : null}
+          ListFooterComponent={hasMore ? <SkeletonBox height={4} radius={2} style={{ marginHorizontal: 16, marginVertical: 8 }} /> : null}
           renderItem={({ item }) => (
             <SongCard
               song={item}
@@ -267,13 +281,51 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 10,
   },
-  empty: {
+  clearBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  clearBtnText: {
+    color: '#000',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+});
+
+function SongCardSkeleton() {
+  return (
+    <View style={skStyles.wrapper}>
+      <View style={skStyles.card}>
+        <SkeletonBox width={56} height={56} radius={8} />
+        <View style={skStyles.info}>
+          <SkeletonBox height={15} width="70%" />
+          <SkeletonBox height={13} width="55%" style={{ marginTop: 6 }} />
+          <SkeletonBox height={11} width="45%" style={{ marginTop: 4 }} />
+          <View style={skStyles.meta}>
+            <SkeletonBox width={48} height={18} radius={4} />
+            <SkeletonBox width={32} height={18} radius={4} />
+          </View>
+        </View>
+        <SkeletonBox width={36} height={36} radius={18} />
+      </View>
+    </View>
+  );
+}
+
+const skStyles = StyleSheet.create({
+  wrapper: { marginBottom: 8 },
+  card: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 80,
-    gap: 8,
+    padding: 12,
+    gap: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  emptyText: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-  },
+  info: { flex: 1 },
+  meta: { flexDirection: 'row', gap: 8, marginTop: 6 },
 });

@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator,
+  View, Text, FlatList, StyleSheet, Animated,
   TouchableOpacity, Modal, TextInput, ScrollView, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
 import PlaylistCard from '@/components/PlaylistCard';
+import SkeletonBox from '@/components/SkeletonBox';
+import EmptyState from '@/components/EmptyState';
 import SpotifySearchModal from '@/components/SpotifySearchModal';
 import {
   getPlaylists, createPlaylist, getSpotifyPlaylists, importSpotifyPlaylist,
@@ -154,7 +156,9 @@ export default function PlaylistsScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />
+        <View style={[styles.grid, styles.skeletonGrid]}>
+          {[1, 2, 3, 4, 5, 6].map((i) => <PlaylistCardSkeleton key={i} />)}
+        </View>
       ) : (
         <FlatList
           data={playlists}
@@ -164,13 +168,18 @@ export default function PlaylistsScreen() {
           columnWrapperStyle={styles.row}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
           ListEmptyComponent={
-            <View style={styles.empty}>
-              <Ionicons name="list-circle-outline" size={48} color={Colors.textMuted} />
-              <Text style={styles.emptyText}>No playlists yet</Text>
-              <TouchableOpacity style={styles.createHintBtn} onPress={() => setCreateOpen(true)}>
-                <Text style={styles.createHintText}>Create your first playlist</Text>
-              </TouchableOpacity>
-            </View>
+            <EmptyState
+              icon={filter === 'mine' ? 'list-circle-outline' : 'earth-outline'}
+              title={filter === 'mine' ? 'No playlists yet' : 'No public playlists'}
+              subtitle={filter === 'mine'
+                ? 'Create your first playlist to organise your music.'
+                : 'Be the first to share a playlist with the community.'}
+              action={filter === 'mine' ? (
+                <TouchableOpacity style={styles.emptyBtn} onPress={() => setCreateOpen(true)}>
+                  <Text style={styles.emptyBtnText}>New Playlist</Text>
+                </TouchableOpacity>
+              ) : undefined}
+            />
           }
           renderItem={({ item }) => (
             <PlaylistCard playlist={item} onPress={(p) => router.push(`/playlist/${p.id}`)} />
@@ -253,7 +262,7 @@ export default function PlaylistsScreen() {
                   <Text style={styles.spotifyPlMeta}>{pl.tracks?.total} tracks</Text>
                 </View>
                 {importing === pl.id ? (
-                  <ActivityIndicator color={Colors.primary} size="small" />
+                  <SkeletonBox width={22} height={22} radius={11} />
                 ) : (
                   <Ionicons name="cloud-download-outline" size={22} color={Colors.primary} />
                 )}
@@ -305,16 +314,17 @@ const styles = StyleSheet.create({
   filterText: { color: Colors.textMuted, fontSize: 13, fontWeight: '600' },
   filterTextActive: { color: '#000' },
   grid: { padding: 16, paddingTop: 4 },
-  row: { justifyContent: 'space-between' },
-  empty: {
-    alignItems: 'center', paddingTop: 80, gap: 12,
+  skeletonGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  emptyText: { color: Colors.textSecondary, fontSize: 16 },
-  createHintBtn: {
+  row: { justifyContent: 'space-between' },
+  emptyBtn: {
     backgroundColor: Colors.primary, borderRadius: 8,
     paddingHorizontal: 20, paddingVertical: 10,
   },
-  createHintText: { color: '#000', fontWeight: '700', fontSize: 14 },
+  emptyBtnText: { color: '#000', fontWeight: '700', fontSize: 14 },
 
   // Modals
   modal: {
@@ -364,4 +374,62 @@ const styles = StyleSheet.create({
   spotifyPlInfo: { flex: 1 },
   spotifyPlName: { color: Colors.text, fontSize: 15, fontWeight: '600' },
   spotifyPlMeta: { color: Colors.textMuted, fontSize: 12, marginTop: 2 },
+});
+
+function PlaylistCardSkeleton() {
+  const opacity = useRef(new Animated.Value(0.35)).current;
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 0.7, duration: 750, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0.35, duration: 750, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [opacity]);
+
+  return (
+    <Animated.View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[skStyles.card, { opacity }]}
+    >
+      <View style={skStyles.info}>
+        <View style={skStyles.line1} />
+        <View style={skStyles.line2} />
+      </View>
+    </Animated.View>
+  );
+}
+
+const skStyles = StyleSheet.create({
+  card: {
+    width: '48%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    marginBottom: 12,
+    backgroundColor: Colors.surfaceAlt,
+    overflow: 'hidden',
+  },
+  info: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 10,
+    gap: 6,
+  },
+  line1: {
+    height: 14,
+    width: '75%',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 4,
+  },
+  line2: {
+    height: 11,
+    width: '55%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 4,
+  },
 });
