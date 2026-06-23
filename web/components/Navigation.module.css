@@ -48,6 +48,7 @@
   padding: 6px 14px;
   border-radius: 20px;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .link:hover {
@@ -71,6 +72,7 @@
 .username {
   color: var(--sonora-text-muted) !important;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .themeToggle {
@@ -84,9 +86,11 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
+  color: var(--sonora-text);
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
   line-height: 1;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .themeToggle:hover {
@@ -103,4 +107,121 @@
   padding: 4px 12px !important;
   min-height: unset !important;
   height: 30px !important;
+  white-space: nowrap !important;
+}
+
+/* ─── Mobile hamburger button ─────────────────────────────────── */
+
+.menuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--sonora-border);
+  background: transparent;
+  color: var(--sonora-text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.menuBtn:hover {
+  border-color: var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+/* ─── Mobile menu dropdown ────────────────────────────────────── */
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 20px;
+  background: var(--sonora-surface);
+  border-bottom: 1px solid var(--sonora-border);
+  animation: slideDown 0.15s ease;
+  position: relative;
+  z-index: 99;
+}
+
+.mobileLink {
+  display: block;
+  color: var(--sonora-text-muted);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 8px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.mobileLink:hover {
+  color: var(--sonora-cyan);
+  background: rgba(0, 212, 255, 0.07);
+}
+
+.mobileLinkActive {
+  color: var(--sonora-cyan);
+  font-weight: 700;
+}
+
+.mobileDivider {
+  height: 1px;
+  background: var(--sonora-border);
+  margin: 8px 0;
+}
+
+.mobileBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 0;
+}
+
+.mobileUsername {
+  color: var(--sonora-text-muted);
+  font-size: 13px;
+}
+
+.mobileBottomActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  top: 64px;
+  z-index: 98;
+}
+
+/* ─── Responsive breakpoints ──────────────────────────────────── */
+
+/* Tablet: hide username text to save space */
+@media (max-width: 900px) {
+  .username {
+    display: none;
+  }
+}
+
+/* Mobile: hide desktop links and actions, show hamburger */
+@media (max-width: 720px) {
+  .links {
+    display: none;
+  }
+
+  .actions {
+    display: none;
+  }
+
+  .menuBtn {
+    display: flex;
+  }
 }
