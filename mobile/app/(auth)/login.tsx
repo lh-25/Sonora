@@ -8,29 +8,59 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { Colors } from '@/constants/colors';
 
+interface FieldErrors {
+  username?: string;
+  password?: string;
+}
+
+function validate(username: string, password: string): FieldErrors {
+  const errs: FieldErrors = {};
+  if (!username.trim()) errs.username = 'Username is required.';
+  if (!password) errs.password = 'Password is required.';
+  return errs;
+}
+
 export default function LoginScreen() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [touched, setTouched] = useState({ username: false, password: false });
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState('');
+
+  const handleBlur = (field: 'username' | 'password') => {
+    const next = { ...touched, [field]: true };
+    setTouched(next);
+    setFieldErrors(validate(username, password));
+  };
+
+  const handleChange = (field: 'username' | 'password', value: string) => {
+    if (field === 'username') setUsername(value);
+    else setPassword(value);
+    if (touched[field]) {
+      const updated = field === 'username' ? validate(value, password) : validate(username, value);
+      setFieldErrors(updated);
+    }
+  };
 
   const handleLogin = async () => {
-    if (!username.trim() || !password) {
-      setError('Please enter your username and password.');
-      return;
-    }
+    setTouched({ username: true, password: true });
+    const errs = validate(username, password);
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setLoading(true);
-    setError('');
+    setFormError('');
     try {
       await login(username.trim(), password);
     } catch (e) {
       const msg = e instanceof Error ? e.message : '';
       if (msg.includes('Network request failed')) {
-        setError("Can't reach the server. Check your connection and try again.");
+        setFormError("Can't reach the server. Check your connection and try again.");
       } else {
-        setError('Invalid username or password.');
+        setFormError('Invalid username or password.');
       }
     } finally {
       setLoading(false);
@@ -49,34 +79,44 @@ export default function LoginScreen() {
         <View style={styles.form}>
           <Text style={styles.label}>Username</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, touched.username && fieldErrors.username ? styles.inputError : null]}
             value={username}
-            onChangeText={setUsername}
+            onChangeText={(v) => handleChange('username', v)}
+            onBlur={() => handleBlur('username')}
             placeholder="Enter your username"
             placeholderTextColor={Colors.textMuted}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="next"
+            accessibilityLabel="Username"
           />
+          {touched.username && fieldErrors.username ? (
+            <Text style={styles.fieldError}>{fieldErrors.username}</Text>
+          ) : null}
 
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordWrapper}>
             <TextInput
-              style={[styles.input, styles.passwordInput]}
+              style={[styles.input, styles.passwordInput, touched.password && fieldErrors.password ? styles.inputError : null]}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(v) => handleChange('password', v)}
+              onBlur={() => handleBlur('password')}
               placeholder="Enter your password"
               placeholderTextColor={Colors.textMuted}
               secureTextEntry={!showPass}
               returnKeyType="done"
               onSubmitEditing={handleLogin}
+              accessibilityLabel="Password"
             />
             <TouchableOpacity style={styles.eyeBtn} onPress={() => setShowPass(!showPass)}>
               <Ionicons name={showPass ? 'eye-off' : 'eye'} size={20} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>
+          {touched.password && fieldErrors.password ? (
+            <Text style={styles.fieldError}>{fieldErrors.password}</Text>
+          ) : null}
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
           <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
             {loading ? (
@@ -145,6 +185,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
+  inputError: {
+    borderColor: Colors.error,
+  },
+  fieldError: {
+    color: Colors.error,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  formError: {
+    color: Colors.error,
+    fontSize: 13,
+    marginTop: 12,
+    textAlign: 'center',
+  },
   passwordWrapper: {
     position: 'relative',
   },
@@ -157,11 +211,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     justifyContent: 'center',
-  },
-  error: {
-    color: Colors.error,
-    fontSize: 13,
-    marginTop: 8,
   },
   btn: {
     backgroundColor: Colors.primary,
