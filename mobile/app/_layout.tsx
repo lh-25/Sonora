@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { PlayerProvider } from '@/contexts/PlayerContext';
 import { ToastProvider } from '@/contexts/ToastContext';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRouter, useSegments } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -46,15 +47,17 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <PlayerProvider>
-          <ToastProvider>
-            <StatusBar style="light" />
-            <RootLayoutNav />
-          </ToastProvider>
-        </PlayerProvider>
-      </AuthProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <PlayerProvider>
+            <ToastProvider>
+              <StatusBar style="light" />
+              <RootLayoutNav />
+            </ToastProvider>
+          </PlayerProvider>
+        </AuthProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
