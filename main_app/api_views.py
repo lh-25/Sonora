@@ -1,9 +1,12 @@
+import logging
 import os
 import uuid
 import boto3
 import requests
 import urllib.parse
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -35,7 +38,7 @@ def _s3_upload(file_obj, folder='uploads'):
         s3.upload_fileobj(file_obj, bucket, key)
         return f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
     except Exception as e:
-        print(f'S3 upload error: {e}')
+        logger.error('S3 upload error: %s', e)
         return None
 
 

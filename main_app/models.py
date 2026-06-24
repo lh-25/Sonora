@@ -63,7 +63,7 @@ class SongOfTheDay(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='posts')
   song = models.ForeignKey(Song,on_delete=models.CASCADE)
   post_title = models.CharField(max_length=255)
-  reason_for_pick = models.TextField()
+  reason_for_pick = models.TextField(blank=False)
   standout_lyric = models.CharField(max_length=500)
   date_posted = models.DateTimeField(auto_now_add=True)
   post_image = models.CharField(max_length=255,null=True, blank=True)
