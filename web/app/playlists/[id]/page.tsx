@@ -8,6 +8,7 @@ import {
 import { getPlaylist, removeSongFromPlaylist, deletePlaylist, type Playlist } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlayer } from '@/contexts/PlayerContext';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import styles from './playlist.module.css';
 
 export default function PlaylistDetailPage() {
@@ -18,6 +19,10 @@ export default function PlaylistDetailPage() {
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [loading, setLoading] = useState(true);
+  const [removeSongId, setRemoveSongId] = useState<number | null>(null);
+  const [removing, setRemoving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     getPlaylist(Number(id))
@@ -26,15 +31,20 @@ export default function PlaylistDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleRemove = async (songId: number) => {
-    if (!confirm('Remove this song from the playlist?')) return;
-    await removeSongFromPlaylist(Number(id), songId);
-    setPlaylist((p) => p ? { ...p, songs: p.songs.filter((s) => s.id !== songId) } : p);
+  const handleRemove = async () => {
+    if (removeSongId == null) return;
+    setRemoving(true);
+    await removeSongFromPlaylist(Number(id), removeSongId);
+    setPlaylist((p) => p ? { ...p, songs: p.songs.filter((s) => s.id !== removeSongId) } : p);
+    setRemoveSongId(null);
+    setRemoving(false);
   };
 
   const handleDelete = async () => {
-    if (!confirm('Delete this playlist? This cannot be undone.')) return;
+    setDeleting(true);
     await deletePlaylist(Number(id));
+    setDeleting(false);
+    setDeleteOpen(false);
     router.push('/playlists');
   };
 
@@ -63,7 +73,7 @@ export default function PlaylistDetailPage() {
               <Text className={styles.desc}>{playlist.description}</Text>
             )}
             {isOwner && (
-              <Button variant="secondary" onClick={handleDelete} className={styles.deleteBtn}>
+              <Button variant="secondary" onClick={() => setDeleteOpen(true)} className={styles.deleteBtn}>
                 Delete Playlist
               </Button>
             )}
@@ -97,7 +107,7 @@ export default function PlaylistDetailPage() {
                     {song.preview_url ? '▶' : '♫'}
                   </Button>
                   {isOwner && (
-                    <Button variant="secondary" onClick={() => handleRemove(song.id)} className={styles.removeBtn}>
+                    <Button variant="secondary" onClick={() => setRemoveSongId(song.id)} className={styles.removeBtn}>
                       ✕
                     </Button>
                   )}
@@ -108,5 +118,27 @@ export default function PlaylistDetailPage() {
         )}
       </div>
     </div>
+
+    <ConfirmDialog
+      open={removeSongId != null}
+      title="Remove Song"
+      message="Remove this song from the playlist?"
+      confirmLabel="Remove"
+      danger
+      loading={removing}
+      onConfirm={handleRemove}
+      onClose={() => setRemoveSongId(null)}
+    />
+
+    <ConfirmDialog
+      open={deleteOpen}
+      title="Delete Playlist"
+      message="Delete this playlist? This cannot be undone."
+      confirmLabel="Delete"
+      danger
+      loading={deleting}
+      onConfirm={handleDelete}
+      onClose={() => setDeleteOpen(false)}
+    />
   );
 }
