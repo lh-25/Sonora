@@ -3,6 +3,7 @@ import {
   View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
 import SkeletonBox from '@/components/SkeletonBox';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +19,7 @@ export default function PostDetailScreen() {
   const { user } = useAuth();
   const { play } = usePlayer();
   const toast = useToast();
+  const headerHeight = useHeaderHeight();
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -131,7 +133,7 @@ export default function PostDetailScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {/* Post image */}
         {post.post_image && (
