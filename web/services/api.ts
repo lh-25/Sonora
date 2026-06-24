@@ -244,6 +244,24 @@ export async function addSongToPlaylist(playlistId: number, songId: number) {
   });
 }
 
+export async function addSpotifyTrackToPlaylist(
+  playlistId: number,
+  track: { id: string; name: string; artists: string; album: string; album_cover: string | null; preview_url: string | null; duration_ms: number },
+) {
+  return request<{ song_id: number }>(`/playlists/${playlistId}/songs/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      spotify_track_id: track.id,
+      song_title: track.name,
+      song_artist: track.artists,
+      song_album: track.album,
+      album_cover: track.album_cover,
+      preview_url: track.preview_url,
+      duration_ms: track.duration_ms,
+    }),
+  });
+}
+
 export async function removeSongFromPlaylist(playlistId: number, songId: number) {
   return request<void>(`/playlists/${playlistId}/songs/${songId}/`, { method: 'DELETE' });
 }
