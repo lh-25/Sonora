@@ -15,7 +15,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sonora.app",
+      "bundleIdentifier": "com.leekamomma.sonora",
       "infoPlist": {
         "LSApplicationQueriesSchemes": ["spotify"]
       }
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a0a0a"
       },
-      "package": "com.sonora.app",
+      "package": "com.leekamomma.sonora",
       "intentFilters": [
         {
           "action": "VIEW",
