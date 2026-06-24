@@ -709,6 +709,16 @@ def _get_user_spotify_token(user):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def spotify_user_token(request):
+    """Return the current user's Spotify access token for use by the mobile SDK."""
+    token = _get_user_spotify_token(request.user)
+    if not token:
+        return Response({'error': 'Spotify not connected'}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response({'access_token': token})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def spotify_user_playlists(request):
     """Fetch the authenticated user's Spotify playlists."""
     token = _get_user_spotify_token(request.user)

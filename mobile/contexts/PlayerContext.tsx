@@ -2,7 +2,8 @@ import React, { createContext, useContext, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import type { Song } from '@/services/api';
-import { openInSpotify, getSpotifyClientToken } from '@/services/spotify';
+import { getSpotifyUserToken } from '@/services/api';
+import { openInSpotify } from '@/services/spotify';
 
 // react-native-spotify-remote is a native module — it won't exist in Expo Go.
 // We import it lazily so the app still loads in development without a native build.
@@ -55,7 +56,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const playViaSpotifySDK = async (song: Song): Promise<boolean> => {
     if (!SpotifyRemote || !song.spotify_track_id) return false;
 
-    const token = await getSpotifyClientToken();
+    const token = await getSpotifyUserToken();
     if (!token) return false;
 
     try {

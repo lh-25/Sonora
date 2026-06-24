@@ -377,6 +377,15 @@ export async function spotifyExchangeToken(code: string, redirectUri: string, co
   });
 }
 
+export async function getSpotifyUserToken(): Promise<string | null> {
+  try {
+    const data = await request<{ access_token: string }>('/spotify/user-token/');
+    return data.access_token;
+  } catch {
+    return null;
+  }
+}
+
 export async function spotifyDisconnect() {
   return request('/spotify/disconnect/', { method: 'DELETE' });
 }
