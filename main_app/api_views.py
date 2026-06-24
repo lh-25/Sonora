@@ -13,10 +13,28 @@ from django.db.models import Q
 from django.utils import timezone
 
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.throttling import UserRateThrottle
+
+
+class PostCreateThrottle(UserRateThrottle):
+    scope = 'post_create'
+
+    def allow_request(self, request, view):
+        if request.method != 'POST':
+            return True
+        return super().allow_request(request, view)
+
+
+class CommentCreateThrottle(UserRateThrottle):
+    scope = 'comment_create'
+
+
+class LikeThrottle(UserRateThrottle):
+    scope = 'like'
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -232,6 +250,7 @@ def api_playlist_songs(request, playlist_id, song_id=None):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
+@throttle_classes([PostCreateThrottle])
 def api_posts(request):
     if request.method == 'GET':
         show = request.query_params.get('filter', 'all')
@@ -291,6 +310,7 @@ def api_post_detail(request, post_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@throttle_classes([LikeThrottle])
 def api_like_post(request, post_id):
     try:
         post = SongOfTheDay.objects.get(id=post_id)
@@ -307,6 +327,7 @@ def api_like_post(request, post_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@throttle_classes([CommentCreateThrottle])
 def api_add_comment(request, post_id):
     try:
         post = SongOfTheDay.objects.get(id=post_id)
@@ -328,6 +349,7 @@ def api_add_comment(request, post_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@throttle_classes([LikeThrottle])
 def api_like_comment(request, comment_id):
     try:
         comment = Comment.objects.get(id=comment_id)
