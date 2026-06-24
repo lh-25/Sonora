@@ -89,23 +89,42 @@
   max-width: 480px;
 }
 
-.genres {
+.genreScroll {
+  display: flex;
+  flex-direction: row;
   gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.genreScroll::-webkit-scrollbar {
+  display: none;
 }
 
-.pill {
+.genreChip {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--sonora-border);
+  background: var(--sonora-surface-alt);
+  color: var(--sonora-text-muted);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
-  border-radius: 20px !important;
-  border-color: var(--sonora-border) !important;
-  color: var(--sonora-text-muted) !important;
+  white-space: nowrap;
+}
+.genreChip:hover {
+  border-color: var(--sonora-cyan);
+  color: var(--sonora-cyan);
 }
 
-.pillActive {
-  background: linear-gradient(90deg, #00d4ff, #ff40ff) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  font-weight: 600 !important;
+.genreChipActive {
+  background: var(--sonora-cyan);
+  border-color: var(--sonora-cyan);
+  color: #000;
+  font-weight: 700;
 }
 
 /* Spotify panel */
