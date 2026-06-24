@@ -11,7 +11,8 @@ let SpotifyRemote: any = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod = require('react-native-spotify-remote');
-  SpotifyRemote = mod.default ?? mod.SpotifyRemoteApi ?? mod;
+  // Package exports SpotifyRemote as a named export
+  SpotifyRemote = mod.SpotifyRemote ?? mod.default ?? mod;
 } catch {
   // running in Expo Go or web — SDK not available
 }
@@ -54,10 +55,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   };
 
   const playViaSpotifySDK = async (song: Song): Promise<boolean> => {
-    if (!SpotifyRemote || !song.spotify_track_id) return false;
+    if (!SpotifyRemote) { Alert.alert('SDK Debug', 'SpotifyRemote module is null'); return false; }
+    if (!song.spotify_track_id) { Alert.alert('SDK Debug', 'No spotify_track_id on song'); return false; }
 
     const token = await getSpotifyUserToken();
-    if (!token) return false;
+    if (!token) { Alert.alert('SDK Debug', 'No token from backend — Spotify not connected?'); return false; }
 
     try {
       await SpotifyRemote.connect(token);
@@ -65,7 +67,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       usingSpotifySDK.current = true;
       setIsPlaying(true);
 
-      // Poll playback state every second for position updates
       const interval = setInterval(async () => {
         try {
           const state = await SpotifyRemote.getPlayerState();
@@ -80,7 +81,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       }, 1000);
 
       return true;
-    } catch {
+    } catch (err: any) {
+      Alert.alert('SDK Debug', `connect/play failed: ${err?.message ?? String(err)}`);
       usingSpotifySDK.current = false;
       return false;
     }
