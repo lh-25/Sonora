@@ -174,15 +174,15 @@ export default function SongsPage() {
             placeholder="Search songs, artists, albums…"
             className={styles.searchInput}
           />
-          <FlexLayout gap={1} wrap className={styles.genres}>
+          <div className={styles.genreScroll}>
             {GENRES.map((g) => (
-              <Pill
+              <button
                 key={g || 'all'}
                 onClick={() => setGenre(g)}
-                className={`${styles.pill} ${genre === g ? styles.pillActive : ''}`}
-              >{g || 'All'}</Pill>
+                className={`${styles.genreChip} ${genre === g ? styles.genreChipActive : ''}`}
+              >{g || 'All'}</button>
             ))}
-          </FlexLayout>
+          </div>
         </div>
 
         {/* Spotify search panel */}
