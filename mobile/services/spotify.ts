@@ -48,10 +48,9 @@ async function generateCodeChallenge(verifier: string): Promise<string> {
 export function useSpotifyAuth() {
   const redirectUri = AuthSession.makeRedirectUri({ scheme: 'sonora', path: 'spotify-callback' });
 
-  const authorize = async (): Promise<{ code: string; redirectUri: string } | null> => {
+  const authorize = async (): Promise<{ code: string; redirectUri: string; codeVerifier: string } | null> => {
     const verifier = await generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
-    await SecureStore.setItemAsync('spotify_code_verifier', verifier);
 
     const authUrl =
       `https://accounts.spotify.com/authorize?` +
@@ -71,7 +70,7 @@ export function useSpotifyAuth() {
     const url = new URL(result.url);
     const code = url.searchParams.get('code');
     if (!code) return null;
-    return { code, redirectUri };
+    return { code, redirectUri, codeVerifier: verifier };
   };
 
   return { authorize, redirectUri };

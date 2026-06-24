@@ -587,24 +587,41 @@ def spotify_auth_url(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def spotify_exchange_token(request):
-    """Exchange Spotify auth code for tokens and store them."""
+    """Exchange Spotify auth code for tokens using PKCE (mobile) or client secret (web)."""
     code = request.data.get('code')
     redirect_uri = request.data.get('redirect_uri', os.environ.get('SPOTIFY_REDIRECT_URI', ''))
+    code_verifier = request.data.get('code_verifier')
     if not code:
         return Response({'error': 'code required'}, status=status.HTTP_400_BAD_REQUEST)
 
     client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
-    client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
-    resp = requests.post(
-        'https://accounts.spotify.com/api/token',
-        data={
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': redirect_uri,
-        },
-        auth=(client_id, client_secret),
-        timeout=10,
-    )
+
+    if code_verifier:
+        # PKCE flow (mobile): verifier instead of client secret
+        resp = requests.post(
+            'https://accounts.spotify.com/api/token',
+            data={
+                'grant_type': 'authorization_code',
+                'code': code,
+                'redirect_uri': redirect_uri,
+                'client_id': client_id,
+                'code_verifier': code_verifier,
+            },
+            timeout=10,
+        )
+    else:
+        # Authorization Code flow (web): client secret via Basic Auth
+        client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
+        resp = requests.post(
+            'https://accounts.spotify.com/api/token',
+            data={
+                'grant_type': 'authorization_code',
+                'code': code,
+                'redirect_uri': redirect_uri,
+            },
+            auth=(client_id, client_secret),
+            timeout=10,
+        )
     if not resp.ok:
         return Response({'error': 'Token exchange failed', 'detail': resp.text}, status=resp.status_code)
 

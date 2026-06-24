@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import type { Song } from '@/services/api';
 import { openInSpotify } from '@/services/spotify';
@@ -39,35 +40,43 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setCurrentSong(song);
 
     if (!song.preview_url) {
-      // No preview — just show in player, offer to open in Spotify
+      if (song.spotify_track_id) {
+        Alert.alert(
+          'No preview available',
+          'This track doesn\'t have a 30-second preview. Open it in Spotify to listen?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Spotify', onPress: () => openInSpotify(song.spotify_track_id!) },
+          ],
+        );
+      } else {
+        Alert.alert('No preview', 'This song isn\'t linked to Spotify yet. Link it to enable playback.');
+      }
       return;
     }
 
-    await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+    try {
+      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
-    const { sound, status } = await Audio.Sound.createAsync(
-      { uri: song.preview_url },
-      { shouldPlay: true },
-      (s) => {
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: song.preview_url },
+        { shouldPlay: true },
+      );
+      soundRef.current = sound;
+      setIsPlaying(true);
+
+      sound.setOnPlaybackStatusUpdate((s) => {
         if (s.isLoaded) {
           setPosition(s.positionMillis ?? 0);
           setDuration(s.durationMillis ?? 0);
           setIsPlaying(s.isPlaying);
+          if (s.didJustFinish) setIsPlaying(false);
         }
-      },
-    );
-    soundRef.current = sound;
-    setIsPlaying(true);
-
-    // Auto-stop at end
-    sound.setOnPlaybackStatusUpdate((s) => {
-      if (s.isLoaded) {
-        setPosition(s.positionMillis ?? 0);
-        setDuration(s.durationMillis ?? 0);
-        setIsPlaying(s.isPlaying);
-        if (s.didJustFinish) setIsPlaying(false);
-      }
-    });
+      });
+    } catch (err) {
+      setCurrentSong(null);
+      Alert.alert('Playback error', 'Could not play this track. Try again.');
+    }
   };
 
   const pause = async () => {
