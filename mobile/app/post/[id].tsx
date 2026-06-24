@@ -3,6 +3,7 @@ import {
   View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
 } from 'react-native';
+import SkeletonBox from '@/components/SkeletonBox';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/colors';
@@ -104,8 +105,30 @@ export default function PostDetailScreen() {
     ]);
   };
 
-  if (loading) return <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />;
-  if (!post) return null;
+  if (loading) {
+    return (
+      <ScrollView style={{ flex: 1, backgroundColor: Colors.background }} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+        <SkeletonBox width="100%" height={200} radius={12} style={{ marginBottom: 16 }} />
+        <SkeletonBox width="100%" height={64} radius={12} style={{ marginBottom: 16 }} />
+        <SkeletonBox width="60%" height={26} style={{ marginBottom: 16 }} />
+        <SkeletonBox width="100%" height={80} radius={12} style={{ marginBottom: 12 }} />
+        <SkeletonBox width="100%" height={60} radius={8} style={{ marginBottom: 16 }} />
+        <SkeletonBox width={120} height={14} />
+      </ScrollView>
+    );
+  }
+
+  if (!post) {
+    return (
+      <View style={{ flex: 1, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <Ionicons name="alert-circle-outline" size={48} color={Colors.textMuted} />
+        <Text style={{ color: Colors.text, fontSize: 18, fontWeight: '700', marginTop: 16 }}>Post not found</Text>
+        <Text style={{ color: Colors.textMuted, fontSize: 14, marginTop: 8, textAlign: 'center' }}>
+          This post may have been deleted or doesn't exist.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

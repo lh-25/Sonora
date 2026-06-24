@@ -230,9 +230,9 @@ export default function NewPostScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.submitBtn, submitting && styles.submitBtnDisabled]}
+            style={[styles.submitBtn, (submitting || !selectedSong || !postTitle.trim() || !reason.trim()) && styles.submitBtnDisabled]}
             onPress={handleSubmit}
-            disabled={submitting}
+            disabled={submitting || !selectedSong || !postTitle.trim() || !reason.trim()}
           >
             {submitting ? (
               <ActivityIndicator color="#fff" size="small" />

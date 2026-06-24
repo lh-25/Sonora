@@ -3,6 +3,7 @@ import {
   View, Text, StyleSheet, Image, TouchableOpacity,
   ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
+import SkeletonBox from '@/components/SkeletonBox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -107,7 +108,7 @@ export default function ProfileScreen() {
   };
 
   if (!user || !profile) {
-    return <ActivityIndicator color={Colors.primary} style={{ flex: 1 }} />;
+    return <ProfileSkeleton />;
   }
 
   return (
@@ -194,6 +195,37 @@ export default function ProfileScreen() {
             <Ionicons name="log-out-outline" size={20} color={Colors.error} />
             <Text style={[styles.actionText, { color: Colors.error }]}>Log Out</Text>
           </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function ProfileSkeleton() {
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.profileHeader}>
+          <SkeletonBox width={90} height={90} radius={45} style={{ marginBottom: 12 }} />
+          <SkeletonBox width={140} height={20} style={{ marginBottom: 8 }} />
+          <SkeletonBox width={180} height={14} style={{ marginBottom: 6 }} />
+          <SkeletonBox width={220} height={14} />
+        </View>
+        <View style={[styles.statsRow, { gap: 0 }]}>
+          <SkeletonBox width={60} height={44} style={{ flex: 1, marginHorizontal: 12 }} />
+          <View style={styles.statDivider} />
+          <SkeletonBox width={60} height={44} style={{ flex: 1, marginHorizontal: 12 }} />
+        </View>
+        <View style={[styles.section, { gap: 12 }]}>
+          <SkeletonBox width={80} height={12} />
+          <SkeletonBox width="100%" height={44} radius={10} />
+          <SkeletonBox width="100%" height={14} />
+        </View>
+        <View style={[styles.section, { gap: 12 }]}>
+          <SkeletonBox width={60} height={12} />
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonBox key={i} width={160} height={16} />
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
