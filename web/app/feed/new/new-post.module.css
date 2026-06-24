@@ -245,3 +245,56 @@
   color: var(--sonora-text-muted) !important;
   border-radius: 25px !important;
 }
+
+/* Search mode toggle */
+.searchModeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.modeBtn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--sonora-border);
+  background: transparent;
+  color: var(--sonora-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.modeBtn:hover {
+  border-color: var(--sonora-cyan);
+  color: var(--sonora-cyan);
+}
+.modeBtnActive {
+  border-color: var(--sonora-cyan) !important;
+  color: var(--sonora-cyan) !important;
+  background: rgba(0, 212, 255, 0.08) !important;
+  font-weight: 700 !important;
+}
+
+/* Spotify search row */
+.spotifySearchRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.spotifySearchBtn {
+  flex-shrink: 0;
+}
+
+.spotifyBadge {
+  color: var(--sonora-green) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin-top: 2px !important;
+}
+
+.searchHint {
+  color: var(--sonora-text-muted) !important;
+  font-size: 12px !important;
+}

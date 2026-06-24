@@ -3,9 +3,18 @@
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, Text, H1, FlexLayout, StackLayout, Spinner } from '@salt-ds/core';
-import { getSong, getSongs, createPostMultipart, type Song } from '@/services/api';
+import { Button, Text, H1, FlexLayout, Spinner } from '@salt-ds/core';
+import { getSong, getSongs, createPostMultipart, spotifySearch, type Song } from '@/services/api';
 import styles from './new-post.module.css';
+
+type SpotifyTrack = {
+  id: string;
+  name: string;
+  artists: { name: string }[];
+  album: { name: string; images: { url: string }[] };
+  duration_ms: number;
+  preview_url: string | null;
+};
 
 export default function NewPostPage() {
   return (
@@ -20,10 +29,17 @@ function NewPostForm() {
   const searchParams = useSearchParams();
   const preSongId = searchParams.get('song_id');
 
+  // DB song selection
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [songSearch, setSongSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [searching, setSearching] = useState(false);
+
+  // Spotify track selection
+  const [searchMode, setSearchMode] = useState<'local' | 'spotify'>('local');
+  const [selectedSpotifyTrack, setSelectedSpotifyTrack] = useState<SpotifyTrack | null>(null);
+  const [spotifyResults, setSpotifyResults] = useState<SpotifyTrack[]>([]);
+  const [spotifySearching, setSpotifySearching] = useState(false);
 
   const [postTitle, setPostTitle] = useState('');
   const [reasonForPick, setReasonForPick] = useState('');
@@ -64,6 +80,33 @@ function NewPostForm() {
     setSearchResults([]);
   };
 
+  const handleSpotifySearch = async () => {
+    if (!songSearch.trim()) return;
+    setSpotifySearching(true);
+    try {
+      const data = await spotifySearch(songSearch.trim(), 'track', 10);
+      setSpotifyResults(data?.tracks?.items ?? []);
+    } catch {
+      setSpotifyResults([]);
+    } finally {
+      setSpotifySearching(false);
+    }
+  };
+
+  const handleSelectSpotifyTrack = (track: SpotifyTrack) => {
+    setSelectedSpotifyTrack(track);
+    setSongSearch('');
+    setSpotifyResults([]);
+  };
+
+  const handleClearSong = () => {
+    setSelectedSong(null);
+    setSelectedSpotifyTrack(null);
+    setSongSearch('');
+    setSearchResults([]);
+    setSpotifyResults([]);
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -75,7 +118,7 @@ function NewPostForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedSong) {
+    if (!selectedSong && !selectedSpotifyTrack) {
       setError('Please select a song.');
       return;
     }
@@ -89,7 +132,20 @@ function NewPostForm() {
 
     try {
       const formData = new FormData();
-      formData.append('song_id', String(selectedSong.id));
+
+      if (selectedSpotifyTrack) {
+        formData.append('spotify_track_id', selectedSpotifyTrack.id);
+        formData.append('song_title', selectedSpotifyTrack.name);
+        formData.append('song_artist', selectedSpotifyTrack.artists.map((a) => a.name).join(', '));
+        formData.append('song_album', selectedSpotifyTrack.album.name);
+        const artUrl = selectedSpotifyTrack.album.images?.[0]?.url;
+        if (artUrl) formData.append('album_cover', artUrl);
+        if (selectedSpotifyTrack.preview_url) formData.append('preview_url', selectedSpotifyTrack.preview_url);
+        formData.append('duration_ms', String(selectedSpotifyTrack.duration_ms));
+      } else if (selectedSong) {
+        formData.append('song_id', String(selectedSong.id));
+      }
+
       formData.append('post_title', postTitle.trim());
       formData.append('reason_for_pick', reasonForPick.trim());
       formData.append('standout_lyric', standoutLyric.trim());
@@ -106,6 +162,16 @@ function NewPostForm() {
     }
   };
 
+  const hasSongSelected = selectedSong !== null || selectedSpotifyTrack !== null;
+
+  const selectedArt = selectedSpotifyTrack
+    ? selectedSpotifyTrack.album.images?.[0]?.url
+    : selectedSong?.album_cover;
+  const selectedTitle = selectedSpotifyTrack ? selectedSpotifyTrack.name : selectedSong?.title;
+  const selectedArtist = selectedSpotifyTrack
+    ? selectedSpotifyTrack.artists.map((a) => a.name).join(', ')
+    : selectedSong?.artist;
+
   return (
     <div className={styles.page}>
       <div className="page-container">
@@ -120,58 +186,129 @@ function NewPostForm() {
           <div className={styles.fieldGroup}>
             <Text className={styles.label}>Song *</Text>
 
-            {selectedSong ? (
+            {hasSongSelected ? (
               <div className={styles.selectedSong}>
-                {selectedSong.album_cover && (
+                {selectedArt && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={selectedSong.album_cover}
-                    alt={selectedSong.title}
-                    className={styles.songArt}
-                  />
+                  <img src={selectedArt} alt={selectedTitle} className={styles.songArt} />
                 )}
                 <div>
-                  <Text className={styles.songName}>{selectedSong.title}</Text>
-                  <Text className={styles.songArtist}>{selectedSong.artist}</Text>
+                  <Text className={styles.songName}>{selectedTitle}</Text>
+                  <Text className={styles.songArtist}>{selectedArtist}</Text>
+                  {selectedSpotifyTrack && (
+                    <Text className={styles.spotifyBadge}>via Spotify</Text>
+                  )}
                 </div>
                 <button
                   type="button"
                   className={styles.cancelBtn}
                   style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sonora-text-muted)', fontSize: '12px' }}
-                  onClick={() => setSelectedSong(null)}
+                  onClick={handleClearSong}
                 >
                   Change
                 </button>
               </div>
             ) : (
               <>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="Search for a song..."
-                  value={songSearch}
-                  onChange={(e) => handleSongSearch(e.target.value)}
-                />
-                {searchResults.length > 0 && (
-                  <div className={styles.searchResults}>
-                    {searchResults.map((s) => (
-                      <button
-                        key={s.id}
+                {/* Search mode toggle */}
+                <div className={styles.searchModeRow}>
+                  <button
+                    type="button"
+                    className={`${styles.modeBtn} ${searchMode === 'local' ? styles.modeBtnActive : ''}`}
+                    onClick={() => { setSearchMode('local'); setSongSearch(''); setSpotifyResults([]); }}
+                  >
+                    Sonora Library
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.modeBtn} ${searchMode === 'spotify' ? styles.modeBtnActive : ''}`}
+                    onClick={() => { setSearchMode('spotify'); setSongSearch(''); setSearchResults([]); }}
+                  >
+                    ♫ Search Spotify
+                  </button>
+                </div>
+
+                {searchMode === 'local' ? (
+                  <>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      placeholder="Search for a song..."
+                      value={songSearch}
+                      onChange={(e) => handleSongSearch(e.target.value)}
+                    />
+                    {searching && <Text className={styles.searchHint}>Searching…</Text>}
+                    {searchResults.length > 0 && (
+                      <div className={styles.searchResults}>
+                        {searchResults.map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            className={styles.searchResultItem}
+                            onClick={() => handleSelectSong(s)}
+                          >
+                            {s.album_cover && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={s.album_cover} alt={s.title} className={styles.searchArt} />
+                            )}
+                            <div>
+                              <Text className={styles.searchTitle}>{s.title}</Text>
+                              <Text className={styles.searchArtist}>{s.artist}</Text>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.spotifySearchRow}>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        placeholder="Song name or artist…"
+                        value={songSearch}
+                        onChange={(e) => setSongSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSpotifySearch())}
+                        style={{ flex: 1 }}
+                      />
+                      <Button
                         type="button"
-                        className={styles.searchResultItem}
-                        onClick={() => handleSelectSong(s)}
+                        variant="primary"
+                        onClick={handleSpotifySearch}
+                        loading={spotifySearching}
+                        className={styles.spotifySearchBtn}
                       >
-                        {s.album_cover && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={s.album_cover} alt={s.title} className={styles.searchArt} />
-                        )}
-                        <div>
-                          <Text className={styles.searchTitle}>{s.title}</Text>
-                          <Text className={styles.searchArtist}>{s.artist}</Text>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                        Search
+                      </Button>
+                    </div>
+                    {spotifyResults.length > 0 && (
+                      <div className={styles.searchResults}>
+                        {spotifyResults.map((track) => {
+                          const art = track.album.images?.[0]?.url;
+                          return (
+                            <button
+                              key={track.id}
+                              type="button"
+                              className={styles.searchResultItem}
+                              onClick={() => handleSelectSpotifyTrack(track)}
+                            >
+                              {art && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={art} alt={track.name} className={styles.searchArt} />
+                              )}
+                              <div>
+                                <Text className={styles.searchTitle}>{track.name}</Text>
+                                <Text className={styles.searchArtist}>
+                                  {track.artists.map((a) => a.name).join(', ')}
+                                </Text>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -239,7 +376,7 @@ function NewPostForm() {
               variant="primary"
               className={styles.submitBtn}
               loading={submitting}
-              disabled={!selectedSong || !postTitle.trim()}
+              disabled={!hasSongSelected || !postTitle.trim()}
             >
               Post Song of the Day
             </Button>
