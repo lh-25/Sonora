@@ -58,8 +58,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (!SpotifyRemote) { Alert.alert('SDK Debug', 'SpotifyRemote module is null'); return false; }
     if (!song.spotify_track_id) { Alert.alert('SDK Debug', 'No spotify_track_id on song'); return false; }
 
-    const token = await getSpotifyUserToken();
-    if (!token) { Alert.alert('SDK Debug', 'No token from backend — Spotify not connected?'); return false; }
+    const { token, error: tokenError } = await getSpotifyUserToken();
+    if (!token) { Alert.alert('SDK Debug', `Token fetch failed: ${tokenError ?? 'no token returned'}`); return false; }
 
     try {
       await SpotifyRemote.connect(token);

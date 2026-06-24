@@ -377,12 +377,12 @@ export async function spotifyExchangeToken(code: string, redirectUri: string, co
   });
 }
 
-export async function getSpotifyUserToken(): Promise<string | null> {
+export async function getSpotifyUserToken(): Promise<{ token: string | null; error?: string }> {
   try {
     const data = await request<{ access_token: string }>('/spotify/user-token/');
-    return data.access_token;
-  } catch {
-    return null;
+    return { token: data.access_token };
+  } catch (e: any) {
+    return { token: null, error: e?.message ?? String(e) };
   }
 }
 
