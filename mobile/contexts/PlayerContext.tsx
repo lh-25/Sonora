@@ -2,7 +2,18 @@ import React, { createContext, useContext, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import type { Song } from '@/services/api';
-import { openInSpotify } from '@/services/spotify';
+import { openInSpotify, getSpotifyClientToken } from '@/services/spotify';
+
+// react-native-spotify-remote is a native module — it won't exist in Expo Go.
+// We import it lazily so the app still loads in development without a native build.
+let SpotifyRemote: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mod = require('react-native-spotify-remote');
+  SpotifyRemote = mod.default ?? mod.SpotifyRemoteApi ?? mod;
+} catch {
+  // running in Expo Go or web — SDK not available
+}
 
 type PlayerState = {
   currentSong: Song | null;
@@ -24,8 +35,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Track whether we're currently playing via the Spotify Remote SDK
+  const usingSpotifySDK = useRef(false);
 
   const unloadCurrent = async () => {
+    if (usingSpotifySDK.current) {
+      try { await SpotifyRemote?.pause(); } catch { /* ignore */ }
+      usingSpotifySDK.current = false;
+    }
     if (soundRef.current) {
       await soundRef.current.unloadAsync();
       soundRef.current = null;
@@ -35,57 +52,106 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setDuration(0);
   };
 
+  const playViaSpotifySDK = async (song: Song): Promise<boolean> => {
+    if (!SpotifyRemote || !song.spotify_track_id) return false;
+
+    const token = await getSpotifyClientToken();
+    if (!token) return false;
+
+    try {
+      await SpotifyRemote.connect(token);
+      await SpotifyRemote.playUri(`spotify:track:${song.spotify_track_id}`);
+      usingSpotifySDK.current = true;
+      setIsPlaying(true);
+
+      // Poll playback state every second for position updates
+      const interval = setInterval(async () => {
+        try {
+          const state = await SpotifyRemote.getPlayerState();
+          if (state) {
+            setPosition(state.playbackPosition ?? 0);
+            setIsPlaying(!state.isPaused);
+            if (state.track?.duration) setDuration(state.track.duration);
+          }
+        } catch {
+          clearInterval(interval);
+        }
+      }, 1000);
+
+      return true;
+    } catch {
+      usingSpotifySDK.current = false;
+      return false;
+    }
+  };
+
   const play = async (song: Song) => {
     await unloadCurrent();
     setCurrentSong(song);
 
-    if (!song.preview_url) {
-      if (song.spotify_track_id) {
-        Alert.alert(
-          'No preview available',
-          'This track doesn\'t have a 30-second preview. Open it in Spotify to listen?',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Spotify', onPress: () => openInSpotify(song.spotify_track_id!) },
-          ],
-        );
-      } else {
-        Alert.alert('No preview', 'This song isn\'t linked to Spotify yet. Link it to enable playback.');
-      }
-      return;
+    // Prefer full-track playback via Spotify SDK if track is linked
+    if (song.spotify_track_id && SpotifyRemote) {
+      const sdkPlayed = await playViaSpotifySDK(song);
+      if (sdkPlayed) return;
     }
 
-    try {
-      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+    // Fall back to 30-second preview if available
+    if (song.preview_url) {
+      try {
+        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: song.preview_url },
+          { shouldPlay: true },
+        );
+        soundRef.current = sound;
+        setIsPlaying(true);
 
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: song.preview_url },
-        { shouldPlay: true },
+        sound.setOnPlaybackStatusUpdate((s) => {
+          if (s.isLoaded) {
+            setPosition(s.positionMillis ?? 0);
+            setDuration(s.durationMillis ?? 0);
+            setIsPlaying(s.isPlaying);
+            if (s.didJustFinish) setIsPlaying(false);
+          }
+        });
+        return;
+      } catch {
+        setCurrentSong(null);
+        Alert.alert('Playback error', 'Could not play this track. Try again.');
+        return;
+      }
+    }
+
+    // No preview, no SDK — offer to open Spotify app
+    if (song.spotify_track_id) {
+      Alert.alert(
+        'Open in Spotify',
+        'Connect your Spotify account to play full tracks in-app, or open this track in the Spotify app.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Spotify', onPress: () => openInSpotify(song.spotify_track_id!) },
+        ],
       );
-      soundRef.current = sound;
-      setIsPlaying(true);
-
-      sound.setOnPlaybackStatusUpdate((s) => {
-        if (s.isLoaded) {
-          setPosition(s.positionMillis ?? 0);
-          setDuration(s.durationMillis ?? 0);
-          setIsPlaying(s.isPlaying);
-          if (s.didJustFinish) setIsPlaying(false);
-        }
-      });
-    } catch (err) {
-      setCurrentSong(null);
-      Alert.alert('Playback error', 'Could not play this track. Try again.');
+    } else {
+      Alert.alert('No preview', 'This song isn\'t linked to Spotify yet.');
     }
   };
 
   const pause = async () => {
-    await soundRef.current?.pauseAsync();
+    if (usingSpotifySDK.current) {
+      await SpotifyRemote?.pause();
+    } else {
+      await soundRef.current?.pauseAsync();
+    }
     setIsPlaying(false);
   };
 
   const resume = async () => {
-    await soundRef.current?.playAsync();
+    if (usingSpotifySDK.current) {
+      await SpotifyRemote?.resume();
+    } else {
+      await soundRef.current?.playAsync();
+    }
     setIsPlaying(true);
   };
 

@@ -15,7 +15,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sonora.app"
+      "bundleIdentifier": "com.sonora.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["spotify"]
+      }
     },
     "android": {
       "adaptiveIcon": {
