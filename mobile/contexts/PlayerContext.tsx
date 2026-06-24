@@ -9,10 +9,14 @@ import { openInSpotify } from '@/services/spotify';
 // We import it lazily so the app still loads in development without a native build.
 let SpotifyRemote: any = null;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { NativeModules } = require('react-native');
   const mod = require('react-native-spotify-remote');
-  // Package exports SpotifyRemote as a named export
-  SpotifyRemote = mod.SpotifyRemote ?? mod.default ?? mod;
+  // Try named export first, then default, then fall back to the raw native module
+  const candidate = mod.SpotifyRemote ?? mod.default ?? mod;
+  // If the JS wrapper doesn't expose connect(), use the native module directly
+  SpotifyRemote = typeof candidate?.connect === 'function'
+    ? candidate
+    : NativeModules.RNSpotifyRemoteAppRemote ?? candidate;
 } catch {
   // running in Expo Go or web — SDK not available
 }
@@ -56,6 +60,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   const playViaSpotifySDK = async (song: Song): Promise<boolean> => {
     if (!SpotifyRemote) { Alert.alert('SDK Debug', 'SpotifyRemote module is null'); return false; }
+    Alert.alert('SDK Debug', `Remote keys: ${Object.keys(SpotifyRemote).join(', ')}`); // temp
     if (!song.spotify_track_id) { Alert.alert('SDK Debug', 'No spotify_track_id on song'); return false; }
 
     const { token, error: tokenError } = await getSpotifyUserToken();
