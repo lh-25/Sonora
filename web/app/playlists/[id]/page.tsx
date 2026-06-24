@@ -54,6 +54,7 @@ export default function PlaylistDetailPage() {
   const isOwner = user?.id === playlist.user.id;
 
   return (
+    <>
     <div className={styles.page}>
       <div className="page-container">
         {/* Header */}
@@ -120,6 +121,7 @@ export default function PlaylistDetailPage() {
     </div>
 
     <ConfirmDialog
+
       open={removeSongId != null}
       title="Remove Song"
       message="Remove this song from the playlist?"
@@ -140,5 +142,6 @@ export default function PlaylistDetailPage() {
       onConfirm={handleDelete}
       onClose={() => setDeleteOpen(false)}
     />
+    </>
   );
 }
