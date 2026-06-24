@@ -230,12 +230,31 @@ def api_playlist_songs(request, playlist_id, song_id=None):
 
     if request.method == 'POST':
         sid = request.data.get('song_id') or song_id
-        try:
-            song = Song.objects.get(id=sid)
-        except Song.DoesNotExist:
-            return Response({'error': 'Song not found'}, status=status.HTTP_404_NOT_FOUND)
+        spotify_track_id = request.data.get('spotify_track_id')
+
+        if sid:
+            try:
+                song = Song.objects.get(id=sid)
+            except Song.DoesNotExist:
+                return Response({'error': 'Song not found'}, status=status.HTTP_404_NOT_FOUND)
+        elif spotify_track_id:
+            duration_ms = request.data.get('duration_ms', 0)
+            song, _ = Song.objects.get_or_create(
+                spotify_track_id=spotify_track_id,
+                defaults={
+                    'title': request.data.get('song_title', 'Unknown'),
+                    'artist': request.data.get('song_artist', 'Unknown'),
+                    'album': request.data.get('song_album') or None,
+                    'album_cover': request.data.get('album_cover') or None,
+                    'preview_url': request.data.get('preview_url') or None,
+                    'duration': timedelta(milliseconds=int(duration_ms)),
+                },
+            )
+        else:
+            return Response({'error': 'song_id or spotify_track_id required'}, status=status.HTTP_400_BAD_REQUEST)
+
         playlist.songs.add(song)
-        return Response({'status': 'added'})
+        return Response({'status': 'added', 'song_id': song.id})
 
     # DELETE
     try:
@@ -267,7 +286,26 @@ def api_posts(request):
         serializer = SongOfTheDaySerializer(page, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
-    serializer = SongOfTheDaySerializer(data=request.data, context={'request': request})
+    data = request.data.dict() if hasattr(request.data, 'dict') else dict(request.data)
+    # Resolve Spotify-only songs (not yet in DB) by creating/fetching the Song first
+    spotify_track_id = data.get('spotify_track_id')
+    if spotify_track_id and not data.get('song_id'):
+        duration_ms = data.get('duration_ms', 0)
+        song, _ = Song.objects.get_or_create(
+            spotify_track_id=spotify_track_id,
+            defaults={
+                'title': data.get('song_title', 'Unknown'),
+                'artist': data.get('song_artist', 'Unknown'),
+                'album': data.get('song_album') or None,
+                'album_cover': data.get('album_cover') or None,
+                'preview_url': data.get('preview_url') or None,
+                'duration': timedelta(milliseconds=int(duration_ms)),
+            },
+        )
+        data['song_id'] = song.id
+    # post_image is a file upload — handled via request.FILES below, not the serializer
+    data.pop('post_image', None)
+    serializer = SongOfTheDaySerializer(data=data, context={'request': request})
     if serializer.is_valid():
         post = serializer.save(user=request.user)
         pic_file = request.FILES.get('post_image')

@@ -34,6 +34,7 @@ export default function PlaylistsScreen() {
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newVisibility, setNewVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PRIVATE');
+  const [nameError, setNameError] = useState('');
   const [creating, setCreating] = useState(false);
 
   // Spotify import
@@ -64,12 +65,12 @@ export default function PlaylistsScreen() {
   };
 
   const handleCreate = async () => {
-    if (!newName.trim()) { toast.error('Please enter a playlist name.'); return; }
+    if (!newName.trim()) { setNameError('Playlist name is required.'); return; }
     setCreating(true);
     try {
       await createPlaylist({ name: newName.trim(), description: newDesc, visibility: newVisibility });
       setCreateOpen(false);
-      setNewName(''); setNewDesc('');
+      setNewName(''); setNewDesc(''); setNameError('');
       fetchPlaylists(filter, true);
       toast.success(`Playlist "${newName.trim()}" created.`);
     } catch {
@@ -188,23 +189,24 @@ export default function PlaylistsScreen() {
       )}
 
       {/* Create Playlist Modal */}
-      <Modal visible={createOpen} animationType="slide" presentationStyle="formSheet" onRequestClose={() => setCreateOpen(false)}>
+      <Modal visible={createOpen} animationType="slide" presentationStyle="formSheet" onRequestClose={() => { setCreateOpen(false); setNameError(''); }}>
         <View style={styles.modal}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>New Playlist</Text>
-            <TouchableOpacity onPress={() => setCreateOpen(false)}>
+            <TouchableOpacity onPress={() => { setCreateOpen(false); setNameError(''); }}>
               <Ionicons name="close" size={24} color={Colors.text} />
             </TouchableOpacity>
           </View>
 
           <Text style={styles.formLabel}>Name *</Text>
           <TextInput
-            style={styles.formInput}
+            style={[styles.formInput, nameError ? styles.formInputError : null]}
             value={newName}
-            onChangeText={setNewName}
+            onChangeText={(v) => { setNewName(v); if (nameError) setNameError(''); }}
             placeholder="Playlist name"
             placeholderTextColor={Colors.textMuted}
           />
+          {nameError ? <Text style={styles.fieldError}>{nameError}</Text> : null}
 
           <Text style={styles.formLabel}>Description</Text>
           <TextInput
@@ -346,6 +348,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 12,
     color: Colors.text, fontSize: 15,
     borderWidth: 1, borderColor: Colors.border,
+  },
+  formInputError: {
+    borderColor: Colors.error,
+  },
+  fieldError: {
+    color: Colors.error, fontSize: 12, marginTop: 4, marginLeft: 2,
   },
   textArea: { height: 80, textAlignVertical: 'top', paddingTop: 12 },
   visibilityRow: { flexDirection: 'row', gap: 12 },

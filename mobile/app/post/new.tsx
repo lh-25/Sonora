@@ -84,8 +84,11 @@ export default function NewPostScreen() {
         formData.append('spotify_track_id', selectedSong.spotify_track_id);
         formData.append('song_title', selectedSong.title);
         formData.append('song_artist', selectedSong.artist);
+        if (selectedSong.album) formData.append('song_album', selectedSong.album);
         if (selectedSong.album_cover) formData.append('album_cover', selectedSong.album_cover);
         if (selectedSong.preview_url) formData.append('preview_url', selectedSong.preview_url);
+        const raw = (selectedSong as any)._raw;
+        if (raw?.duration_ms) formData.append('duration_ms', String(raw.duration_ms));
       }
       formData.append('post_title', postTitle.trim());
       formData.append('reason_for_pick', reason.trim());

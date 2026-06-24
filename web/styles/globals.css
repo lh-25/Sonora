@@ -226,13 +226,15 @@ select:focus-visible,
 .saltScrim {
   background: rgba(0, 0, 0, 0.6) !important;
   backdrop-filter: blur(6px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 html[data-sonora-theme='light'] .saltScrim {
   background: rgba(20, 30, 60, 0.35) !important;
 }
 
 .saltDialog {
-  position: relative !important;
   background: var(--sonora-surface) !important;
   border: 1px solid var(--sonora-border) !important;
   border-radius: 18px !important;
